@@ -261,3 +261,7 @@ depends_on = ["trait-pool-token", "trait-ownable"]
 [contracts.alex-staking-helper-v10]
 path = "contracts/helpers/alex-staking-helper-v10.clar"
 depends_on = ["alex-reserve-pool-v10", "token-t-alex-v2"]
+
+[contracts.send-many-helper-t-alex]
+path = "contracts/helpers/send-many-helper-t-alex.clar"
+depends_on = ["trait-ownable", "token-t-alex-v2"]

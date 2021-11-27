@@ -811,7 +811,7 @@ async function run() {
     // result = await fwpGetPoolDetails('token-wbtc', 'token-usda', 0.5e8, 0.5e8);
     // printResult(result);
 
-    // await mint('token-t-alex', 'ST11KFHZRN7ANRRPDK0HJXG243EJBFBAFRB27NPK8', 1000e8);
+    await mint('token-t-alex-v2', 'ST3YWEVAEB33P3QXQ16D5HRKX4DGKN501ED4M3JVY', 1000e8);
     
 
 }
