@@ -327,7 +327,7 @@
     (asserts! (>= block-height (get-activation-block-or-default token)) ERR-CONTRACT-NOT-ACTIVATED)
     (asserts! (and (> lock-period u0) (<= lock-period MAX-REWARD-CYCLES)) ERR-CANNOT-STAKE)
     (asserts! (> amount-token u0) ERR-CANNOT-STAKE)
-    (unwrap! (contract-call? token-trait transfer amount-token tx-sender .alex-vault none) ERR-TRANSFER-FAILED)
+    (unwrap! (contract-call? token-trait transfer amount-token tx-sender .alex-vault-v3 none) ERR-TRANSFER-FAILED)
     (try! (as-contract (add-to-balance token amount-token)))
     (match (fold stake-tokens-closure REWARD-CYCLE-INDEXES (ok commitment))
       ok-value (ok true)
@@ -433,7 +433,7 @@
       }
     )
     ;; send back tokens if user was eligible
-    (and (> to-return u0) (try! (contract-call? .alex-vault transfer-pool token-trait to-return user)))
+    (and (> to-return u0) (try! (contract-call? .alex-vault-v3 transfer-pool token-trait to-return user)))
     (and (> to-return u0) (try! (as-contract (remove-from-balance (contract-of token-trait) to-return))))
     ;; send back rewards if user was eligible
     (and (> entitled-token u0) (as-contract (try! (contract-call? token-trait mint user entitled-token))))    
