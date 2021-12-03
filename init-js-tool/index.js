@@ -313,7 +313,7 @@ async function arbitrage_crp(dry_run = true, _subset=_deploy) {
             printed = Number(wbtcPrice) / Number(usdaPrice);
         }
 
-        let node_info = await (await fetch('https://regtest-2.alexgo.io/v2/info')).json();
+        let node_info = await (await fetch('https://regtest-3.alexgo.io/v2/info')).json();
         let time_to_maturity = (Math.round(_subset[key]['expiry'] / ONE_8) - node_info['burn_block_height']) / 2102400;
 
         if (time_to_maturity > 0) {
@@ -401,7 +401,7 @@ async function arbitrage_ytp(dry_run = true, _subset=_deploy) {
         result = await ytpGetYield(_subset[key]['yield_token']);
         implied_yield = Number(result.value.value) / ONE_8;
 
-        let node_info = await (await fetch('https://regtest-2.alexgo.io/v2/info')).json();
+        let node_info = await (await fetch('https://regtest-3.alexgo.io/v2/info')).json();
         let time_to_maturity = (Math.round(_subset[key]['expiry'] / ONE_8) - node_info['burn_block_height']) / 2102400;
 
         if (time_to_maturity > 0) {
@@ -673,9 +673,9 @@ _white_list = {
 
 async function run() {
     // await set_faucet_amounts();
-    // await mint_some_tokens(process.env.DEPLOYER_ACCOUNT_ADDRESS);
-    // await mint_some_usda(process.env.DEPLOYER_ACCOUNT_ADDRESS + '.alex-reserve-pool');    
-    // await mint_some_tokens(process.env.USER_ACCOUNT_ADDRESS);
+    await mint_some_tokens(process.env.DEPLOYER_ACCOUNT_ADDRESS);
+    await mint_some_usda(process.env.DEPLOYER_ACCOUNT_ADDRESS + '.alex-reserve-pool');    
+    await mint_some_tokens(process.env.USER_ACCOUNT_ADDRESS);
     // await get_some_token(process.env.USER_ACCOUNT_ADDRESS);
 
     // const _pools = {    0:_deploy[2], 
@@ -693,14 +693,14 @@ async function run() {
     // const _pools = { 0:_deploy[0], 1:_deploy[1], 2:_deploy[2], 3:_deploy[3]};
     const _pools = _deploy;
 
-    // await create_fwp(add_only=false);
-    // await create_ytp(add_only=false, _pools);
-    // await create_crp(add_only=false, _pools);    
+    await create_fwp(add_only=false);
+    await create_ytp(add_only=false, _pools);
+    await create_crp(add_only=false, _pools);    
 
-    await arbitrage_fwp(dry_run = false);
-    await arbitrage_crp(dry_run = false, _pools);
-    await arbitrage_ytp(dry_run = false, _pools);
-    await arbitrage_fwp(dry_run = false);
+    // await arbitrage_fwp(dry_run = false);
+    // await arbitrage_crp(dry_run = false, _pools);
+    // await arbitrage_ytp(dry_run = false, _pools);
+    // await arbitrage_fwp(dry_run = false);
 
     // await test_spot_trading();
     // await test_margin_trading();
@@ -784,6 +784,6 @@ async function run() {
 
     // await mint('token-t-alex-v2', 'ST13F0C8HFJC9H1FR7S7WFZ9FEMNV1PBEG346P1ZP', 1000e8);    
 
-    // await get_some_token('ST3MZM9WJ34Y4311XBJDBKQ41SXX5DY68406J26WJ');
+    // await get_some_token('ST11KFHZRN7ANRRPDK0HJXG243EJBFBAFRB27NPK8');
 }
 run();

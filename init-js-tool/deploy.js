@@ -9,31 +9,31 @@ const { exit } = require('process');
 let contract_records = {"Contracts":[]}
 let VERSION;
 let contract_paths = [
-    "lib/math-log-exp.clar",
-    "lib/math-fixed-point.clar",
-    "traits/trait-sip-010.clar",    
-    "traits/trait-flash-loan-user.clar",
-    "traits/trait-oracle.clar",
-    "traits/trait-pool-token.clar",
-    "traits/trait-yield-token.clar",
-    "traits/trait-ownable.clar",
-    "traits/trait-vault.clar",
-    "traits/trait-multisig-vote.clar",
-    "equations/weighted-equation.clar",
-    "equations/yield-token-equation.clar",    
-    "token/token-alex.clar",
-    "token/token-usda.clar",
-    "token/token-wbtc.clar",
-    "token/token-t-alex.clar",
-    "alex-vault.clar",    
-    "token/token-wstx.clar",
-    "pool/alex-reserve-pool.clar",
-    "pool/fixed-weight-pool.clar",
-    "pool/liquidity-bootstrapping-pool.clar",
-    "pool/yield-token-pool.clar",
-    "pool/collateral-rebalancing-pool.clar",
-    "faucet.clar",
-    "pool-token/fwp-wbtc-usda-50-50.clar",    
+    // "lib/math-log-exp.clar",
+    // "lib/math-fixed-point.clar",
+    // "traits/trait-sip-010.clar",    
+    // "traits/trait-flash-loan-user.clar",
+    // "traits/trait-oracle.clar",
+    // "traits/trait-pool-token.clar",
+    // "traits/trait-yield-token.clar",
+    // "traits/trait-ownable.clar",
+    // "traits/trait-vault.clar",
+    // "traits/trait-multisig-vote.clar",
+    // "equations/weighted-equation.clar",
+    // "equations/yield-token-equation.clar",    
+    // "token/token-alex.clar",
+    // "token/token-usda.clar",
+    // "token/token-wbtc.clar",
+    // "token/token-t-alex.clar",
+    // "alex-vault.clar",    
+    // "token/token-wstx.clar",
+    // "pool/alex-reserve-pool.clar",
+    // "pool/fixed-weight-pool.clar",
+    // "pool/liquidity-bootstrapping-pool.clar",
+    // "pool/yield-token-pool.clar",
+    // "pool/collateral-rebalancing-pool.clar",
+    // "faucet.clar",
+    // "pool-token/fwp-wbtc-usda-50-50.clar",    
     "multisig/multisig-fwp-wbtc-usda-50-50.clar",  
 
     "yield-token/yield-wbtc-34560.clar",
@@ -92,10 +92,10 @@ async function deploy(filePath, contractName){
     const transaction = await makeContractDeploy(txOptions);
     const broadcast_id = await broadcastTransaction(transaction, network);
     // console.log(broadcast_id)
-    //console.log(`https://regtest-2.alexgo.io/extended/v1/tx/0x${broadcast_id.txid}`)
+    //console.log(`https://regtest-3.alexgo.io/extended/v1/tx/0x${broadcast_id.txid}`)
     while (true){
         await sleep(3000);
-        let truth = await fetch(`https://regtest-2.alexgo.io/extended/v1/tx/${broadcast_id.txid}`)
+        let truth = await fetch(`https://regtest-3.alexgo.io/extended/v1/tx/${broadcast_id.txid}`)
         let res = await truth.json();
         console.log(`Waiting... ${broadcast_id.txid}`)
         if (res['tx_status'] === 'success'){
