@@ -56,8 +56,9 @@ let contract_paths = [
     // "flash-loan-user-margin-wbtc-usda.clar",
 
     // "helpers/alex-staking-helper.clar"
-    "pool/alex-launchpad.clar",
-    "lottery-tokens/lottery-t-alex.clar"
+    // "pool/alex-launchpad.clar",
+    // "lottery-tokens/lottery-t-alex.clar"
+    "lib/math-log-exp-test-1.clar"
 ]
 
 async function get_version(){
@@ -97,10 +98,10 @@ async function deploy(filePath, contractName){
     const transaction = await makeContractDeploy(txOptions);
     const broadcast_id = await broadcastTransaction(transaction, network);
     // console.log(broadcast_id)
-    //console.log(`https://regtest-3.alexgo.io/extended/v1/tx/0x${broadcast_id.txid}`)
+    //console.log(`https://node-one.alexgo.io/extended/v1/tx/0x${broadcast_id.txid}`)
     while (true){
         await sleep(3000);
-        let truth = await fetch(`https://regtest-3.alexgo.io/extended/v1/tx/${broadcast_id.txid}`)
+        let truth = await fetch(`https://node-one.alexgo.io/extended/v1/tx/${broadcast_id.txid}`)
         let res = await truth.json();
         console.log(`Waiting... ${broadcast_id.txid}`)
         if (res['tx_status'] === 'success'){

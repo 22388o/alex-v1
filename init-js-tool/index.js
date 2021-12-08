@@ -346,7 +346,7 @@ async function arbitrage_crp(dry_run = true, _subset=_deploy) {
             printed = Number(wbtcPrice) / Number(usdaPrice);
         }
 
-        let node_info = await (await fetch('https://regtest-3.alexgo.io/v2/info')).json();
+        let node_info = await (await fetch('https://node-one.alexgo.io/v2/info')).json();
         let time_to_maturity = (Math.round(_subset[key]['expiry'] / ONE_8) - node_info['burn_block_height']) / 2102400;
 
         if (time_to_maturity > 0) {
@@ -434,7 +434,7 @@ async function arbitrage_ytp(dry_run = true, _subset=_deploy) {
         result = await ytpGetYield(_subset[key]['expiry'], _subset[key]['yield_token']);
         implied_yield = Number(result.value.value) / ONE_8;
 
-        let node_info = await (await fetch('https://regtest-3.alexgo.io/v2/info')).json();
+        let node_info = await (await fetch('https://node-one.alexgo.io/v2/info')).json();
         let time_to_maturity = (Math.round(_subset[key]['expiry'] / ONE_8) - node_info['burn_block_height']) / 2102400;
 
         if (time_to_maturity > 0) {
