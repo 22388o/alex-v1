@@ -734,10 +734,10 @@ async function run() {
     // await create_ytp(add_only=false, _pools);
     // await create_crp(add_only=false, _pools);    
 
-    // await arbitrage_fwp(dry_run = false);
-    // await arbitrage_crp(dry_run = false, _pools);
+    await arbitrage_fwp(dry_run = false);
+    await arbitrage_crp(dry_run = false, _pools);
     await arbitrage_ytp(dry_run = false, _pools);
-    // await arbitrage_fwp(dry_run = false);
+    await arbitrage_fwp(dry_run = false);
 
     // await test_spot_trading();
     // await test_margin_trading();
