@@ -101,37 +101,7 @@ const _deploy = {
         target_apy: 0.086475,
         expiry: 34560e+8,
         token_to_maturity: 11520e+8
-    },     
-    2: {token: 'token-wbtc',
-        collateral: 'token-usda',
-        yield_token: 'yield-wbtc-74880',
-        key_token: 'key-wbtc-74880-usda',
-        pool_token: 'ytp-yield-wbtc-74880-wbtc',
-        multisig_ytp: 'multisig-ytp-yield-wbtc-74880-wbtc',
-        multisig_crp: 'multisig-crp-wbtc-74880-usda',
-        liquidity_ytp: 100e+8,
-        collateral_crp: 1500000e+8,
-        ltv_0: 0.7e+8,
-        bs_vol: 0.8e+8,
-        target_apy: 0.06354,
-        expiry: 74880e+8,
-        token_to_maturity: 11520e+8
-    },
-    3: {token: 'token-usda',
-        collateral: 'token-wbtc',
-        yield_token: 'yield-usda-74880',
-        key_token: 'key-usda-74880-wbtc',
-        pool_token: 'ytp-yield-usda-74880-usda',
-        multisig_ytp: 'multisig-ytp-yield-usda-74880-usda',
-        multisig_crp: 'multisig-crp-usda-74880-wbtc',
-        liquidity_ytp: 6000000e+8,
-        collateral_crp: 25e+8,
-        ltv_0: 0.7e+8,
-        bs_vol: 0.8e+8,
-        target_apy: 0.086475,
-        expiry: 74880e+8,
-        token_to_maturity: 11520e+8
-    },       
+    },          
 }
 
 const ONE_8 = 100000000
