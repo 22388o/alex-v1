@@ -675,7 +675,6 @@ _white_list = {
 async function run() {
     // await set_faucet_amounts();
     // await mint_some_tokens(process.env.DEPLOYER_ACCOUNT_ADDRESS);
-    // await mint_some_usda(process.env.DEPLOYER_ACCOUNT_ADDRESS + '.alex-reserve-pool');    
     // await mint_some_tokens(process.env.USER_ACCOUNT_ADDRESS);
     // await get_some_token(process.env.USER_ACCOUNT_ADDRESS);
 
@@ -698,10 +697,10 @@ async function run() {
     // await create_ytp(add_only=false, _pools);
     // await create_crp(add_only=false, _pools);    
 
-    // await arbitrage_fwp(dry_run = false);
-    // await arbitrage_crp(dry_run = false, _pools);
-    // await arbitrage_ytp(dry_run = false, _pools);
-    // await arbitrage_fwp(dry_run = false);
+    await arbitrage_fwp(dry_run = false);
+    await arbitrage_crp(dry_run = false, _pools);
+    await arbitrage_ytp(dry_run = false, _pools);
+    await arbitrage_fwp(dry_run = false);
 
     // await test_spot_trading();
     // await test_margin_trading();
@@ -752,7 +751,7 @@ async function run() {
     //     await transfer(_list[i], 'STCTK0C1JAFK3JVM95TFV6EB16579WRCEYN10CTQ', ONE_8, deployer=true);
     // }
 
-    // _staking = ['fwp-wbtc-usda-50-50', 'ytp-yield-wbtc-34560-wbtc', 'ytp-yield-usda-34560-usda']
+    // _staking = ['token-t-alex', 'fwp-wbtc-usda-50-50', 'ytp-yield-wbtc-34560-wbtc', 'ytp-yield-usda-34560-usda']
     // for (let i = 0; i < _staking.length; i++) {
     //     await reserveAddToken(_staking[i]);
     //     await reserveSetActivationThreshold(1);
@@ -794,6 +793,6 @@ async function run() {
     //   result.list.map(e=>{console.log(e.data)});
 
     // await see_balance(process.env.USER_ACCOUNT_ADDRESS);           
-    await mint_some_wbtc(process.env.USER_ACCOUNT_ADDRESS);    
+    // await mint_some_wbtc(process.env.USER_ACCOUNT_ADDRESS);    
 }
 run();
