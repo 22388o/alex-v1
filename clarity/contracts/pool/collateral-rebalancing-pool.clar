@@ -105,17 +105,17 @@
     (let
         (
             (a1x (mul-down a1 x))
-            (x2 (pow-down x u200000000))
+            (x2 (mul-down x x))
             (a2x (mul-down a2 x2))
-            (x3 (pow-down x u300000000))
+            (x3 (mul-down x (mul-down x x)))
             (a3x (mul-down a3 x3))
-            (x4 (pow-down x u400000000))
+            (x4 (mul-down x (mul-down x (mul-down x x))))
             (a4x (mul-down a4 x4))
             (denom (+ ONE_8 a1x))
             (denom1 (+ denom a2x))
             (denom2 (+ denom1 a3x))
             (denom3 (+ denom2 a4x))
-            (denom4 (pow-down denom3 u400000000))
+            (denom4 (mul-down denom3 (mul-down denom3 (mul-down denom3 denom3))))
             (base (div-down ONE_8 denom4))
         )
         (if (<= ONE_8 base) u0 (- ONE_8 base))
@@ -246,7 +246,7 @@
 
                     ;; we calculate d1 first
                     (spot-term (div-up (try! (get-spot token collateral)) strike))
-                    (pow-bs-vol (div-up (pow-down bs-vol u200000000) u200000000))
+                    (pow-bs-vol (div-up (mul-down bs-vol bs-vol) u200000000))
                     (vol-term (mul-up t pow-bs-vol))
                     (sqrt-t (pow-down t u50000000))
                     (sqrt-2 (pow-down u200000000 u50000000))
@@ -309,7 +309,7 @@
                 ;; because we support 'at-the-money' only, we can simplify formula
                 (sqrt-t (pow-down t u50000000))
                 (sqrt-2 (pow-down u200000000 u50000000))
-                (pow-bs-vol (div-up (pow-down bs-vol u200000000) u200000000))
+                (pow-bs-vol (div-up (mul-down bs-vol bs-vol) u200000000))
                 (numerator (mul-up t pow-bs-vol))
                 (denominator (mul-down bs-vol sqrt-t))        
                 (d1 (div-up numerator denominator))
@@ -535,11 +535,10 @@
                 (pool (unwrap! (map-get? pools-data-map { token-x: token-x, token-y: token-y, expiry: expiry }) ERR-INVALID-POOL-ERR))
                 (balance-x (get balance-x pool))
                 (balance-y (get balance-y pool))            
-                (key-supply (get key-supply pool))            
-                (yield-supply (get yield-supply pool))            
+                (key-supply (get key-supply pool))  
+                (yield-supply (get yield-supply pool))                                   
                 (total-shares (unwrap! (contract-call? the-key-token get-balance tx-sender) ERR-GET-BALANCE-FAIL))
                 (shares (if (is-eq percent ONE_8) total-shares (mul-down total-shares percent)))
-                
                 ;; CR-02
                 ;; if there are any residual collateral, convert to token
                 (bal-x-to-y (if (is-eq balance-x u0) 
@@ -555,7 +554,7 @@
                 )
                 (bal-y-key (if (<= (+ balance-y bal-x-to-y) yield-supply) u0 (- (+ balance-y bal-x-to-y) yield-supply)))
                 (shares-to-key (div-down shares key-supply))
-                (bal-y-reduce (mul-down bal-y-key shares-to-key))             
+                (bal-y-reduce (mul-down bal-y-key shares-to-key))   
 
                 (pool-updated (merge pool {
                     key-supply: (if (<= key-supply shares) u0 (- key-supply shares)),
@@ -591,7 +590,7 @@
         ;; swap is supported only if token /= collateral
         (asserts! (not (is-eq token collateral)) ERR-INVALID-POOL-ERR)
         ;; CR-03
-        (asserts! (<= (* block-height ONE_8) expiry) ERR-EXPIRY)        
+        (asserts! (<= (* block-height ONE_8) expiry) ERR-EXPIRY)            
         (let
             (
                 (token-x (contract-of collateral))
@@ -652,7 +651,7 @@
         ;; swap is supported only if token /= collateral
         (asserts! (not (is-eq token collateral)) ERR-INVALID-POOL-ERR)   
         ;; CR-03
-        (asserts! (<= (* block-height ONE_8) expiry) ERR-EXPIRY)           
+        (asserts! (<= (* block-height ONE_8) expiry) ERR-EXPIRY)              
         (let
             (
                 (token-x (contract-of collateral))

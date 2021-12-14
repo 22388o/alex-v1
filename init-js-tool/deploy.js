@@ -49,9 +49,10 @@ let contract_paths = [
     "flash-loan-user-margin-usda-wbtc-34560.clar", 
     "flash-loan-user-margin-wbtc-usda-34560.clar",
 
-    "helpers/alex-staking-helper.clar"
-
-    // "open-oracle.clar",        
+    "helpers/alex-staking-helper.clar",
+    "helpers/alex-staking-helper-laplace.clar",
+    "helpers/staking-helper.clar",
+    "helpers/margin-helper.clar"
 ]
 
 async function get_version(){
