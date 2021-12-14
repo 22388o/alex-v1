@@ -697,10 +697,10 @@ async function run() {
     // await create_ytp(add_only=false, _pools);
     // await create_crp(add_only=false, _pools);    
 
-    await arbitrage_fwp(dry_run = false);
-    await arbitrage_crp(dry_run = false, _pools);
-    await arbitrage_ytp(dry_run = false, _pools);
-    await arbitrage_fwp(dry_run = false);
+    // await arbitrage_fwp(dry_run = false);
+    // await arbitrage_crp(dry_run = false, _pools);
+    // await arbitrage_ytp(dry_run = false, _pools);
+    // await arbitrage_fwp(dry_run = false);
 
     // await test_spot_trading();
     // await test_margin_trading();
@@ -751,15 +751,15 @@ async function run() {
     //     await transfer(_list[i], 'STCTK0C1JAFK3JVM95TFV6EB16579WRCEYN10CTQ', ONE_8, deployer=true);
     // }
 
-    // _staking = ['token-t-alex', 'fwp-wbtc-usda-50-50', 'ytp-yield-wbtc-34560-wbtc', 'ytp-yield-usda-34560-usda']
-    // for (let i = 0; i < _staking.length; i++) {
-    //     await reserveAddToken(_staking[i]);
-    //     await reserveSetActivationThreshold(1);
-    //     await reserveSetActivationDelay(1);
-    //     await reserveSetRewardCycleLength(525);
-    //     await reserveRegisterUser(_staking[i]);
-    //     await reserveSetCoinbaseAmount(_staking[i], 866e7, 866e7, 866e7, 866e7, 866e7);
-    // }
+    _staking = ['token-t-alex', 'fwp-wbtc-usda-50-50', 'ytp-yield-wbtc-34560-wbtc', 'ytp-yield-usda-34560-usda']
+    for (let i = 0; i < _staking.length; i++) {
+        // await reserveAddToken(_staking[i]);
+        // await reserveSetActivationThreshold(1);
+        // await reserveSetActivationDelay(1);
+        // await reserveSetRewardCycleLength(525);
+        // await reserveRegisterUser(_staking[i]);
+        await reserveSetCoinbaseAmount(_staking[i], 1000e8, 1000e8, 1000e8, 1000e8, 1000e8);
+    }
 
     // await multisigPropose('multisig-fwp-wbtc-usda-50-50', 22330, 'update fee', '', 0.003 * ONE_8, 0.003 * ONE_8);
     // result = await balance('fwp-wbtc-usda-50-50', process.env.DEPLOYER_ACCOUNT_ADDRESS);
