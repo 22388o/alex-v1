@@ -10,29 +10,28 @@
 (define-constant ONE_8 u100000000) ;; 8 decimal places
 
 (define-constant ERR-NOT-AUTHORIZED (err u1000))
-(define-constant ERR-INVALID-POOL-ERR (err u2001))
+(define-constant ERR-INVALID-POOL (err u2001))
 (define-constant ERR-INVALID-LIQUIDITY (err u2003))
-(define-constant ERR-TRANSFER-X-FAILED (err u3001))
-(define-constant ERR-TRANSFER-Y-FAILED (err u3002))
+(define-constant ERR-TRANSFER-FAILED (err u3000))
 (define-constant ERR-POOL-ALREADY-EXISTS (err u2000))
 (define-constant ERR-TOO-MANY-POOLS (err u2004))
-(define-constant ERR-PERCENT_GREATER_THAN_ONE (err u5000))
+(define-constant ERR-PERCENT-GREATER-THAN-ONE (err u5000))
 (define-constant ERR-ALREADY-EXPIRED (err u2011))
 (define-constant ERR-EXCEEDS-MAX-SLIPPAGE (err u2020))
 (define-constant ERR-PRICE-LOWER-THAN-MIN (err u2021))
 (define-constant ERR-PRICE-GREATER-THAN-MAX (err u2022))
-(define-constant ERR-INVALID-POOL-TOKEN (err u2023))
+(define-constant ERR-INVALID-TOKEN (err u2026))
 
-(define-data-var CONTRACT-OWNER principal tx-sender)
+(define-data-var contract-owner principal tx-sender)
 
 (define-read-only (get-contract-owner)
-  (ok (var-get CONTRACT-OWNER))
+  (ok (var-get contract-owner))
 )
 
 (define-public (set-contract-owner (owner principal))
   (begin
-    (asserts! (is-eq contract-caller (var-get CONTRACT-OWNER)) ERR-NOT-AUTHORIZED)
-    (ok (var-set CONTRACT-OWNER owner))
+    (asserts! (is-eq tx-sender (var-get contract-owner)) ERR-NOT-AUTHORIZED)
+    (ok (var-set contract-owner owner))
   )
 )
 
@@ -75,6 +74,14 @@
 ;;
 
 ;; liquidity injection is allowed at the pool creation only
+;; @desc add-to-position 
+;; @params token-x-trait; ft-trait
+;; @params token-y-trait; ft-trait
+;; @params expiry
+;; @params the-pool-token; ft-trait
+;; @params dx
+;; @params dy
+;; @returns (response bool)
 (define-private (add-to-position (token-x-trait <ft-trait>) (token-y-trait <ft-trait>) (expiry uint) (the-pool-token <ft-trait>) (dx uint) (dy uint))
     (begin
         (asserts! (> dx u0) ERR-INVALID-LIQUIDITY)        
@@ -82,7 +89,7 @@
             (
                 (token-x (contract-of token-x-trait))
                 (token-y (contract-of token-y-trait))
-                (pool (unwrap! (map-get? pools-data-map { token-x: token-x, token-y: token-y, expiry: expiry }) ERR-INVALID-POOL-ERR))
+                (pool (unwrap! (map-get? pools-data-map { token-x: token-x, token-y: token-y, expiry: expiry }) ERR-INVALID-POOL))
                 (balance-x (get balance-x pool))
                 (balance-y (get balance-y pool))
                 (total-supply (get total-supply pool))
@@ -97,11 +104,11 @@
             )
             ;; CR-01
             (asserts! (>= dy new-dy) ERR-EXCEEDS-MAX-SLIPPAGE)
-            (asserts! (is-eq (get pool-token pool) (contract-of the-pool-token)) ERR-INVALID-POOL-TOKEN)
+            (asserts! (is-eq (get pool-token pool) (contract-of the-pool-token)) ERR-INVALID-TOKEN)
 
             (asserts! (> new-dy u0) ERR-INVALID-LIQUIDITY)
-            (unwrap! (contract-call? token-x-trait transfer-fixed dx tx-sender .alex-vault none) ERR-TRANSFER-X-FAILED)
-            (unwrap! (contract-call? token-y-trait transfer-fixed new-dy tx-sender .alex-vault none) ERR-TRANSFER-Y-FAILED)
+            (unwrap! (contract-call? token-x-trait transfer-fixed dx tx-sender .alex-vault none) ERR-TRANSFER-FAILED)
+            (unwrap! (contract-call? token-y-trait transfer-fixed new-dy tx-sender .alex-vault none) ERR-TRANSFER-FAILED)
         
             ;; mint pool token-x and send to tx-sender
             (map-set pools-data-map { token-x: token-x, token-y: token-y, expiry: expiry } pool-updated)
@@ -134,13 +141,18 @@
     (ok (map get-pool-contracts (var-get pools-list)))
 )
 
+;; immunefi-4384
+(define-read-only (get-pools-by-ids (pool-ids (list 26 uint)))
+  (ok (map get-pool-contracts pool-ids))
+)
+
 ;; @desc get-pool-details
 ;; @param token-x-trait; token-x
 ;; @param token-y-trait; token-y
 ;; @param expiry; expiry
 ;; @returns (response (tuple) uint)
 (define-read-only (get-pool-details (token-x-trait <ft-trait>) (token-y-trait <ft-trait>) (expiry uint))
-    (ok (unwrap! (map-get? pools-data-map { token-x: (contract-of token-x-trait), token-y: (contract-of token-y-trait), expiry: expiry }) ERR-INVALID-POOL-ERR))
+    (ok (unwrap! (map-get? pools-data-map { token-x: (contract-of token-x-trait), token-y: (contract-of token-y-trait), expiry: expiry }) ERR-INVALID-POOL))
 )
 
 ;; @desc get-weight-x
@@ -156,7 +168,7 @@
             (
                 (token-x (contract-of token-x-trait))
                 (token-y (contract-of token-y-trait))
-                (pool (unwrap! (map-get? pools-data-map { token-x: token-x, token-y: token-y, expiry: expiry }) ERR-INVALID-POOL-ERR))                  
+                (pool (unwrap! (map-get? pools-data-map { token-x: token-x, token-y: token-y, expiry: expiry }) ERR-INVALID-POOL))                  
                 (balance-x (get balance-x pool))
                 (balance-y (get balance-y pool))
                 (weight-x-0 (get weight-x-0 pool))
@@ -184,7 +196,7 @@
 (define-read-only (get-price-range (token-x-trait <ft-trait>) (token-y-trait <ft-trait>) (expiry uint))
     (let
         (
-            (pool (unwrap! (map-get? pools-data-map { token-x: (contract-of token-x-trait), token-y: (contract-of token-y-trait), expiry: expiry }) ERR-INVALID-POOL-ERR))
+            (pool (unwrap! (map-get? pools-data-map { token-x: (contract-of token-x-trait), token-y: (contract-of token-y-trait), expiry: expiry }) ERR-INVALID-POOL))
         )
         (ok {min-price: (get price-x-min pool), max-price: (get price-x-max pool)})
     )
@@ -199,7 +211,7 @@
 (define-public (set-price-range (token-x-trait <ft-trait>) (token-y-trait <ft-trait>) (expiry uint) (min-price uint) (max-price uint))
     (let
         (
-            (pool (unwrap! (map-get? pools-data-map { token-x: (contract-of token-x-trait), token-y: (contract-of token-y-trait), expiry: expiry }) ERR-INVALID-POOL-ERR))
+            (pool (unwrap! (map-get? pools-data-map { token-x: (contract-of token-x-trait), token-y: (contract-of token-y-trait), expiry: expiry }) ERR-INVALID-POOL))
             (pool-updated (merge pool {
                 price-x-min: min-price,
                 price-x-max: max-price
@@ -219,14 +231,14 @@
 (define-read-only (get-balance-fixeds (token-x-trait <ft-trait>) (token-y-trait <ft-trait>) (expiry uint))
     (let
         (
-            (pool (unwrap! (map-get? pools-data-map { token-x: (contract-of token-x-trait), token-y: (contract-of token-y-trait), expiry: expiry }) ERR-INVALID-POOL-ERR))
+            (pool (unwrap! (map-get? pools-data-map { token-x: (contract-of token-x-trait), token-y: (contract-of token-y-trait), expiry: expiry }) ERR-INVALID-POOL))
         )
         (ok {balance-x: (get balance-x pool), balance-y: (get balance-y pool)})
     )
 )
 
 ;; @desc create-pool
-;; @restricted CONTRACT-OWNER
+;; @restricted contract-owner
 ;; @param token-x-trait; token-x
 ;; @param token-y-trait; token-y
 ;; @param weight-x-0; weight of token-x at start
@@ -257,7 +269,7 @@
                 price-x-max: price-x-max
             })
         )
-        (asserts! (is-eq contract-caller (var-get CONTRACT-OWNER)) ERR-NOT-AUTHORIZED)     
+        (asserts! (is-eq tx-sender (var-get contract-owner)) ERR-NOT-AUTHORIZED)     
 
         (asserts! (is-none (map-get? pools-data-map { token-x: token-x, token-y: token-y, expiry: expiry })) ERR-POOL-ALREADY-EXISTS)             
 
@@ -282,12 +294,12 @@
 ;; @returns (response (tuple uint uint) uint)
 (define-public (reduce-position (token-x-trait <ft-trait>) (token-y-trait <ft-trait>) (expiry uint) (the-pool-token <ft-trait>) (percent uint))
     (begin
-        (asserts! (<= percent ONE_8) ERR-PERCENT_GREATER_THAN_ONE) 
+        (asserts! (<= percent ONE_8) ERR-PERCENT-GREATER-THAN-ONE) 
         (let
             (
                 (token-x (contract-of token-x-trait))
                 (token-y (contract-of token-y-trait))
-                (pool (unwrap! (map-get? pools-data-map { token-x: token-x, token-y: token-y, expiry: expiry }) ERR-INVALID-POOL-ERR))
+                (pool (unwrap! (map-get? pools-data-map { token-x: token-x, token-y: token-y, expiry: expiry }) ERR-INVALID-POOL))
                 (balance-x (get balance-x pool))
                 (balance-y (get balance-y pool))
                 (total-shares (unwrap-panic (contract-call? the-pool-token get-balance-fixed tx-sender)))
@@ -304,7 +316,7 @@
                 )
             )
             
-            (asserts! (is-eq (get pool-token pool) (contract-of the-pool-token)) ERR-INVALID-POOL-TOKEN)    
+            (asserts! (is-eq (get pool-token pool) (contract-of the-pool-token)) ERR-INVALID-TOKEN)    
 
             (try! (contract-call? .alex-vault ft-transfer-multi token-x-trait dx token-y-trait dy tx-sender))
             
@@ -331,7 +343,7 @@
             (
                 (token-x (contract-of token-x-trait))
                 (token-y (contract-of token-y-trait))
-                (pool (unwrap! (map-get? pools-data-map { token-x: token-x, token-y: token-y, expiry: expiry }) ERR-INVALID-POOL-ERR))
+                (pool (unwrap! (map-get? pools-data-map { token-x: token-x, token-y: token-y, expiry: expiry }) ERR-INVALID-POOL))
                 (balance-x (get balance-x pool))
                 (balance-y (get balance-y pool))       
 
@@ -350,7 +362,7 @@
             (asserts! (<= (get price-x-min pool) (div-down dy dx)) ERR-PRICE-LOWER-THAN-MIN)
             (asserts! (>= (get price-x-max pool) (div-down dy dx)) ERR-PRICE-GREATER-THAN-MAX)
 
-            (unwrap! (contract-call? token-x-trait transfer-fixed dx tx-sender .alex-vault none) ERR-TRANSFER-X-FAILED)
+            (unwrap! (contract-call? token-x-trait transfer-fixed dx tx-sender .alex-vault none) ERR-TRANSFER-FAILED)
             (try! (contract-call? .alex-vault transfer-ft token-y-trait dy tx-sender))
             ;; post setting
             (map-set pools-data-map { token-x: token-x, token-y: token-y, expiry: expiry } pool-updated)
@@ -375,7 +387,7 @@
             (
                 (token-x (contract-of token-x-trait))
                 (token-y (contract-of token-y-trait))
-                (pool (unwrap! (map-get? pools-data-map { token-x: token-x, token-y: token-y, expiry: expiry }) ERR-INVALID-POOL-ERR))
+                (pool (unwrap! (map-get? pools-data-map { token-x: token-x, token-y: token-y, expiry: expiry }) ERR-INVALID-POOL))
                 (balance-x (get balance-x pool))
                 (balance-y (get balance-y pool))
 
@@ -395,7 +407,7 @@
             (asserts! (>= (get price-x-max pool) (div-down dy dx)) ERR-PRICE-GREATER-THAN-MAX)
 
             (try! (contract-call? .alex-vault transfer-ft token-x-trait dx tx-sender))
-            (unwrap! (contract-call? token-y-trait transfer-fixed dy tx-sender .alex-vault none) ERR-TRANSFER-Y-FAILED)
+            (unwrap! (contract-call? token-y-trait transfer-fixed dy tx-sender .alex-vault none) ERR-TRANSFER-FAILED)
             ;; post setting
             (map-set pools-data-map { token-x: token-x, token-y: token-y, expiry: expiry } pool-updated)
             (print { object: "pool", action: "swap-y-for-x", data: pool-updated })
@@ -410,19 +422,19 @@
 ;; @param expiry; expiry
 ;; @returns (response principal uint)
 (define-read-only (get-pool-multisig (token-x-trait <ft-trait>) (token-y-trait <ft-trait>) (expiry uint))
-    (ok (get pool-multisig (unwrap! (map-get? pools-data-map { token-x: (contract-of token-x-trait), token-y: (contract-of token-y-trait), expiry: expiry }) ERR-INVALID-POOL-ERR)))
+    (ok (get pool-multisig (unwrap! (map-get? pools-data-map { token-x: (contract-of token-x-trait), token-y: (contract-of token-y-trait), expiry: expiry }) ERR-INVALID-POOL)))
 )
 
 ;; testing only
 (define-public (set-pool-multisig (token-x-trait <ft-trait>) (token-y-trait <ft-trait>) (expiry uint) (new-multisig principal))
     (let
         (
-            (pool (unwrap! (map-get? pools-data-map { token-x: (contract-of token-x-trait), token-y: (contract-of token-y-trait), expiry: expiry }) ERR-INVALID-POOL-ERR))
+            (pool (unwrap! (map-get? pools-data-map { token-x: (contract-of token-x-trait), token-y: (contract-of token-y-trait), expiry: expiry }) ERR-INVALID-POOL))
             (pool-updated (merge pool {
                 pool-multisig: new-multisig
                 }))            
         )
-        (asserts! (is-eq contract-caller (var-get CONTRACT-OWNER)) ERR-NOT-AUTHORIZED)
+        (asserts! (is-eq tx-sender (var-get contract-owner)) ERR-NOT-AUTHORIZED)
         (map-set pools-data-map { token-x: (contract-of token-x-trait), token-y: (contract-of token-y-trait), expiry: expiry } pool-updated)
         (ok true)
     )
@@ -437,7 +449,7 @@
 (define-read-only (get-y-given-x (token-x-trait <ft-trait>) (token-y-trait <ft-trait>) (expiry uint) (dx uint))
     (let 
         (
-            (pool (unwrap! (map-get? pools-data-map { token-x: (contract-of token-x-trait), token-y: (contract-of token-y-trait), expiry: expiry }) ERR-INVALID-POOL-ERR))
+            (pool (unwrap! (map-get? pools-data-map { token-x: (contract-of token-x-trait), token-y: (contract-of token-y-trait), expiry: expiry }) ERR-INVALID-POOL))
             (weight-x (get weight-x-t pool))
         )
         (contract-call? .weighted-equation get-y-given-x (get balance-x pool) (get balance-y pool) weight-x (- ONE_8 weight-x) dx)        
@@ -453,7 +465,7 @@
 (define-read-only (get-x-given-y (token-x-trait <ft-trait>) (token-y-trait <ft-trait>) (expiry uint) (dy uint))
     (let 
         (
-            (pool (unwrap! (map-get? pools-data-map { token-x: (contract-of token-x-trait), token-y: (contract-of token-y-trait), expiry: expiry }) ERR-INVALID-POOL-ERR))
+            (pool (unwrap! (map-get? pools-data-map { token-x: (contract-of token-x-trait), token-y: (contract-of token-y-trait), expiry: expiry }) ERR-INVALID-POOL))
             (weight-x (get weight-x-t pool))
         )
         (contract-call? .weighted-equation get-x-given-y (get balance-x pool) (get balance-y pool) weight-x (- ONE_8 weight-x) dy)
@@ -469,7 +481,7 @@
 (define-read-only (get-x-given-price (token-x-trait <ft-trait>) (token-y-trait <ft-trait>) (expiry uint) (price uint))
     (let 
         (
-            (pool (unwrap! (map-get? pools-data-map { token-x: (contract-of token-x-trait), token-y: (contract-of token-y-trait), expiry: expiry }) ERR-INVALID-POOL-ERR))
+            (pool (unwrap! (map-get? pools-data-map { token-x: (contract-of token-x-trait), token-y: (contract-of token-y-trait), expiry: expiry }) ERR-INVALID-POOL))
             (balance-x (get balance-x pool))
             (balance-y (get balance-y pool))
             (weight-x (get weight-x-t pool))
@@ -488,7 +500,7 @@
 (define-read-only (get-y-given-price (token-x-trait <ft-trait>) (token-y-trait <ft-trait>) (expiry uint) (price uint))
     (let 
         (
-            (pool (unwrap! (map-get? pools-data-map { token-x: (contract-of token-x-trait), token-y: (contract-of token-y-trait), expiry: expiry }) ERR-INVALID-POOL-ERR))
+            (pool (unwrap! (map-get? pools-data-map { token-x: (contract-of token-x-trait), token-y: (contract-of token-y-trait), expiry: expiry }) ERR-INVALID-POOL))
             (balance-x (get balance-x pool))
             (balance-y (get balance-y pool))
             (weight-x (get weight-x-t pool))
@@ -508,7 +520,7 @@
 (define-read-only (get-token-given-position (token-x-trait <ft-trait>) (token-y-trait <ft-trait>) (expiry uint) (dx uint) (dy uint))
     (let 
         (
-            (pool (unwrap! (map-get? pools-data-map { token-x: (contract-of token-x-trait), token-y: (contract-of token-y-trait), expiry: expiry }) ERR-INVALID-POOL-ERR))
+            (pool (unwrap! (map-get? pools-data-map { token-x: (contract-of token-x-trait), token-y: (contract-of token-y-trait), expiry: expiry }) ERR-INVALID-POOL))
             (balance-x (get balance-x pool))
             (balance-y (get balance-y pool))
             (total-supply (get total-supply pool))
@@ -528,7 +540,7 @@
 (define-read-only (get-position-given-mint (token-x-trait <ft-trait>) (token-y-trait <ft-trait>) (expiry uint) (shares uint))
     (let 
         (
-            (pool (unwrap! (map-get? pools-data-map { token-x: (contract-of token-x-trait), token-y: (contract-of token-y-trait), expiry: expiry }) ERR-INVALID-POOL-ERR))
+            (pool (unwrap! (map-get? pools-data-map { token-x: (contract-of token-x-trait), token-y: (contract-of token-y-trait), expiry: expiry }) ERR-INVALID-POOL))
             (balance-x (get balance-x pool))
             (balance-y (get balance-y pool))
             (total-supply (get total-supply pool))     
@@ -548,7 +560,7 @@
 (define-read-only (get-position-given-burn (token-x-trait <ft-trait>) (token-y-trait <ft-trait>) (expiry uint) (shares uint))
     (let 
         (
-            (pool (unwrap! (map-get? pools-data-map { token-x: (contract-of token-x-trait), token-y: (contract-of token-y-trait), expiry: expiry }) ERR-INVALID-POOL-ERR))
+            (pool (unwrap! (map-get? pools-data-map { token-x: (contract-of token-x-trait), token-y: (contract-of token-y-trait), expiry: expiry }) ERR-INVALID-POOL))
             (balance-x (get balance-x pool))
             (balance-y (get balance-y pool))
             (total-supply (get total-supply pool))
@@ -571,12 +583,18 @@
 
 ;; public functions
 ;;
-
+;; @desc mul-down
+;; @params a
+;; @param b
+;; @returns uint
 (define-read-only (mul-down (a uint) (b uint))
     (/ (* a b) ONE_8)
 )
 
-
+;; @desc mul-up
+;; @params a
+;; @param b
+;; @returns uint
 (define-read-only (mul-up (a uint) (b uint))
     (let
         (
@@ -589,6 +607,10 @@
    )
 )
 
+;; @desc div-down
+;; @params a
+;; @param b
+;; @returns uint
 (define-read-only (div-down (a uint) (b uint))
     (if (is-eq a u0)
         u0
@@ -596,6 +618,10 @@
     )
 )
 
+;; @desc div-up
+;; @params a
+;; @param b
+;; @returns uint
 (define-read-only (div-up (a uint) (b uint))
     (if (is-eq a u0)
         u0
@@ -603,6 +629,10 @@
     )
 )
 
+;; @desc pow-down
+;; @params a
+;; @param b
+;; @returns uint
 (define-read-only (pow-down (a uint) (b uint))    
     (let
         (
@@ -616,6 +646,10 @@
     )
 )
 
+;; @desc pow-up
+;; @params a
+;; @param b
+;; @returns uint
 (define-read-only (pow-up (a uint) (b uint))
     (let
         (
@@ -681,6 +715,9 @@
 ;;
 
 ;; Internal natural logarithm (ln(a)) with signed 8 decimal fixed point argument.
+;; @desc ln-priv
+;; @params a
+;; @returns int
 (define-private (ln-priv (a int))
   (let
     (
@@ -699,6 +736,10 @@
  )
 )
 
+;; @desc accumulate_division
+;; @params x_a_pre; tuple
+;; @params rolling_a_sum; tuple
+;; @returns tuple
 (define-private (accumulate_division (x_a_pre (tuple (x_pre int) (a_pre int) (use_deci bool))) (rolling_a_sum (tuple (a int) (sum int))))
   (let
     (
@@ -715,6 +756,10 @@
  )
 )
 
+;; @desc rolling_sum_div
+;; @params n
+;; @params rolling; tuple
+;; @returns tuple
 (define-private (rolling_sum_div (n int) (rolling (tuple (num int) (seriesSum int) (z_squared int))))
   (let
     (
@@ -732,6 +777,10 @@
 ;; arrive at that result. In particular, exp(ln(x)) = x, and ln(x^y) = y * ln(x). This means
 ;; x^y = exp(y * ln(x)).
 ;; Reverts if ln(x) * y is smaller than `MIN_NATURAL_EXPONENT`, or larger than `MAX_NATURAL_EXPONENT`.
+;; @desc pow-priv
+;; @params x
+;; @params y
+;; @returns (response uint)
 (define-private (pow-priv (x uint) (y uint))
   (let
     (
@@ -745,6 +794,9 @@
   )
 )
 
+;; @desc exp-pos
+;; @params x
+;; @returns (response uint)
 (define-private (exp-pos (x int))
   (begin
     (asserts! (and (<= 0 x) (<= x MAX_NATURAL_EXPONENT)) ERR_INVALID_EXPONENT)
@@ -768,6 +820,10 @@
  )
 )
 
+;; @desc accumulate_product
+;; @params x_a_pre ; tuple
+;; @params rolling_x_p; tuple
+;; @returns tuple
 (define-private (accumulate_product (x_a_pre (tuple (x_pre int) (a_pre int) (use_deci bool))) (rolling_x_p (tuple (x int) (product int))))
   (let
     (
@@ -784,6 +840,10 @@
  )
 )
 
+;; @desc rolling_div_sum
+;; @params n
+;; @params rolling; tuple
+;; @returns tuple
 (define-private (rolling_div_sum (n int) (rolling (tuple (term int) (seriesSum int) (x int))))
   (let
     (
@@ -800,11 +860,17 @@
 ;; public functions
 ;;
 
+;; @desc get-exp-bound
+;; @returns (response uint)
 (define-read-only (get-exp-bound)
   (ok MILD_EXPONENT_BOUND)
 )
 
 ;; Exponentiation (x^y) with unsigned 8 decimal fixed point base and exponent.
+;; @desc pow-fixed
+;; @params x
+;; @params y
+;; @returns (response uint)
 (define-read-only (pow-fixed (x uint) (y uint))
   (begin
     ;; The ln function takes a signed value, so we need to make sure x fits in the signed 128 bit range.
@@ -825,6 +891,9 @@
 
 ;; Natural exponentiation (e^x) with signed 8 decimal fixed point exponent.
 ;; Reverts if `x` is smaller than MIN_NATURAL_EXPONENT, or larger than `MAX_NATURAL_EXPONENT`.
+;; @desc exp-fixed
+;; @params x
+;; @returns uint
 (define-read-only (exp-fixed (x int))
   (begin
     (asserts! (and (<= MIN_NATURAL_EXPONENT x) (<= x MAX_NATURAL_EXPONENT)) ERR_INVALID_EXPONENT)
@@ -839,6 +908,9 @@
 )
 
 ;; Natural logarithm (ln(a)) with signed 8 decimal fixed point argument.
+;; @desc ln-fixed
+;; @params a
+;; @returns uint
 (define-read-only (ln-fixed (a int))
   (begin
     (asserts! (> a 0) ERR_OUT_OF_BOUNDS)
