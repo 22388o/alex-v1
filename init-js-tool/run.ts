@@ -124,7 +124,7 @@ async function run() {
   // await arbitrage_fwp(false);
 
   // await test_spot_trading();
-  await test_margin_trading();
+  // await test_margin_trading();
 
   // await create_crp(true, _deploy);
   // await create_ytp(true, _deploy);
@@ -201,10 +201,12 @@ async function run() {
   //   console.log(result.list[item]);
   // }  
 
-  // await multisigPropose('multisig-fwp-wstx-wbtc-50-50', 3630, 'update fee', '', 0.003e8, 0.003e8);
-  // let result:any = await balance('fwp-wstx-wbtc-50-50', DEPLOYER_ACCOUNT_ADDRESS());
+  // await multisigPropose('multisig-fwp-wstx-usda-50-50', 4300, 'update fee', '', 0.003e8, 0.003e8);
+  // let result:any = await balance('fwp-wstx-usda-50-50', DEPLOYER_ACCOUNT_ADDRESS());
   // console.log(result)
-  // let result:any = await multisigVoteFor('multisig-fwp-wstx-usda-50-50', 'fwp-wstx-usda-50-50', 1, 17907343375660777);
+  //164951367484105n
+  //37108851621966726n
+  let result:any = await multisigVoteFor('multisig-fwp-wstx-wbtc-50-50', 'fwp-wstx-wbtc-50-50', 1, 164951367484100);
   // result = await multisigEndProposal('multisig-fwp-wstx-usda-50-50', 1);
   // result = await multisigGetProposalById('multisig-fwp-wstx-usda-50-50', 2);
   // console.log(result);
@@ -250,7 +252,7 @@ async function run() {
   // await get_some_token('ST11KFHZRN7ANRRPDK0HJXG243EJBFBAFRB27NPK8');
   // await mint_ft('lottery-t-alex', 100e8, 'ST1XARV3J1N3SJJBDJCE3WE84KDHZQGMGBAZR2JXT');
   // await mint_ft('lottery-t-alex', 100e8, 'ST11KFHZRN7ANRRPDK0HJXG243EJBFBAFRB27NPK8');
-  // await transferSTX('ST11KFHZRN7ANRRPDK0HJXG243EJBFBAFRB27NPK8', 250000e8);
+  // await transferSTX('STHFAXDZVFHMY8YR3P9J7ZCV6N89SBET23T2DWG9', 100000e6);
 
   // await mint_ft('token-t-alex', 90000e8, DEPLOYER_ACCOUNT_ADDRESS());
   // await mint_ft('lottery-t-alex', 100e8, DEPLOYER_ACCOUNT_ADDRESS());
@@ -279,6 +281,6 @@ async function run() {
   // console.log(result.data);
 
   // await transfer_sft('yield-usda', 'ST1J2JTYXGRMZYNKE40GM87ZCACSPSSEEQVSNB7DC.alex-vault', 34561e8, 1e8, false);
-  console.log(await get_token_owned('yield-usda', false));
+  // console.log(await get_token_owned('yield-usda', false));
 }
 run();

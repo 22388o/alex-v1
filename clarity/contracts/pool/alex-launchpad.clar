@@ -381,6 +381,10 @@
   )
 )
 
+(define-public (claim-many (token-trait (list 2000 <ft-trait>)) (ticket-trait (list 2000 <ft-trait>)))
+  (ok (map claim token-trait ticket-trait))
+)
+
 (define-public (claim (token-trait <ft-trait>) (ticket-trait <ft-trait>))
   (begin
     (let
