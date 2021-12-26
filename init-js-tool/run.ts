@@ -278,7 +278,8 @@ async function run() {
   // result = await launchGetSubscriberAtToken('token-t-alex', 2);
   // console.log(result.data);
 
-  // await transfer_sft('yield-usda', 'ST1J2JTYXGRMZYNKE40GM87ZCACSPSSEEQVSNB7DC.alex-vault', 34561e8, 1e8, false);
+  // await transfer_sft('yield-usda', 'ST1J2JTYXGRMZYNKE40GM87ZCACSPSSEEQVSNB7DC.alex-vault', 78880e8, 1e8, false);
   console.log(await get_token_owned('yield-usda', false));
+  console.log(await get_token_owned('yield-wbtc', false));
 }
 run();

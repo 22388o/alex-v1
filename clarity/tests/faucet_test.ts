@@ -136,7 +136,7 @@ class Faucet {
     
     sendManyMap(sender: Account, recipients: string[]) {
       let block = this.chain.mineBlock([
-          Tx.contractCall("faucet-helper", "send-many-map", [
+          Tx.contractCall("faucet", "send-many-map", [
             types.list(recipients.map(types.principal)),
           ], sender.address),
         ]);

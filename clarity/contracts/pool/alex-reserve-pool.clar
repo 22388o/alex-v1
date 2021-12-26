@@ -675,6 +675,211 @@
   )
 )
 
+;; helper functions:
+
+(define-private (get-staker-at-cycle-or-default-by-tx-sender (token principal) (reward-cycle uint))
+  (get-staker-at-cycle-or-default token reward-cycle (default-to u0 (get-user-id token tx-sender)))
+)
+
+(define-private (get-staking-reward-by-tx-sender (token principal) (target-cycle uint))
+  (get-staking-reward token (default-to u0 (get-user-id token tx-sender)) target-cycle)
+)
+
+(define-read-only (get-staking-stats-coinbase (token principal) (reward-cycle uint))
+    { 
+        staking-stats: (get-staking-stats-at-cycle-or-default token reward-cycle), 
+        coinbase-amount: (get-coinbase-amount-or-default token reward-cycle)
+    }
+)
+
+(define-read-only (get-staking-stats-coinbase-many (token principal) (reward-cycles (list 32 uint)))
+    (let
+        (
+            (token-list (list token token token token token token token token token token token token token token token token token token token token token token token token token token token token token token token token))
+        )
+        (map get-staking-stats-coinbase token-list reward-cycles)
+    )    
+)
+
+(define-read-only (get-staked-many (token principal) (reward-cycles (list 1000 uint)))
+  (map 
+    get-staker-at-cycle-or-default-by-tx-sender 
+    (list 
+      token	token	token	token	token	token	token	token	token	token	token	token	token	token	token	token	token	token	token	token
+      token	token	token	token	token	token	token	token	token	token	token	token	token	token	token	token	token	token	token	token
+      token	token	token	token	token	token	token	token	token	token	token	token	token	token	token	token	token	token	token	token
+      token	token	token	token	token	token	token	token	token	token	token	token	token	token	token	token	token	token	token	token
+      token	token	token	token	token	token	token	token	token	token	token	token	token	token	token	token	token	token	token	token
+      token	token	token	token	token	token	token	token	token	token	token	token	token	token	token	token	token	token	token	token
+      token	token	token	token	token	token	token	token	token	token	token	token	token	token	token	token	token	token	token	token
+      token	token	token	token	token	token	token	token	token	token	token	token	token	token	token	token	token	token	token	token
+      token	token	token	token	token	token	token	token	token	token	token	token	token	token	token	token	token	token	token	token
+      token	token	token	token	token	token	token	token	token	token	token	token	token	token	token	token	token	token	token	token
+      token	token	token	token	token	token	token	token	token	token	token	token	token	token	token	token	token	token	token	token
+      token	token	token	token	token	token	token	token	token	token	token	token	token	token	token	token	token	token	token	token
+      token	token	token	token	token	token	token	token	token	token	token	token	token	token	token	token	token	token	token	token
+      token	token	token	token	token	token	token	token	token	token	token	token	token	token	token	token	token	token	token	token
+      token	token	token	token	token	token	token	token	token	token	token	token	token	token	token	token	token	token	token	token
+      token	token	token	token	token	token	token	token	token	token	token	token	token	token	token	token	token	token	token	token
+      token	token	token	token	token	token	token	token	token	token	token	token	token	token	token	token	token	token	token	token
+      token	token	token	token	token	token	token	token	token	token	token	token	token	token	token	token	token	token	token	token
+      token	token	token	token	token	token	token	token	token	token	token	token	token	token	token	token	token	token	token	token
+      token	token	token	token	token	token	token	token	token	token	token	token	token	token	token	token	token	token	token	token
+      token	token	token	token	token	token	token	token	token	token	token	token	token	token	token	token	token	token	token	token
+      token	token	token	token	token	token	token	token	token	token	token	token	token	token	token	token	token	token	token	token
+      token	token	token	token	token	token	token	token	token	token	token	token	token	token	token	token	token	token	token	token
+      token	token	token	token	token	token	token	token	token	token	token	token	token	token	token	token	token	token	token	token
+      token	token	token	token	token	token	token	token	token	token	token	token	token	token	token	token	token	token	token	token
+      token	token	token	token	token	token	token	token	token	token	token	token	token	token	token	token	token	token	token	token
+      token	token	token	token	token	token	token	token	token	token	token	token	token	token	token	token	token	token	token	token
+      token	token	token	token	token	token	token	token	token	token	token	token	token	token	token	token	token	token	token	token
+      token	token	token	token	token	token	token	token	token	token	token	token	token	token	token	token	token	token	token	token
+      token	token	token	token	token	token	token	token	token	token	token	token	token	token	token	token	token	token	token	token
+      token	token	token	token	token	token	token	token	token	token	token	token	token	token	token	token	token	token	token	token
+      token	token	token	token	token	token	token	token	token	token	token	token	token	token	token	token	token	token	token	token
+      token	token	token	token	token	token	token	token	token	token	token	token	token	token	token	token	token	token	token	token
+      token	token	token	token	token	token	token	token	token	token	token	token	token	token	token	token	token	token	token	token
+      token	token	token	token	token	token	token	token	token	token	token	token	token	token	token	token	token	token	token	token
+      token	token	token	token	token	token	token	token	token	token	token	token	token	token	token	token	token	token	token	token
+      token	token	token	token	token	token	token	token	token	token	token	token	token	token	token	token	token	token	token	token
+      token	token	token	token	token	token	token	token	token	token	token	token	token	token	token	token	token	token	token	token
+      token	token	token	token	token	token	token	token	token	token	token	token	token	token	token	token	token	token	token	token
+      token	token	token	token	token	token	token	token	token	token	token	token	token	token	token	token	token	token	token	token
+      token	token	token	token	token	token	token	token	token	token	token	token	token	token	token	token	token	token	token	token
+      token	token	token	token	token	token	token	token	token	token	token	token	token	token	token	token	token	token	token	token
+      token	token	token	token	token	token	token	token	token	token	token	token	token	token	token	token	token	token	token	token
+      token	token	token	token	token	token	token	token	token	token	token	token	token	token	token	token	token	token	token	token
+      token	token	token	token	token	token	token	token	token	token	token	token	token	token	token	token	token	token	token	token
+      token	token	token	token	token	token	token	token	token	token	token	token	token	token	token	token	token	token	token	token
+      token	token	token	token	token	token	token	token	token	token	token	token	token	token	token	token	token	token	token	token
+      token	token	token	token	token	token	token	token	token	token	token	token	token	token	token	token	token	token	token	token
+      token	token	token	token	token	token	token	token	token	token	token	token	token	token	token	token	token	token	token	token
+      token	token	token	token	token	token	token	token	token	token	token	token	token	token	token	token	token	token	token	token
+    )
+    reward-cycles
+  )
+)
+
+(define-read-only (get-staking-rewards-many (token principal) (reward-cycles (list 1000 uint)))
+  (map 
+    get-staking-reward-by-tx-sender     
+    (list 
+      token	token	token	token	token	token	token	token	token	token	token	token	token	token	token	token	token	token	token	token
+      token	token	token	token	token	token	token	token	token	token	token	token	token	token	token	token	token	token	token	token
+      token	token	token	token	token	token	token	token	token	token	token	token	token	token	token	token	token	token	token	token
+      token	token	token	token	token	token	token	token	token	token	token	token	token	token	token	token	token	token	token	token
+      token	token	token	token	token	token	token	token	token	token	token	token	token	token	token	token	token	token	token	token
+      token	token	token	token	token	token	token	token	token	token	token	token	token	token	token	token	token	token	token	token
+      token	token	token	token	token	token	token	token	token	token	token	token	token	token	token	token	token	token	token	token
+      token	token	token	token	token	token	token	token	token	token	token	token	token	token	token	token	token	token	token	token
+      token	token	token	token	token	token	token	token	token	token	token	token	token	token	token	token	token	token	token	token
+      token	token	token	token	token	token	token	token	token	token	token	token	token	token	token	token	token	token	token	token
+      token	token	token	token	token	token	token	token	token	token	token	token	token	token	token	token	token	token	token	token
+      token	token	token	token	token	token	token	token	token	token	token	token	token	token	token	token	token	token	token	token
+      token	token	token	token	token	token	token	token	token	token	token	token	token	token	token	token	token	token	token	token
+      token	token	token	token	token	token	token	token	token	token	token	token	token	token	token	token	token	token	token	token
+      token	token	token	token	token	token	token	token	token	token	token	token	token	token	token	token	token	token	token	token
+      token	token	token	token	token	token	token	token	token	token	token	token	token	token	token	token	token	token	token	token
+      token	token	token	token	token	token	token	token	token	token	token	token	token	token	token	token	token	token	token	token
+      token	token	token	token	token	token	token	token	token	token	token	token	token	token	token	token	token	token	token	token
+      token	token	token	token	token	token	token	token	token	token	token	token	token	token	token	token	token	token	token	token
+      token	token	token	token	token	token	token	token	token	token	token	token	token	token	token	token	token	token	token	token
+      token	token	token	token	token	token	token	token	token	token	token	token	token	token	token	token	token	token	token	token
+      token	token	token	token	token	token	token	token	token	token	token	token	token	token	token	token	token	token	token	token
+      token	token	token	token	token	token	token	token	token	token	token	token	token	token	token	token	token	token	token	token
+      token	token	token	token	token	token	token	token	token	token	token	token	token	token	token	token	token	token	token	token
+      token	token	token	token	token	token	token	token	token	token	token	token	token	token	token	token	token	token	token	token
+      token	token	token	token	token	token	token	token	token	token	token	token	token	token	token	token	token	token	token	token
+      token	token	token	token	token	token	token	token	token	token	token	token	token	token	token	token	token	token	token	token
+      token	token	token	token	token	token	token	token	token	token	token	token	token	token	token	token	token	token	token	token
+      token	token	token	token	token	token	token	token	token	token	token	token	token	token	token	token	token	token	token	token
+      token	token	token	token	token	token	token	token	token	token	token	token	token	token	token	token	token	token	token	token
+      token	token	token	token	token	token	token	token	token	token	token	token	token	token	token	token	token	token	token	token
+      token	token	token	token	token	token	token	token	token	token	token	token	token	token	token	token	token	token	token	token
+      token	token	token	token	token	token	token	token	token	token	token	token	token	token	token	token	token	token	token	token
+      token	token	token	token	token	token	token	token	token	token	token	token	token	token	token	token	token	token	token	token
+      token	token	token	token	token	token	token	token	token	token	token	token	token	token	token	token	token	token	token	token
+      token	token	token	token	token	token	token	token	token	token	token	token	token	token	token	token	token	token	token	token
+      token	token	token	token	token	token	token	token	token	token	token	token	token	token	token	token	token	token	token	token
+      token	token	token	token	token	token	token	token	token	token	token	token	token	token	token	token	token	token	token	token
+      token	token	token	token	token	token	token	token	token	token	token	token	token	token	token	token	token	token	token	token
+      token	token	token	token	token	token	token	token	token	token	token	token	token	token	token	token	token	token	token	token
+      token	token	token	token	token	token	token	token	token	token	token	token	token	token	token	token	token	token	token	token
+      token	token	token	token	token	token	token	token	token	token	token	token	token	token	token	token	token	token	token	token
+      token	token	token	token	token	token	token	token	token	token	token	token	token	token	token	token	token	token	token	token
+      token	token	token	token	token	token	token	token	token	token	token	token	token	token	token	token	token	token	token	token
+      token	token	token	token	token	token	token	token	token	token	token	token	token	token	token	token	token	token	token	token
+      token	token	token	token	token	token	token	token	token	token	token	token	token	token	token	token	token	token	token	token
+      token	token	token	token	token	token	token	token	token	token	token	token	token	token	token	token	token	token	token	token
+      token	token	token	token	token	token	token	token	token	token	token	token	token	token	token	token	token	token	token	token
+      token	token	token	token	token	token	token	token	token	token	token	token	token	token	token	token	token	token	token	token
+      token	token	token	token	token	token	token	token	token	token	token	token	token	token	token	token	token	token	token	token
+    )  
+    reward-cycles    
+  )
+)
+
+(define-public (claim-staking-reward-many (token <ft-trait>) (reward-cycles (list 1000 uint)))
+  (ok 
+    (map 
+      claim-staking-reward 
+      (list 
+        token	token	token	token	token	token	token	token	token	token	token	token	token	token	token	token	token	token	token	token
+        token	token	token	token	token	token	token	token	token	token	token	token	token	token	token	token	token	token	token	token
+        token	token	token	token	token	token	token	token	token	token	token	token	token	token	token	token	token	token	token	token
+        token	token	token	token	token	token	token	token	token	token	token	token	token	token	token	token	token	token	token	token
+        token	token	token	token	token	token	token	token	token	token	token	token	token	token	token	token	token	token	token	token
+        token	token	token	token	token	token	token	token	token	token	token	token	token	token	token	token	token	token	token	token
+        token	token	token	token	token	token	token	token	token	token	token	token	token	token	token	token	token	token	token	token
+        token	token	token	token	token	token	token	token	token	token	token	token	token	token	token	token	token	token	token	token
+        token	token	token	token	token	token	token	token	token	token	token	token	token	token	token	token	token	token	token	token
+        token	token	token	token	token	token	token	token	token	token	token	token	token	token	token	token	token	token	token	token
+        token	token	token	token	token	token	token	token	token	token	token	token	token	token	token	token	token	token	token	token
+        token	token	token	token	token	token	token	token	token	token	token	token	token	token	token	token	token	token	token	token
+        token	token	token	token	token	token	token	token	token	token	token	token	token	token	token	token	token	token	token	token
+        token	token	token	token	token	token	token	token	token	token	token	token	token	token	token	token	token	token	token	token
+        token	token	token	token	token	token	token	token	token	token	token	token	token	token	token	token	token	token	token	token
+        token	token	token	token	token	token	token	token	token	token	token	token	token	token	token	token	token	token	token	token
+        token	token	token	token	token	token	token	token	token	token	token	token	token	token	token	token	token	token	token	token
+        token	token	token	token	token	token	token	token	token	token	token	token	token	token	token	token	token	token	token	token
+        token	token	token	token	token	token	token	token	token	token	token	token	token	token	token	token	token	token	token	token
+        token	token	token	token	token	token	token	token	token	token	token	token	token	token	token	token	token	token	token	token
+        token	token	token	token	token	token	token	token	token	token	token	token	token	token	token	token	token	token	token	token
+        token	token	token	token	token	token	token	token	token	token	token	token	token	token	token	token	token	token	token	token
+        token	token	token	token	token	token	token	token	token	token	token	token	token	token	token	token	token	token	token	token
+        token	token	token	token	token	token	token	token	token	token	token	token	token	token	token	token	token	token	token	token
+        token	token	token	token	token	token	token	token	token	token	token	token	token	token	token	token	token	token	token	token
+        token	token	token	token	token	token	token	token	token	token	token	token	token	token	token	token	token	token	token	token
+        token	token	token	token	token	token	token	token	token	token	token	token	token	token	token	token	token	token	token	token
+        token	token	token	token	token	token	token	token	token	token	token	token	token	token	token	token	token	token	token	token
+        token	token	token	token	token	token	token	token	token	token	token	token	token	token	token	token	token	token	token	token
+        token	token	token	token	token	token	token	token	token	token	token	token	token	token	token	token	token	token	token	token
+        token	token	token	token	token	token	token	token	token	token	token	token	token	token	token	token	token	token	token	token
+        token	token	token	token	token	token	token	token	token	token	token	token	token	token	token	token	token	token	token	token
+        token	token	token	token	token	token	token	token	token	token	token	token	token	token	token	token	token	token	token	token
+        token	token	token	token	token	token	token	token	token	token	token	token	token	token	token	token	token	token	token	token
+        token	token	token	token	token	token	token	token	token	token	token	token	token	token	token	token	token	token	token	token
+        token	token	token	token	token	token	token	token	token	token	token	token	token	token	token	token	token	token	token	token
+        token	token	token	token	token	token	token	token	token	token	token	token	token	token	token	token	token	token	token	token
+        token	token	token	token	token	token	token	token	token	token	token	token	token	token	token	token	token	token	token	token
+        token	token	token	token	token	token	token	token	token	token	token	token	token	token	token	token	token	token	token	token
+        token	token	token	token	token	token	token	token	token	token	token	token	token	token	token	token	token	token	token	token
+        token	token	token	token	token	token	token	token	token	token	token	token	token	token	token	token	token	token	token	token
+        token	token	token	token	token	token	token	token	token	token	token	token	token	token	token	token	token	token	token	token
+        token	token	token	token	token	token	token	token	token	token	token	token	token	token	token	token	token	token	token	token
+        token	token	token	token	token	token	token	token	token	token	token	token	token	token	token	token	token	token	token	token
+        token	token	token	token	token	token	token	token	token	token	token	token	token	token	token	token	token	token	token	token
+        token	token	token	token	token	token	token	token	token	token	token	token	token	token	token	token	token	token	token	token
+        token	token	token	token	token	token	token	token	token	token	token	token	token	token	token	token	token	token	token	token
+        token	token	token	token	token	token	token	token	token	token	token	token	token	token	token	token	token	token	token	token
+        token	token	token	token	token	token	token	token	token	token	token	token	token	token	token	token	token	token	token	token
+        token	token	token	token	token	token	token	token	token	token	token	token	token	token	token	token	token	token	token	token
+      ) 
+      reward-cycles      
+    )
+  )
+)
+
 ;; @desc mul-down
 ;; @params a
 ;; @params b

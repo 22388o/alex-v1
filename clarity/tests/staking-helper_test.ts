@@ -5,7 +5,7 @@ import { assertEquals } from 'https://deno.land/std@0.90.0/testing/asserts.ts';
 
 const stakeContract = "fwp-wstx-usda-50-50"
 const reserveContract = "alex-reserve-pool";
-const helperContract = "staking-helper";
+const helperContract = "alex-reserve-pool";
 const reward_cycle_length = 525;
 
 const ONE_8 = 100000000;
@@ -23,7 +23,7 @@ class StakingHelper {
 
     claimStakingReward(sender: Account, stakedToken: string, reward_cycle: number) {
       let block = this.chain.mineBlock([
-          Tx.contractCall(helperContract, "claim-staking-reward-by-tx-sender", [
+          Tx.contractCall(helperContract, "claim-staking-reward", [
             types.principal(stakedToken),
             types.uint(reward_cycle),
           ], sender.address),
@@ -32,7 +32,7 @@ class StakingHelper {
     }
 
     getStaked(sender: Account, stakedToken: string, reward_cycles: Array<number>) {
-        return this.chain.callReadOnlyFn(helperContract, "get-staked", [
+        return this.chain.callReadOnlyFn(helperContract, "get-staked-many", [
           types.principal(stakedToken),
           types.list(reward_cycles.map(e=>{return types.uint(e)}))
         ], sender.address);
@@ -124,7 +124,7 @@ class StakingHelper {
     }    
     
     getStakingStatsCoinbaseAsList(token: string, reward_cycles: Array<number>) {
-      return this.chain.callReadOnlyFn(helperContract, "get-staking-stats-coinbase-as-list", [
+      return this.chain.callReadOnlyFn(helperContract, "get-staking-stats-coinbase-many", [
         types.principal(token),
         types.list(reward_cycles.map(e=>{return types.uint(e)}))
       ], this.deployer.address);

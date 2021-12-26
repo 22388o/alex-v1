@@ -165,6 +165,13 @@
     )
 )
 
+;; SEND-MANY but that returns a list of ok/err (instead of running fold)
+(define-public (send-many-map (recipients (list 200 principal)))
+    (begin
+        (ok (map get-some-tokens recipients))
+    )
+)
+
 ;; @desc check-err
 ;; @params result 
 ;; @params prior
