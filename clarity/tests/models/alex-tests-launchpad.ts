@@ -21,12 +21,12 @@ class ALEXLaunchpad {
                 types.principal(token),
                 types.principal(ticket),
                 types.principal(feeToAddress),
-                types.uint(amountPerTicket),
-                types.uint(wstxPerTicketInFixed),
-                types.uint(registrationStart),
-                types.uint(registrationEnd),
-                types.uint(claimEnd),
-                types.uint(activationThreshold),
+                'u' + BigInt(amountPerTicket),
+                'u' + BigInt(wstxPerTicketInFixed),
+                'u' + BigInt(registrationStart),
+                'u' + BigInt(registrationEnd),
+                'u' + BigInt(claimEnd),
+                'u' + BigInt(activationThreshold),
             ],
                 sender.address
             ),
@@ -38,7 +38,7 @@ class ALEXLaunchpad {
         let block = this.chain.mineBlock([
             Tx.contractCall("alex-launchpad", "add-to-position", [
                 types.principal(token),
-                types.uint(tickets),
+                'u' + BigInt(tickets),
             ],
                 sender.address
             ),
@@ -51,7 +51,7 @@ class ALEXLaunchpad {
             Tx.contractCall("alex-launchpad", "register", [
                 types.principal(token),
                 types.principal(ticketTrait),
-                types.uint(ticketAmount),
+                'u' + BigInt(ticketAmount),
             ],
                 sender.address
             ),
@@ -179,7 +179,7 @@ class ALEXLaunchpad {
             "get-subscriber-at-token-or-default",
             [
                 types.principal(token),
-                types.uint(userId)
+                'u' + BigInt(userId)
             ],
             this.deployer.address
         )

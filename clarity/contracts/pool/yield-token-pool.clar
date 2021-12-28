@@ -5,8 +5,8 @@
 (use-trait multisig-trait .trait-multisig-vote.multisig-vote-sft-trait)
 
 ;; yield-token-pool
-(define-constant ONE_8 (pow u10 u8)) ;; 8 decimal places
-(define-constant MAX_T u85000000)
+(define-constant ONE_16 (pow u10 u16)) ;; 16 decimal places
+(define-constant MAX_T u8500000000000000)
 
 (define-constant ERR-INVALID-POOL (err u2001))
 (define-constant ERR-INVALID-LIQUIDITY (err u2003))
@@ -91,7 +91,7 @@
     (begin
         (asserts! (is-eq tx-sender (var-get contract-owner)) ERR-NOT-AUTHORIZED)
         ;; MI-05
-        (asserts! (> new-max-expiry (* block-height ONE_8)) ERR-INVALID-EXPIRY)
+        (asserts! (> new-max-expiry (* block-height ONE_16)) ERR-INVALID-EXPIRY)
         (ok (var-set max-expiry new-max-expiry)) 
     )
 )
@@ -104,11 +104,11 @@
 (define-read-only (get-t (expiry uint) (listed uint))
     (begin
         (asserts! (> (var-get max-expiry) expiry) ERR-INVALID-EXPIRY)
-        (asserts! (> (var-get max-expiry) (* block-height ONE_8)) ERR-INVALID-EXPIRY)        
+        (asserts! (> (var-get max-expiry) (* block-height ONE_16)) ERR-INVALID-EXPIRY)        
         (let
             (
                 (t (div-down
-                    (if (< expiry (* block-height ONE_8)) u0 (- expiry (* block-height ONE_8)))
+                    (if (< expiry (* block-height ONE_16)) u0 (- expiry (* block-height ONE_16)))
                     (- (var-get max-expiry) listed)))
             )
             (ok (if (< t MAX_T) t MAX_T)) ;; to avoid numerical error
@@ -230,7 +230,7 @@
         )
         (asserts! (is-eq tx-sender (var-get contract-owner)) ERR-NOT-AUTHORIZED)
         (asserts! (get oracle-enabled pool) ERR-ORACLE-NOT-ENABLED)
-        (asserts! (< new-oracle-average ONE_8) ERR-ORACLE-AVERAGE-BIGGER-THAN-ONE)
+        (asserts! (< new-oracle-average ONE_16) ERR-ORACLE-AVERAGE-BIGGER-THAN-ONE)
         (map-set pools-data-map { yield-token: (contract-of the-yield-token), expiry: expiry } pool-updated)
         (ok true)
     )    
@@ -246,7 +246,7 @@
             (pool (unwrap! (map-get? pools-data-map { yield-token: (contract-of the-yield-token), expiry: expiry }) ERR-INVALID-POOL))
         )
         (asserts! (get oracle-enabled pool) ERR-ORACLE-NOT-ENABLED)
-        (ok (+ (mul-down (- ONE_8 (get oracle-average pool)) (try! (get-oracle-instant expiry the-yield-token)))
+        (ok (+ (mul-down (- ONE_16 (get oracle-average pool)) (try! (get-oracle-instant expiry the-yield-token)))
                (mul-down (get oracle-average pool) (get oracle-resilient pool))))
     )
 )
@@ -256,7 +256,7 @@
 ;; @param the-yield-token; yield-token
 ;; @returns (response uint uint)
 (define-read-only (get-oracle-instant (expiry uint) (the-yield-token <sft-trait>))
-    (ok (div-down ONE_8 (try! (get-price expiry the-yield-token))))
+    (ok (div-down ONE_16 (try! (get-price expiry the-yield-token))))
 )
 
 ;; @desc create-pool
@@ -288,7 +288,7 @@
                     fee-rate-yield-token: u0,
                     fee-rate-token: u0,
                     fee-rebate: u0,
-                    listed: (* block-height ONE_8),
+                    listed: (* block-height ONE_16),
                     oracle-enabled: false,
                     oracle-average: u0,
                     oracle-resilient: u0
@@ -302,7 +302,7 @@
             (var-set pool-count pool-id)
 
             ;; ;; if yield-token added has a longer expiry than current max-expiry, update max-expiry (to expiry + one block).
-            ;; (var-set max-expiry (if (< (var-get max-expiry) expiry) (+ expiry ONE_8) (var-get max-expiry)))
+            ;; (var-set max-expiry (if (< (var-get max-expiry) expiry) (+ expiry ONE_16) (var-get max-expiry)))
             (try! (add-to-position expiry the-yield-token the-token the-pool-token dx (some dy)))
 
             (print { object: "pool", action: "created", data: pool-data })
@@ -391,7 +391,7 @@
 ;; @returns (response (tuple uint uint) uint)
 (define-public (reduce-position (expiry uint) (the-yield-token <sft-trait>) (the-token <ft-trait>) (the-pool-token <sft-trait>) (percent uint))
     (begin
-        (asserts! (<= percent ONE_8) ERR-PERCENT-GREATER-THAN-ONE)
+        (asserts! (<= percent ONE_16) ERR-PERCENT-GREATER-THAN-ONE)
         (let
             (
                 (yield-token (contract-of the-yield-token))
@@ -401,7 +401,7 @@
                 (balance-virtual (get balance-virtual pool))                
                 (total-supply (get total-supply pool))
                 (total-shares (unwrap-panic (contract-call? the-pool-token get-balance-fixed expiry tx-sender)))
-                (shares (if (is-eq percent ONE_8) total-shares (mul-down total-shares percent)))
+                (shares (if (is-eq percent ONE_16) total-shares (mul-down total-shares percent)))
                 (reduce-data (try! (get-position-given-burn expiry the-yield-token shares)))
                 (dx (get dx reduce-data))
                 (dy-act (get dy-act reduce-data))
@@ -469,7 +469,7 @@
                 ;; lambda ~= 1 - fee-rate-yield-token * yield
                 (yield (try! (get-yield expiry the-yield-token)))
                 (fee-yield (mul-down yield (get fee-rate-yield-token pool)))
-                (lambda (if (<= ONE_8 fee-yield) u0 (- ONE_8 fee-yield)))
+                (lambda (if (<= ONE_16 fee-yield) u0 (- ONE_16 fee-yield)))
                 (dx-net-fees (mul-down dx lambda))
                 (fee (if (<= dx dx-net-fees) u0 (- dx dx-net-fees)))
                 (fee-rebate (mul-down fee (get fee-rebate pool)))
@@ -519,7 +519,7 @@
                 ;; lambda ~= 1 - fee-rate-token * yield
                 (yield (try! (get-yield expiry the-yield-token)))
                 (fee-yield (mul-down yield (get fee-rate-token pool)))
-                (lambda (if (<= ONE_8 fee-yield) u0 (- ONE_8 fee-yield)))
+                (lambda (if (<= ONE_16 fee-yield) u0 (- ONE_16 fee-yield)))
                 (dy-net-fees (mul-down dy lambda))
                 (fee (if (<= dy dy-net-fees) u0 (- dy dy-net-fees)))
                 (fee-rebate (mul-down fee (get fee-rebate pool)))
@@ -860,7 +860,7 @@
 ;; @params a
 ;; @returns uint
 (define-read-only (scale-up (a uint))
-    (* a ONE_8)
+    (* a ONE_16)
 )
 
 ;; @desc mul-down
@@ -868,7 +868,7 @@
 ;; @param b
 ;; @returns uint
 (define-read-only (mul-down (a uint) (b uint))
-    (/ (* a b) ONE_8)
+    (/ (* a b) ONE_16)
 )
 
 ;; @desc mul-up
@@ -882,7 +882,7 @@
        )
         (if (is-eq product u0)
             u0
-            (+ u1 (/ (- product u1) ONE_8))
+            (+ u1 (/ (- product u1) ONE_16))
        )
    )
 )
@@ -894,7 +894,7 @@
 (define-read-only (div-down (a uint) (b uint))
     (if (is-eq a u0)
         u0
-        (/ (* a ONE_8) b)
+        (/ (* a ONE_16) b)
     )
 )
 
@@ -905,7 +905,7 @@
 (define-read-only (div-up (a uint) (b uint))
     (if (is-eq a u0)
         u0
-        (+ u1 (/ (- (* a ONE_8) u1) b))
+        (+ u1 (/ (- (* a ONE_16) u1) b))
     )
 )
 

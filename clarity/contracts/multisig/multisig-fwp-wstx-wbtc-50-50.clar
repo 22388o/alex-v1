@@ -20,7 +20,7 @@
 (define-constant ERR-NOT-AUTHORIZED (err u1000))
 (define-constant ERR-MATH-CALL (err u2010))
 
-(define-constant ONE_8 u100000000)
+(define-constant ONE_16 (pow u10 u16))
 (define-data-var contract-owner principal tx-sender)
 
 (define-read-only (get-contract-owner)
@@ -341,8 +341,8 @@
   ) 
   
     ;; Setting for Yield Token Pool
-    (try! (contract-call? .fixed-weight-pool set-fee-rate-x .token-wstx .token-wbtc u50000000 u50000000 new-fee-rate-x))
-    (try! (contract-call? .fixed-weight-pool set-fee-rate-y .token-wstx .token-wbtc u50000000 u50000000 new-fee-rate-y))
+    (try! (contract-call? .fixed-weight-pool set-fee-rate-x .token-wstx .token-wbtc u5000000000000000 u5000000000000000 new-fee-rate-x))
+    (try! (contract-call? .fixed-weight-pool set-fee-rate-y .token-wstx .token-wbtc u5000000000000000 u5000000000000000 new-fee-rate-y))
     
     (ok true)
   )

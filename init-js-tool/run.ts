@@ -112,15 +112,15 @@ async function run() {
   // await create_crp(false, _deploy);
 
   // let _list = ['token-t-alex', 'fwp-wstx-usda-50-50', 'fwp-wstx-wbtc-50-50'];//, 
-  let _list = ['ytp-yield-wbtc', 'ytp-yield-usda'];
-  for(let i = 0; i < _list.length; i++) {
-    await reserveAddToken(_list[i]);
-    await reserveSetActivationThreshold(1);
-    await reserveSetActivationDelay(1);
-    await reserveSetRewardCycleLength(525);
-    await reserveRegisterUser(_list[i]);
-    await reserveSetCoinbaseAmount(_list[i], 1000e8, 1000e8, 1000e8, 1000e8, 1000e8);
-  }
+  // let _list = ['ytp-yield-wbtc', 'ytp-yield-usda'];
+  // for(let i = 0; i < _list.length; i++) {
+  //   await reserveAddToken(_list[i]);
+  //   await reserveSetActivationThreshold(1);
+  //   await reserveSetActivationDelay(1);
+  //   await reserveSetRewardCycleLength(525);
+  //   await reserveRegisterUser(_list[i]);
+  //   await reserveSetCoinbaseAmount(_list[i], 1000e8, 1000e8, 1000e8, 1000e8, 1000e8);
+  // }
 
   // await arbitrage_fwp(false);
   // await arbitrage_crp(false, _deploy);
@@ -194,7 +194,8 @@ async function run() {
 
 
   // let result:any = await reserveGetStaked('token-t-alex', [0,1,2,3,4,5,6,7,8,9,10]);
-  // let result:any = await reserveGetStakingStatsCoinbaseAsList('fwp-wstx-wbtc-50-50', [2,3,4,5,6,7,8,9,10]);
+  // let result:any = await reserveGetStakingStatsCoinbaseAsList('token-t-alex', [11,21,31]);
+  // console.log(result.list[2].data);
   // let result:any = await reserveGetStakingRewards('token-t-alex', [2,3,4,5,6,7,8,9,10])
   // let result:any = await balance('fwp-wstx-wbtc-50-50', DEPLOYER_ACCOUNT_ADDRESS());
   // console.log(result)

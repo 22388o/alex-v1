@@ -19,7 +19,7 @@
 (define-constant ERR-BLOCK-HEIGHT-NOT-REACHED (err u8003))
 (define-constant ERR-NOT-AUTHORIZED (err u1000))
 
-(define-constant ONE_8 u100000000)
+(define-constant ONE_16 (pow u10 u16))
 
 (define-data-var contract-owner principal tx-sender)
 
@@ -324,7 +324,7 @@
     (
       (proposal (get-proposal-by-id proposal-id))
       (expiry (get expiry proposal))
-      (token-count (/ (get amount (get-tokens-by-member-by-id proposal-id member token expiry)) ONE_8))      
+      (token-count (/ (get amount (get-tokens-by-member-by-id proposal-id member token expiry)) ONE_16))      
     )
 
     (asserts! (is-token-accepted token) ERR-INVALID-TOKEN)
@@ -368,7 +368,7 @@
        )
         (if (is-eq product u0)
             u0
-            (+ u1 (/ (- product u1) ONE_8))
+            (+ u1 (/ (- product u1) ONE_16))
        )
    )
 )

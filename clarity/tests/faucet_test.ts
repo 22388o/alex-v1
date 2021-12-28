@@ -3,7 +3,7 @@
 import { Clarinet, Tx, Chain, Account, types } from 'https://deno.land/x/clarinet@v0.14.0/index.ts';
 import { assertEquals } from 'https://deno.land/std@0.90.0/testing/asserts.ts';
 
-const ONE_8 = 100000000
+const ONE_16 = 100000000
 
 const faucetAddress = "ST1HTBVD3JG9C05J7HBJTHGR0GGW7KXW28M5JS8QE.faucet"
 
@@ -26,7 +26,7 @@ class Faucet {
     setUsdaAmount(sender: Account, amount: number) {
       let block = this.chain.mineBlock([
           Tx.contractCall("faucet", "set-usda-amount", [
-            types.uint(amount),
+            'u' + BigInt(amount),
           ], sender.address),
         ]);
         return block.receipts[0].result;
@@ -35,7 +35,7 @@ class Faucet {
     setWbtcAmount(sender: Account, amount: number) {
         let block = this.chain.mineBlock([
             Tx.contractCall("faucet", "set-wbtc-amount", [
-              types.uint(amount),
+              'u' + BigInt(amount),
             ], sender.address),
           ]);
           return block.receipts[0].result;
@@ -44,7 +44,7 @@ class Faucet {
     setStxAmount(sender: Account, amount: number) {
       let block = this.chain.mineBlock([
           Tx.contractCall("faucet", "set-stx-amount", [
-            types.uint(amount),
+            'u' + BigInt(amount),
           ], sender.address),
         ]);
         return block.receipts[0].result;
@@ -53,7 +53,7 @@ class Faucet {
     setAlexAmount(sender: Account, amount: number) {
       let block = this.chain.mineBlock([
           Tx.contractCall("faucet", "set-alex-amount", [
-            types.uint(amount),
+            'u' + BigInt(amount),
           ], sender.address),
         ]);
         return block.receipts[0].result;
@@ -62,7 +62,7 @@ class Faucet {
     setMaxUse(sender: Account, amount: number) {
       let block = this.chain.mineBlock([
           Tx.contractCall("faucet", "set-max-use", [
-            types.uint(amount),
+            'u' + BigInt(amount),
           ], sender.address),
         ]);
         return block.receipts[0].result;
@@ -121,7 +121,7 @@ class Faucet {
       let block = this.chain.mineBlock([
           Tx.contractCall("faucet", "mint-alex-many", [
             types.list(recipients.map((record) => { 
-              return types.tuple({ to: types.principal(record.to.address), amount: types.uint(record.amount) });
+              return types.tuple({ to: types.principal(record.to.address), amount: 'u' + BigInt(record.amount) });
             }))
           ], sender.address),
         ]);
@@ -189,19 +189,19 @@ Clarinet.test({
         result.expectErr().expectUint(1000)            
         
         // contract-owner setting faucet amount works
-        await FaucetTest.setStxAmount(deployer, 100 * ONE_8);
+        await FaucetTest.setStxAmount(deployer, 100 * ONE_16);
         result = await FaucetTest.getStxAmount(); 
-        result.result.expectOk().expectUint(100 * ONE_8);
-        await FaucetTest.setUsdaAmount(deployer, 100 * ONE_8);
+        result.result.expectOk().expectUint(100 * ONE_16);
+        await FaucetTest.setUsdaAmount(deployer, 100 * ONE_16);
         result = await FaucetTest.getUsdaAmount(); 
-        result.result.expectOk().expectUint(100 * ONE_8);
-        await FaucetTest.setWbtcAmount(deployer, 100 * ONE_8);
+        result.result.expectOk().expectUint(100 * ONE_16);
+        await FaucetTest.setWbtcAmount(deployer, 100 * ONE_16);
         result = await FaucetTest.getWbtcAmount(); 
-        result.result.expectOk().expectUint(100 * ONE_8); 
-        result.result.expectOk().expectUint(100 * ONE_8);
-        await FaucetTest.setAlexAmount(deployer, 100 * ONE_8);
+        result.result.expectOk().expectUint(100 * ONE_16); 
+        result.result.expectOk().expectUint(100 * ONE_16);
+        await FaucetTest.setAlexAmount(deployer, 100 * ONE_16);
         result = await FaucetTest.getAlexAmount(); 
-        result.result.expectOk().expectUint(100 * ONE_8);           
+        result.result.expectOk().expectUint(100 * ONE_16);           
         
         // by default use is capped to once only.
         result = await FaucetTest.getMaxUse();
@@ -220,11 +220,11 @@ Clarinet.test({
         result = await FaucetTest.getSomeTokens(wallet_7, wallet_7.address);
         result.expectOk().expectBool(true);
         result = await FaucetTest.getBalance('token-usda', wallet_7.address);
-        result.result.expectOk().expectUint(100 * ONE_8);
+        result.result.expectOk().expectUint(100 * ONE_16);
         result = await FaucetTest.getBalance('token-wbtc', wallet_7.address);
-        result.result.expectOk().expectUint(100 * ONE_8);          
+        result.result.expectOk().expectUint(100 * ONE_16);          
         result = await FaucetTest.getBalance('token-t-alex', wallet_7.address);
-        result.result.expectOk().expectUint(100 * ONE_8); 
+        result.result.expectOk().expectUint(100 * ONE_16); 
         
         // non contract-owner attempting to call get-some-tokens for another wallet throws an error.
         result = await FaucetTest.getSomeTokens(wallet_6, wallet_7.address);
@@ -254,11 +254,11 @@ Clarinet.test({
         result = await FaucetTest.getSomeTokens(wallet_7, wallet_7.address);
         result.expectOk().expectBool(true);
         result = await FaucetTest.getBalance('token-usda', wallet_7.address);
-        result.result.expectOk().expectUint(200 * ONE_8);
+        result.result.expectOk().expectUint(200 * ONE_16);
         result = await FaucetTest.getBalance('token-wbtc', wallet_7.address);
-        result.result.expectOk().expectUint(200 * ONE_8);   
+        result.result.expectOk().expectUint(200 * ONE_16);   
         result = await FaucetTest.getBalance('token-t-alex', wallet_7.address);
-        result.result.expectOk().expectUint(200 * ONE_8);        
+        result.result.expectOk().expectUint(200 * ONE_16);        
 
         // using more than max-use throws an error
         result = await FaucetTest.getSomeTokens(wallet_7, wallet_7.address);
@@ -283,17 +283,17 @@ Clarinet.test({
         result = await FaucetTest.sendMany(deployer, [wallet_6.address, wallet_7.address]);
         result.expectOk().expectBool(true);
         result = await FaucetTest.getBalance('token-usda', wallet_6.address);
-        result.result.expectOk().expectUint(100 * ONE_8);
+        result.result.expectOk().expectUint(100 * ONE_16);
         result = await FaucetTest.getBalance('token-wbtc', wallet_6.address);
-        result.result.expectOk().expectUint(100 * ONE_8);   
+        result.result.expectOk().expectUint(100 * ONE_16);   
         result = await FaucetTest.getBalance('token-t-alex', wallet_6.address);
-        result.result.expectOk().expectUint(100 * ONE_8);    
+        result.result.expectOk().expectUint(100 * ONE_16);    
         result = await FaucetTest.getBalance('token-usda', wallet_7.address);
-        result.result.expectOk().expectUint(300 * ONE_8);
+        result.result.expectOk().expectUint(300 * ONE_16);
         result = await FaucetTest.getBalance('token-wbtc', wallet_7.address);
-        result.result.expectOk().expectUint(300 * ONE_8);   
+        result.result.expectOk().expectUint(300 * ONE_16);   
         result = await FaucetTest.getBalance('token-t-alex', wallet_7.address);
-        result.result.expectOk().expectUint(300 * ONE_8);
+        result.result.expectOk().expectUint(300 * ONE_16);
 
         // this will return ok, but list of ok or err
         result = await FaucetTest.sendManyMap(deployer, [wallet_6.address, wallet_7.address]);
@@ -306,7 +306,7 @@ Clarinet.test({
 
         // testing mint-alex-many
         const recipients: Array<Account> = [ accounts.get("wallet_6")!, accounts.get("wallet_7")! ];
-        const amounts: Array<number> = [100 * ONE_8, 200 * ONE_8];
+        const amounts: Array<number> = [100 * ONE_16, 200 * ONE_16];
 
         const mintAlexManyRecords: MintAlexManyRecord[] = [];
 
@@ -325,8 +325,8 @@ Clarinet.test({
         result = await FaucetTest.mintAlexMany(deployer, mintAlexManyRecords);
         result.expectOk().expectBool(true);
         result = await FaucetTest.getBalance('token-t-alex', wallet_6.address);
-        result.result.expectOk().expectUint(300 * ONE_8);
+        result.result.expectOk().expectUint(300 * ONE_16);
         result = await FaucetTest.getBalance('token-t-alex', wallet_7.address);
-        result.result.expectOk().expectUint(500 * ONE_8);        
+        result.result.expectOk().expectUint(500 * ONE_16);        
     },    
 });

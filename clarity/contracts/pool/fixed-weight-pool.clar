@@ -7,7 +7,7 @@
 ;; Fixed Weight Pool is an uniswap-like on-chain AMM based on Balancer
 ;;
 
-(define-constant ONE_8 (pow u10 u8)) ;; 8 decimal places
+(define-constant ONE_16 (pow u10 u16)) ;; 16 decimal places
 
 (define-constant ERR-NOT-AUTHORIZED (err u1000))
 (define-constant ERR-INVALID-POOL (err u2001))
@@ -196,7 +196,7 @@
         )
         (asserts! (is-eq tx-sender (var-get contract-owner)) ERR-NOT-AUTHORIZED)
         (asserts! (get oracle-enabled pool) ERR-ORACLE-NOT-ENABLED)
-        (asserts! (< new-oracle-average ONE_8) ERR-ORACLE-AVERAGE-BIGGER-THAN-ONE)
+        (asserts! (< new-oracle-average ONE_16) ERR-ORACLE-AVERAGE-BIGGER-THAN-ONE)
         (map-set pools-data-map { token-x: (contract-of token-x-trait), token-y: (contract-of token-y-trait), weight-x: weight-x, weight-y: weight-y } pool-updated)
         (ok true)
     )    
@@ -217,7 +217,7 @@
                     (pool (unwrap! (map-get? pools-data-map { token-x: (contract-of token-x-trait), token-y: (contract-of token-y-trait), weight-x: weight-x, weight-y: weight-y }) ERR-INVALID-POOL))
                 )
                 (asserts! (get oracle-enabled pool) ERR-ORACLE-NOT-ENABLED)
-                (ok (+ (mul-down (- ONE_8 (get oracle-average pool)) (try! (get-oracle-instant token-x-trait token-y-trait weight-x weight-y))) 
+                (ok (+ (mul-down (- ONE_16 (get oracle-average pool)) (try! (get-oracle-instant token-x-trait token-y-trait weight-x weight-y))) 
                        (mul-down (get oracle-average pool) (get oracle-resilient pool))))
             )
             (let
@@ -225,8 +225,8 @@
                     (pool (unwrap! (map-get? pools-data-map { token-x: (contract-of token-y-trait), token-y: (contract-of token-x-trait), weight-x: weight-y, weight-y: weight-x }) ERR-INVALID-POOL))
                 )
                 (asserts! (get oracle-enabled pool) ERR-ORACLE-NOT-ENABLED)
-                (ok (+ (mul-down (- ONE_8 (get oracle-average pool)) (try! (get-oracle-instant token-x-trait token-y-trait weight-x weight-y))) 
-                       (mul-down (get oracle-average pool) (div-down ONE_8 (get oracle-resilient pool)))))
+                (ok (+ (mul-down (- ONE_16 (get oracle-average pool)) (try! (get-oracle-instant token-x-trait token-y-trait weight-x weight-y))) 
+                       (mul-down (get oracle-average pool) (div-down ONE_16 (get oracle-resilient pool)))))
             )
         )            
     )
@@ -374,7 +374,7 @@
 ;; @returns (response (tuple uint uint) uint)
 (define-public (reduce-position (token-x-trait <ft-trait>) (token-y-trait <ft-trait>) (weight-x uint) (weight-y uint) (the-pool-token <ft-trait>) (percent uint))
     (begin
-        (asserts! (<= percent ONE_8) ERR-PERCENT-GREATER-THAN-ONE)
+        (asserts! (<= percent ONE_16) ERR-PERCENT-GREATER-THAN-ONE)
         (let
             (
                 (token-x (contract-of token-x-trait))
@@ -383,7 +383,7 @@
                 (balance-x (get balance-x pool))
                 (balance-y (get balance-y pool))
                 (total-shares (unwrap-panic (contract-call? the-pool-token get-balance-fixed tx-sender)))
-                (shares (if (is-eq percent ONE_8) total-shares (mul-down total-shares percent)))
+                (shares (if (is-eq percent ONE_16) total-shares (mul-down total-shares percent)))
                 (total-supply (get total-supply pool))
                 (reduce-data (try! (get-position-given-burn token-x-trait token-y-trait weight-x weight-y shares)))
                 (dx (get dx reduce-data))
@@ -422,7 +422,7 @@
         (asserts! (> dx u0) ERR-INVALID-LIQUIDITY)      
         (let
             (
-                (weight-x (- ONE_8 weight-y))
+                (weight-x (- ONE_16 weight-y))
                 (token-y (contract-of token-y-trait))
                 (pool (unwrap! (map-get? pools-data-map { token-x: .token-wstx, token-y: token-y, weight-x: weight-x, weight-y: weight-y }) ERR-INVALID-POOL))
                 (balance-x (get balance-x pool))
@@ -474,7 +474,7 @@
         (asserts! (> dy u0) ERR-INVALID-LIQUIDITY)
         (let
             (
-                (weight-x (- ONE_8 weight-y))
+                (weight-x (- ONE_16 weight-y))
                 (token-y (contract-of token-y-trait))
                 (pool (unwrap! (map-get? pools-data-map { token-x: .token-wstx, token-y: token-y, weight-x: weight-x, weight-y: weight-y }) ERR-INVALID-POOL))
                 (balance-x (get balance-x pool))
@@ -708,7 +708,7 @@
     
     (let 
         (
-            (weight-x (- ONE_8 weight-y))
+            (weight-x (- ONE_16 weight-y))
             (pool (unwrap! (map-get? pools-data-map { token-x: .token-wstx, token-y: (contract-of token-y-trait), weight-x: weight-x, weight-y: weight-y }) ERR-INVALID-POOL))
         )
         (contract-call? .weighted-equation get-y-given-x (get balance-x pool) (get balance-y pool) weight-x weight-y dx)        
@@ -723,7 +723,7 @@
 (define-read-only (get-wstx-given-y (token-y-trait <ft-trait>) (weight-y uint) (dy uint)) 
     (let 
         (
-            (weight-x (- ONE_8 weight-y))
+            (weight-x (- ONE_16 weight-y))
             (pool (unwrap! (map-get? pools-data-map { token-x: .token-wstx, token-y: (contract-of token-y-trait), weight-x: weight-x, weight-y: weight-y }) ERR-INVALID-POOL))
         )
         (contract-call? .weighted-equation get-x-given-y (get balance-x pool) (get balance-y pool) weight-x weight-y dy)
@@ -880,7 +880,7 @@
 ;; @param b
 ;; @returns uint
 (define-read-only (mul-down (a uint) (b uint))
-    (/ (* a b) ONE_8)
+    (/ (* a b) ONE_16)
 )
 
 ;; @desc mul-up
@@ -894,7 +894,7 @@
        )
         (if (is-eq product u0)
             u0
-            (+ u1 (/ (- product u1) ONE_8))
+            (+ u1 (/ (- product u1) ONE_16))
        )
    )
 )
@@ -906,7 +906,7 @@
 (define-read-only (div-down (a uint) (b uint))
     (if (is-eq a u0)
         u0
-        (/ (* a ONE_8) b)
+        (/ (* a ONE_16) b)
     )
 )
 
@@ -917,7 +917,7 @@
 (define-read-only (div-up (a uint) (b uint))
     (if (is-eq a u0)
         u0
-        (+ u1 (/ (- (* a ONE_8) u1) b))
+        (+ u1 (/ (- (* a ONE_16) u1) b))
     )
 )
 

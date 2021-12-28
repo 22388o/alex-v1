@@ -9,7 +9,7 @@
 
 ;; constants
 ;;
-(define-constant ONE_8 u100000000) ;; 8 decimal places
+(define-constant ONE_16 u100000000) ;; 8 decimal places
 
 (define-constant ERR-NOT-AUTHORIZED (err u1000))
 (define-constant ERR-INVALID-POOL (err u2001))
@@ -211,12 +211,12 @@
 )
 
 (define-read-only (mul-down (a uint) (b uint))
-    (/ (* a b) ONE_8)
+    (/ (* a b) ONE_16)
 )
 
 (define-read-only (div-down (a uint) (b uint))
   (if (is-eq a u0)
     u0
-    (/ (* a ONE_8) b)
+    (/ (* a ONE_16) b)
   )
 )

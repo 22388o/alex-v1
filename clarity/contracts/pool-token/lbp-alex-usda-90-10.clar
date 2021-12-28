@@ -135,7 +135,7 @@
   )
 )
 
-(define-constant ONE_8 (pow u10 u8))
+(define-constant ONE_16 (pow u10 u16))
 
 ;; @desc pow-decimals
 ;; @returns uint
@@ -147,14 +147,14 @@
 ;; @params amount
 ;; @returns uint
 (define-read-only (fixed-to-decimals (amount uint))
-  (/ (* amount (pow-decimals)) ONE_8)
+  (/ (* amount (pow-decimals)) ONE_16)
 )
 
 ;; @desc decimals-to-fixed 
 ;; @params amount
 ;; @returns uint
 (define-private (decimals-to-fixed (amount uint))
-  (/ (* amount ONE_8) (pow-decimals))
+  (/ (* amount ONE_16) (pow-decimals))
 )
 
 ;; @desc get-total-supply-fixed

@@ -8,7 +8,7 @@ const reserveContract = "alex-reserve-pool";
 const helperContract = "staking-helper";
 const reward_cycle_length = 525;
 
-const ONE_8 = 100000000;
+const ONE_16 = 100000000;
 const stakedAddress = "ST1HTBVD3JG9C05J7HBJTHGR0GGW7KXW28M5JS8QE." + stakeContract;
 const fwpAddress = "ST1HTBVD3JG9C05J7HBJTHGR0GGW7KXW28M5JS8QE.fixed-weight-pool";
 
@@ -25,7 +25,7 @@ class StakingHelper {
       let block = this.chain.mineBlock([
           Tx.contractCall(helperContract, "claim-staking-reward-by-tx-sender", [
             types.principal(stakedToken),
-            types.uint(reward_cycle),
+            'u' + BigInt(reward_cycle),
           ], sender.address),
         ]);
         return block.receipts[0].result;
@@ -34,7 +34,7 @@ class StakingHelper {
     getStaked(sender: Account, stakedToken: string, reward_cycles: Array<number>) {
         return this.chain.callReadOnlyFn(helperContract, "get-staked", [
           types.principal(stakedToken),
-          types.list(reward_cycles.map(e=>{return types.uint(e)}))
+          types.list(reward_cycles.map(e=>{return 'u' + BigInt(e)}))
         ], sender.address);
     }
     
@@ -50,7 +50,7 @@ class StakingHelper {
     setActivationThreshold(sender: Account, threshold: number){
       let block = this.chain.mineBlock([
         Tx.contractCall(reserveContract, "set-activation-threshold", [
-          types.uint(threshold)
+          'u' + BigInt(threshold)
         ], sender.address),
       ]);
       return block.receipts[0].result;        
@@ -59,7 +59,7 @@ class StakingHelper {
     setActivationDelay(sender: Account, delay: number){
       let block = this.chain.mineBlock([
         Tx.contractCall(reserveContract, "set-activation-delay", [
-          types.uint(delay)
+          'u' + BigInt(delay)
         ], sender.address),
       ]);
       return block.receipts[0].result;        
@@ -68,7 +68,7 @@ class StakingHelper {
     setRewardCycleLength(sender: Account, length: number){
       let block = this.chain.mineBlock([
         Tx.contractCall(reserveContract, "set-reward-cycle-length", [
-          types.uint(length)
+          'u' + BigInt(length)
         ], sender.address),
       ]);
       return block.receipts[0].result;        
@@ -88,8 +88,8 @@ class StakingHelper {
       let block = this.chain.mineBlock([
         Tx.contractCall(reserveContract, "stake-tokens", [
           types.principal(token),
-          types.uint(amount),
-          types.uint(lock_period)
+          'u' + BigInt(amount),
+          'u' + BigInt(lock_period)
         ], sender.address),
       ]);
       return block.receipts[0].result;        
@@ -98,14 +98,14 @@ class StakingHelper {
     getRewardCycle(token: string) {
       return this.chain.callReadOnlyFn(reserveContract, "get-reward-cycle", [
         types.principal(token),
-        types.uint(this.chain.blockHeight)
+        'u' + BigInt(this.chain.blockHeight)
       ], this.deployer.address);
     }      
 
     getFirstStacksBlocksInRewardCycle(token: string, reward_cycle: number) {
       return this.chain.callReadOnlyFn(reserveContract, "get-first-stacks-block-in-reward-cycle", [
         types.principal(token),
-        types.uint(reward_cycle)
+        'u' + BigInt(reward_cycle)
       ], this.deployer.address);
     } 
 
@@ -113,11 +113,11 @@ class StakingHelper {
       let block = this.chain.mineBlock([
         Tx.contractCall(reserveContract, "set-coinbase-amount", [
           types.principal(token),
-          types.uint(coinbase1),
-          types.uint(coinbase2),
-          types.uint(coinbase3),
-          types.uint(coinbase4),
-          types.uint(coinbase5),
+          'u' + BigInt(coinbase1),
+          'u' + BigInt(coinbase2),
+          'u' + BigInt(coinbase3),
+          'u' + BigInt(coinbase4),
+          'u' + BigInt(coinbase5),
         ], sender.address),
       ]);
       return block.receipts[0].result;        
@@ -126,7 +126,7 @@ class StakingHelper {
     getStakingStatsCoinbaseAsList(token: string, reward_cycles: Array<number>) {
       return this.chain.callReadOnlyFn(helperContract, "get-staking-stats-coinbase-as-list", [
         types.principal(token),
-        types.list(reward_cycles.map(e=>{return types.uint(e)}))
+        types.list(reward_cycles.map(e=>{return 'u' + BigInt(e)}))
       ], this.deployer.address);
     }
 }
@@ -147,7 +147,7 @@ Clarinet.test({
 
         chain.mineBlock([
           Tx.contractCall(stakeContract, "mint-fixed", [
-            types.uint(100000e8),
+            'u' + BigInt(100000e16),
             types.principal(wallet_6.address)
           ], deployer.address),
         ]);
@@ -160,12 +160,12 @@ Clarinet.test({
         result.expectOk().expectBool(true);
         result = await StakingTest.addToken(deployer, stakedAddress);
         result.expectOk().expectBool(true);  
-        result = await StakingTest.setCoinbaseAmount(deployer, stakedAddress, ONE_8, ONE_8, ONE_8, ONE_8, ONE_8);
+        result = await StakingTest.setCoinbaseAmount(deployer, stakedAddress, ONE_16, ONE_16, ONE_16, ONE_16, ONE_16);
         result.expectOk().expectBool(true);      
         result = await StakingTest.registerUser(deployer, stakedAddress);
         result.expectOk().expectBool(true);
 
-        result = await StakingTest.stakeTokens(wallet_6, stakedAddress, 100e8, 3);
+        result = await StakingTest.stakeTokens(wallet_6, stakedAddress, 100e16, 3);
         result.expectOk().expectBool(true);
 
         // you can stake only from next cycle
@@ -176,18 +176,18 @@ Clarinet.test({
         result0['to-return'].expectUint(0);
 
         result0 = result[1].expectTuple();
-        result0['amount-staked'].expectUint(100e8);
+        result0['amount-staked'].expectUint(100e16);
         result0['to-return'].expectUint(0);
 
         result0 = result[2].expectTuple();
-        result0['amount-staked'].expectUint(100e8);
-        result0['to-return'].expectUint(100e8);          
+        result0['amount-staked'].expectUint(100e16);
+        result0['to-return'].expectUint(100e16);          
 
         call = await StakingTest.getStakingStatsCoinbaseAsList(stakedAddress, [0,1,3]);
         result = call.result.expectList();
         result0 = result[0].expectTuple();
         result0['staking-stats'].expectUint(0);
-        result0['coinbase-amount'].expectUint(ONE_8);      
+        result0['coinbase-amount'].expectUint(ONE_16);      
 
         call = await StakingTest.getFirstStacksBlocksInRewardCycle(stakedAddress, 1);
         result = call.result.expectUint(8 + reward_cycle_length);
@@ -199,7 +199,7 @@ Clarinet.test({
         
         result = await StakingTest.claimStakingReward(wallet_6, stakedAddress, 1);
         let claimed:any = result.expectOk().expectTuple();
-        claimed['entitled-token'].expectUint(ONE_8);
+        claimed['entitled-token'].expectUint(ONE_16);
         claimed['to-return'].expectUint(0);       
         
         result = await StakingTest.claimStakingReward(wallet_6, stakedAddress, 1);
@@ -214,8 +214,8 @@ Clarinet.test({
         
         result = await StakingTest.claimStakingReward(wallet_6, stakedAddress, 3);
         claimed = result.expectOk().expectTuple();
-        claimed['entitled-token'].expectUint(ONE_8);
-        claimed['to-return'].expectUint(100e8);          
+        claimed['entitled-token'].expectUint(ONE_16);
+        claimed['to-return'].expectUint(100e16);          
 
         result = await StakingTest.claimStakingReward(wallet_6, stakedAddress, 3);
         claimed = result.expectOk().expectTuple();

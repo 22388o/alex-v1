@@ -26,7 +26,7 @@ export class TokenClient extends Client {
       this.contractName,
       "transfer-fixed",
       [
-        types.uint(amount),
+        'u' + BigInt(amount),
         types.principal(from.address),
         types.principal(to.address),
         memoVal,
@@ -39,7 +39,7 @@ export class TokenClient extends Client {
     return Tx.contractCall(
       this.contractName,
       "burn-fixed",
-      [types.uint(amount), types.principal(sender.address)],
+      ['u' + BigInt(amount), types.principal(sender.address)],
       sender.address
     );
   }
@@ -68,6 +68,10 @@ export class TokenClient extends Client {
     return this.callReadOnlyFn("get-token-uri");
   }
 
+  fixedToDecimals(amount: number): ReadOnlyFn {
+    return this.callReadOnlyFn("fixed-to-decimals", ['u' + BigInt(amount)]);
+  }
+
   //////////////////////////////////////////////////
   // UTILITIES
   //////////////////////////////////////////////////
@@ -93,7 +97,7 @@ export class TokenClient extends Client {
     return Tx.contractCall(
       this.contractName,
       "mint-fixed",
-      [types.uint(amount), types.principal(recipient.address)],
+      ['u' + BigInt(amount), types.principal(recipient.address)],
       sender.address
     );
   }
@@ -111,7 +115,7 @@ export class TokenClient extends Client {
           recipients.map((record) => {
             return types.tuple({
               to: types.principal(record.to.address),
-              amount: types.uint(record.amount),
+              amount: 'u' + BigInt(record.amount),
               memo:
                 typeof record.memo == "undefined"
                   ? types.none()

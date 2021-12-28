@@ -5,7 +5,7 @@
 
 ;; constants
 ;;
-(define-constant ONE_8 (pow u10 u8)) ;; 8 decimal places
+(define-constant ONE_16 (pow u10 u16)) ;; 16 decimal places
 
 (define-constant ERR-NOT-AUTHORIZED (err u1000))
 (define-constant ERR-NO-LIQUIDITY (err u2002))
@@ -16,8 +16,8 @@
 (define-data-var contract-owner principal tx-sender)
 
 ;; max in/out as % of liquidity
-(define-data-var MAX-IN-RATIO uint (* u30 (pow u10 u6))) ;; 30%
-(define-data-var MAX-OUT-RATIO uint (* u30 (pow u10 u6))) ;; 30%
+(define-data-var MAX-IN-RATIO uint (* u30 (pow u10 u14))) ;; 30%
+(define-data-var MAX-OUT-RATIO uint (* u30 (pow u10 u14))) ;; 30%
 
 ;; @desc get-max-in-ratio
 ;; @returns uint
@@ -100,7 +100,7 @@
       (price (try! (get-price balance-x balance-y t)))
     )    
     ;; (ok (to-uint (unwrap-panic (ln-fixed (to-int price)))))
-    (if (<= price ONE_8) (ok u0) (ok (- price ONE_8)))
+    (if (<= price ONE_16) (ok u0) (ok (- price ONE_16)))
   )
 )
 
@@ -120,8 +120,8 @@
     (asserts! (< dx (mul-down balance-x (var-get MAX-IN-RATIO))) ERR-MAX-IN-RATIO)     
     (let 
       (
-        (t-comp (if (<= ONE_8 t) u0 (- ONE_8 t)))
-        (t-comp-num-uncapped (div-down ONE_8 t-comp))
+        (t-comp (if (<= ONE_16 t) u0 (- ONE_16 t)))
+        (t-comp-num-uncapped (div-down ONE_16 t-comp))
         (bound (unwrap-panic (get-exp-bound)))
         (t-comp-num (if (< t-comp-num-uncapped bound) t-comp-num-uncapped bound))            
         (x-pow (pow-down balance-x t-comp))
@@ -155,8 +155,8 @@
     (asserts! (< dy (mul-down balance-y (var-get MAX-OUT-RATIO))) ERR-MAX-OUT-RATIO)
     (let 
       (          
-        (t-comp (if (<= ONE_8 t) u0 (- ONE_8 t)))
-        (t-comp-num-uncapped (div-down ONE_8 t-comp))
+        (t-comp (if (<= ONE_16 t) u0 (- ONE_16 t)))
+        (t-comp-num-uncapped (div-down ONE_16 t-comp))
         (bound (unwrap-panic (get-exp-bound)))
         (t-comp-num (if (< t-comp-num-uncapped bound) t-comp-num-uncapped bound))            
         (x-pow (pow-down balance-x t-comp))
@@ -190,16 +190,16 @@
     (asserts! (< price (try! (get-price balance-x balance-y t))) ERR-NO-LIQUIDITY) 
     (let 
       (
-        (t-comp (if (<= ONE_8 t) u0 (- ONE_8 t)))
-        (t-comp-num-uncapped (div-down ONE_8 t-comp))
+        (t-comp (if (<= ONE_16 t) u0 (- ONE_16 t)))
+        (t-comp-num-uncapped (div-down ONE_16 t-comp))
         (bound (unwrap-panic (get-exp-bound)))
         (t-comp-num (if (< t-comp-num-uncapped bound) t-comp-num-uncapped bound))            
         (max-exp (unwrap-panic (get-exp-bound)))
-        (numer (+ ONE_8 (pow-down (div-down balance-y balance-x) t-comp)))
-        (denom (+ ONE_8 (pow-down price (div-down t-comp t))))
+        (numer (+ ONE_16 (pow-down (div-down balance-y balance-x) t-comp)))
+        (denom (+ ONE_16 (pow-down price (div-down t-comp t))))
         (lead-term (pow-down (div-down numer denom) t-comp-num))
       )
-      (if (<= lead-term ONE_8) (ok u0) (ok (mul-up balance-x (- lead-term ONE_8))))
+      (if (<= lead-term ONE_16) (ok u0) (ok (mul-up balance-x (- lead-term ONE_16))))
     )
   )
 )
@@ -220,13 +220,13 @@
     (asserts! (> price (try! (get-price balance-x balance-y t))) ERR-NO-LIQUIDITY) 
     (let 
       (
-        (t-comp (if (<= ONE_8 t) u0 (- ONE_8 t)))
-        (t-comp-num-uncapped (div-down ONE_8 t-comp))
+        (t-comp (if (<= ONE_16 t) u0 (- ONE_16 t)))
+        (t-comp-num-uncapped (div-down ONE_16 t-comp))
         (bound (unwrap-panic (get-exp-bound)))
         (t-comp-num (if (< t-comp-num-uncapped bound) t-comp-num-uncapped bound))            
         (max-exp (unwrap-panic (get-exp-bound)))
-        (numer (+ ONE_8 (pow-down (div-down balance-y balance-x) t-comp)))
-        (denom (+ ONE_8 (pow-down price (div-down t-comp t))))
+        (numer (+ ONE_16 (pow-down (div-down balance-y balance-x) t-comp)))
+        (denom (+ ONE_16 (pow-down price (div-down t-comp t))))
         (lead-term (mul-up balance-x (pow-down (div-down numer denom) t-comp-num)))
       )
       (if (<= balance-y lead-term) (ok u0) (ok (- balance-y lead-term)))
@@ -241,7 +241,7 @@
 ;; @param yield; target yield
 ;; @returns (response uint uint)
 (define-read-only (get-x-given-yield (balance-x uint) (balance-y uint) (t uint) (yield uint))
-  (get-x-given-price balance-x balance-y t (+ ONE_8 yield))
+  (get-x-given-price balance-x balance-y t (+ ONE_16 yield))
 )
 
 ;; @desc follows from get-y-given-price
@@ -251,7 +251,7 @@
 ;; @param yield; target yield
 ;; @returns (response uint uint)
 (define-read-only (get-y-given-yield (balance-x uint) (balance-y uint) (t uint) (yield uint))
-  (get-y-given-price balance-x balance-y t (+ ONE_8 yield))
+  (get-y-given-price balance-x balance-y t (+ ONE_16 yield))
 )
 
 ;; @desc get-token-given-position
@@ -316,71 +316,51 @@
 ;; Fixed Point Math
 ;; following https://github.com/balancer-labs/balancer-monorepo/blob/master/pkg/solidity-utils/contracts/math/FixedPoint.sol
 
-;; With 8 fixed digits you would have a maximum error of 0.5 * 10^-8 in each entry, 
-;; which could aggregate to about 8 x 0.5 * 10^-8 = 4 * 10^-8 relative error 
+;; With 16 fixed digits you would have a maximum error of 0.5 * 10^-16 in each entry, 
+;; which could aggregate to about 16 x 0.5 * 10^-16 = 8 * 10^-16 relative error 
 ;; (i.e. the last digit of the result may be completely lost to this error).
-(define-constant MAX_POW_RELATIVE_ERROR u4) 
-
+(define-constant MAX_POW_RELATIVE_ERROR u8) 
 ;; public functions
 ;;
 
-;; @desc mul-down
-;; @params a
-;; @params b
-;; @returns uint
-(define-read-only (mul-down (a uint) (b uint))
-  (/ (* a b) ONE_8)
+
+(define-private (mul-down (a uint) (b uint))
+    (/ (* a b) ONE_16)
 )
 
-;; @desc mul-up
-;; @params a
-;; @params b
-;; @returns uint
-(define-read-only (mul-up (a uint) (b uint))
+(define-private (mul-up (a uint) (b uint))
     (let
         (
             (product (* a b))
        )
         (if (is-eq product u0)
             u0
-            (+ u1 (/ (- product u1) ONE_8))
+            (+ u1 (/ (- product u1) ONE_16))
        )
    )
 )
 
-;; @desc div-down
-;; @params a
-;; @params b
-;; @returns uint
-(define-read-only (div-down (a uint) (b uint))
-  (if (is-eq a u0)
-    u0
-    (/ (* a ONE_8) b)
-  )
+(define-private (div-down (a uint) (b uint))
+    (if (is-eq a u0)
+        u0
+        (/ (* a ONE_16) b)
+   )
 )
 
-;; @desc pow-down
-;; @params a
-;; @params b
-;; @returns uint
-(define-read-only (pow-down (a uint) (b uint))    
+(define-private (pow-down (a uint) (b uint))    
     (let
         (
             (raw (unwrap-panic (pow-fixed a b)))
             (max-error (+ u1 (mul-up raw MAX_POW_RELATIVE_ERROR)))
         )
         (if (< raw max-error)
-          u0
-          (- raw max-error)
+            u0
+            (- raw max-error)
         )
     )
 )
 
-;; @desc pow-up
-;; @params a
-;; @params b
-;; @returns uint
-(define-read-only (pow-up (a uint) (b uint))
+(define-private (pow-up (a uint) (b uint))
     (let
         (
             (raw (unwrap-panic (pow-fixed a b)))
@@ -389,6 +369,7 @@
         (+ raw max-error)
     )
 )
+
 
 ;; math-log-exp
 ;; Exponentiation and logarithm functions for 8 decimal fixed point numbers (both base and exponent/argument).
@@ -402,51 +383,51 @@
 ;; All fixed point multiplications and divisions are inlined. This means we need to divide by ONE when multiplying
 ;; two numbers, and multiply by ONE when dividing them.
 ;; All arguments and return values are 8 decimal fixed point numbers.
-(define-constant iONE_8 (pow 10 8))
+(define-constant iONE_16 (pow 10 16))
 
 ;; The domain of natural exponentiation is bound by the word size and number of decimals used.
-;; The largest possible result is (2^127 - 1) / 10^8, 
-;; which makes the largest exponent ln((2^127 - 1) / 10^8) = 69.6090111872.
-;; The smallest possible result is 10^(-8), which makes largest negative argument ln(10^(-8)) = -18.420680744.
+;; The largest possible result is (2^127 - 1) / 10^16, 
+;; which makes the largest exponent ln((2^127 - 1) / 10^16) = 51.1883304432.
+;; The smallest possible result is 10^(-16), which makes largest negative argument ln(10^(-16)) = -36.8413614879.
 ;; We use 69.0 and -18.0 to have some safety margin.
-(define-constant MAX_NATURAL_EXPONENT (* 69 iONE_8))
-(define-constant MIN_NATURAL_EXPONENT (* -18 iONE_8))
+(define-constant MAX_NATURAL_EXPONENT (* 51 iONE_16))
+(define-constant MIN_NATURAL_EXPONENT (* -36 iONE_16))
 
-(define-constant MILD_EXPONENT_BOUND (/ (pow u2 u126) (to-uint iONE_8)))
+(define-constant MILD_EXPONENT_BOUND (/ (pow u2 u126) (to-uint iONE_16)))
 
-;; Because largest exponent is 69, we start from 64
-;; The first several a_n are too large if stored as 8 decimal numbers, and could cause intermediate overflows.
+;; Because largest exponent is 51, we start from 32 and we end at -64 because of the lowest exponent
+;; The first several a_n are too large if stored as 16 decimal numbers, and could cause intermediate overflows.
 ;; Instead we store them as plain integers, with 0 decimals.
+
 (define-constant x_a_list_no_deci (list 
-{x_pre: 6400000000, a_pre: 6235149080811616882910000000, use_deci: false} ;; x1 = 2^6, a1 = e^(x1)
-))
-;; 8 decimal constants
-(define-constant x_a_list (list 
-{x_pre: 3200000000, a_pre: 7896296018268069516100, use_deci: true} ;; x2 = 2^5, a2 = e^(x2)
-{x_pre: 1600000000, a_pre: 888611052050787, use_deci: true} ;; x3 = 2^4, a3 = e^(x3)
-{x_pre: 800000000, a_pre: 298095798704, use_deci: true} ;; x4 = 2^3, a4 = e^(x4)
-{x_pre: 400000000, a_pre: 5459815003, use_deci: true} ;; x5 = 2^2, a5 = e^(x5)
-{x_pre: 200000000, a_pre: 738905610, use_deci: true} ;; x6 = 2^1, a6 = e^(x6)
-{x_pre: 100000000, a_pre: 271828183, use_deci: true} ;; x7 = 2^0, a7 = e^(x7)
-{x_pre: 50000000, a_pre: 164872127, use_deci: true} ;; x8 = 2^-1, a8 = e^(x8)
-{x_pre: 25000000, a_pre: 128402542, use_deci: true} ;; x9 = 2^-2, a9 = e^(x9)
-{x_pre: 12500000, a_pre: 113314845, use_deci: true} ;; x10 = 2^-3, a10 = e^(x10)
-{x_pre: 6250000, a_pre: 106449446, use_deci: true} ;; x11 = 2^-4, a11 = e^x(11)
+{x_pre: 320000000000000000, a_pre: 789629601826806952, use_deci: false} ;; x0 = 2^5, a0 = e^(x0)
 ))
 
-(define-constant ERR_X_OUT_OF_BOUNDS (err u5009))
-(define-constant ERR_Y_OUT_OF_BOUNDS (err u5010))
-(define-constant ERR_PRODUCT_OUT_OF_BOUNDS (err u5011))
-(define-constant ERR_INVALID_EXPONENT (err u5012))
-(define-constant ERR_OUT_OF_BOUNDS (err u5013))
+;; 16 decimal constants
+(define-constant x_a_list (list 
+{x_pre: 160000000000000000, a_pre: 88861105205078726, use_deci: true} ;; x1 = 2^4, a1 = e^(x1)
+{x_pre: 80000000000000000, a_pre: 29809579870417283, use_deci: true} ;; x2 = 2^3, a2 = e^(x2)
+{x_pre: 40000000000000000, a_pre: 54598150033144239, use_deci: true} ;; x3 = 2^2, a3 = e^(x3)
+{x_pre: 20000000000000000, a_pre: 73890560989306502, use_deci: true} ;; x4 = 2^1, a4 = e^(x4)
+{x_pre: 10000000000000000, a_pre: 27182818284590452, use_deci: true} ;; x5 = 2^0, a5 = e^(x5)
+{x_pre: 5000000000000000, a_pre: 16487212707001282, use_deci: true} ;; x6 = 2^-1, a6 = e^(x6)
+{x_pre: 2500000000000000, a_pre: 12840254166877415, use_deci: true} ;; x7 = 2^-2, a7 = e^(x7)
+{x_pre: 1250000000000000, a_pre: 11331484530668263, use_deci: true} ;; x8 = 2^-3, a8 = e^(x8)
+{x_pre: 625000000000000, a_pre: 10644944589178594, use_deci: true} ;; x9 = 2^-4, a9 = e^(x9)
+{x_pre: 312500000000000, a_pre: 10317434074991027, use_deci: true} ;; x10 = 2^-5, a10 = e^(x10)
+{x_pre: 156250000000000, a_pre: 10157477085866858, use_deci: true} ;; x11 = 2^-6, a11 = e^(x11)
+))
+
+(define-constant ERR-X-OUT-OF-BOUNDS (err u5009))
+(define-constant ERR-Y-OUT-OF-BOUNDS (err u5010))
+(define-constant ERR-PRODUCT-OUT-OF-BOUNDS (err u5011))
+(define-constant ERR-INVALID-EXPONENT (err u5012))
+(define-constant ERR-OUT-OF-BOUNDS (err u5013))
 
 ;; private functions
 ;;
 
-;; Internal natural logarithm (ln(a)) with signed 8 decimal fixed point argument.
-;; @desc ln-priv
-;; @params a
-;; @returns (response uint)
+;; Internal natural logarithm (ln(a)) with signed 16 decimal fixed point argument.
 (define-private (ln-priv (a int))
   (let
     (
@@ -454,21 +435,17 @@
       (a_sum (fold accumulate_division x_a_list {a: (get a a_sum_no_deci), sum: (get sum a_sum_no_deci)}))
       (out_a (get a a_sum))
       (out_sum (get sum a_sum))
-      (z (/ (* (- out_a iONE_8) iONE_8) (+ out_a iONE_8)))
-      (z_squared (/ (* z z) iONE_8))
+      (z (/ (* (- out_a iONE_16) iONE_16) (+ out_a iONE_16)))
+      (z_squared (/ (* z z) iONE_16))
       (div_list (list 3 5 7 9 11))
       (num_sum_zsq (fold rolling_sum_div div_list {num: z, seriesSum: z, z_squared: z_squared}))
       (seriesSum (get seriesSum num_sum_zsq))
       (r (+ out_sum (* seriesSum 2)))
    )
-    (ok r)
+   (ok r)
  )
 )
 
-;; @desc accumulate_division
-;; @params x_a_pre ; tuple(x_pre a_pre use_deci)
-;; @params rolling_a_sum ; tuple (a sum)
-;; @returns uint
 (define-private (accumulate_division (x_a_pre (tuple (x_pre int) (a_pre int) (use_deci bool))) (rolling_a_sum (tuple (a int) (sum int))))
   (let
     (
@@ -478,24 +455,20 @@
       (rolling_a (get a rolling_a_sum))
       (rolling_sum (get sum rolling_a_sum))
    )
-    (if (>= rolling_a (if use_deci a_pre (* a_pre iONE_8)))
-      {a: (/ (* rolling_a (if use_deci iONE_8 1)) a_pre), sum: (+ rolling_sum x_pre)}
+    (if (>= rolling_a (if use_deci a_pre (* a_pre iONE_16)))
+       {a: (/ (* rolling_a (if use_deci iONE_16 1)) a_pre), sum: (+ rolling_sum x_pre)}
       {a: rolling_a, sum: rolling_sum}
    )
  )
 )
 
-;; @desc rolling_sum_div
-;; @params n
-;; @params rolling ; tuple (num seriesSum z_squared)
-;; returns tuple
 (define-private (rolling_sum_div (n int) (rolling (tuple (num int) (seriesSum int) (z_squared int))))
   (let
     (
       (rolling_num (get num rolling))
       (rolling_sum (get seriesSum rolling))
       (z_squared (get z_squared rolling))
-      (next_num (/ (* rolling_num z_squared) iONE_8))
+      (next_num (/ (* rolling_num z_squared) iONE_16))
       (next_sum (+ rolling_sum (/ next_num n)))
    )
     {num: next_num, seriesSum: next_sum, z_squared: z_squared}
@@ -506,29 +479,22 @@
 ;; arrive at that result. In particular, exp(ln(x)) = x, and ln(x^y) = y * ln(x). This means
 ;; x^y = exp(y * ln(x)).
 ;; Reverts if ln(x) * y is smaller than `MIN_NATURAL_EXPONENT`, or larger than `MAX_NATURAL_EXPONENT`.
-;; @desc pow-priv
-;; @params x
-;; @params y
-;; @returns (response uint)
 (define-private (pow-priv (x uint) (y uint))
   (let
     (
       (x-int (to-int x))
       (y-int (to-int y))
       (lnx (unwrap-panic (ln-priv x-int)))
-      (logx-times-y (/ (* lnx y-int) iONE_8))
+      (logx-times-y (/ (* lnx y-int) iONE_16))
     )
-    (asserts! (and (<= MIN_NATURAL_EXPONENT logx-times-y) (<= logx-times-y MAX_NATURAL_EXPONENT)) ERR_PRODUCT_OUT_OF_BOUNDS)
+    (asserts! (and (<= MIN_NATURAL_EXPONENT logx-times-y) (<= logx-times-y MAX_NATURAL_EXPONENT)) ERR-PRODUCT-OUT-OF-BOUNDS)
     (ok (to-uint (unwrap-panic (exp-fixed logx-times-y))))
   )
 )
 
-;; @desc exp-pos
-;; @params x
-;; @returns (response uint)
 (define-private (exp-pos (x int))
   (begin
-    (asserts! (and (<= 0 x) (<= x MAX_NATURAL_EXPONENT)) ERR_INVALID_EXPONENT)
+    (asserts! (and (<= 0 x) (<= x MAX_NATURAL_EXPONENT)) (err ERR-INVALID-EXPONENT))
     (let
       (
         ;; For each x_n, we test if that term is present in the decomposition (if x is larger than it), and if so deduct
@@ -536,23 +502,19 @@
         (x_product_no_deci (fold accumulate_product x_a_list_no_deci {x: x, product: 1}))
         (x_adj (get x x_product_no_deci))
         (firstAN (get product x_product_no_deci))
-        (x_product (fold accumulate_product x_a_list {x: x_adj, product: iONE_8}))
+        (x_product (fold accumulate_product x_a_list {x: x_adj, product: iONE_16}))
         (product_out (get product x_product))
         (x_out (get x x_product))
-        (seriesSum (+ iONE_8 x_out))
+        (seriesSum (+ iONE_16 x_out))
         (div_list (list 2 3 4 5 6 7 8 9 10 11 12))
         (term_sum_x (fold rolling_div_sum div_list {term: x_out, seriesSum: seriesSum, x: x_out}))
         (sum (get seriesSum term_sum_x))
      )
-      (ok (* (/ (* product_out sum) iONE_8) firstAN))
+      (ok (* (/ (* product_out sum) iONE_16) firstAN))
    )
  )
 )
 
-;; @desc accumulate_product
-;; @params x_a_pre ; tuple (x_pre a_pre use_deci)
-;; @params rolling_x_p ; tuple (x product)
-;; @returns tuple
 (define-private (accumulate_product (x_a_pre (tuple (x_pre int) (a_pre int) (use_deci bool))) (rolling_x_p (tuple (x int) (product int))))
   (let
     (
@@ -563,23 +525,19 @@
       (rolling_product (get product rolling_x_p))
    )
     (if (>= rolling_x x_pre)
-      {x: (- rolling_x x_pre), product: (/ (* rolling_product a_pre) (if use_deci iONE_8 1))}
+      {x: (- rolling_x x_pre), product: (/ (* rolling_product a_pre) (if use_deci iONE_16 1))}
       {x: rolling_x, product: rolling_product}
    )
  )
 )
 
-;; @desc rolling_div_sum
-;; @params n
-;; @params rolling ; tuple (term seriesSum x)
-;; @returns tuple
 (define-private (rolling_div_sum (n int) (rolling (tuple (term int) (seriesSum int) (x int))))
   (let
     (
       (rolling_term (get term rolling))
       (rolling_sum (get seriesSum rolling))
       (x (get x rolling))
-      (next_term (/ (/ (* rolling_term x) iONE_8) n))
+      (next_term (/ (/ (* rolling_term x) iONE_16) n))
       (next_sum (+ rolling_sum next_term))
    )
     {term: next_term, seriesSum: next_sum, x: x}
@@ -589,27 +547,21 @@
 ;; public functions
 ;;
 
-;; @desc get-exp-bound
-;; @returns (response uint)
-(define-read-only (get-exp-bound)
+(define-private (get-exp-bound)
   (ok MILD_EXPONENT_BOUND)
 )
 
-;; Exponentiation (x^y) with unsigned 8 decimal fixed point base and exponent.
-;; @desc pow-fixed
-;; @params x
-;; @params y
-;; @returns (response uint)
-(define-read-only (pow-fixed (x uint) (y uint))
+;; Exponentiation (x^y) with unsigned 16 decimal fixed point base and exponent.
+(define-private (pow-fixed (x uint) (y uint))
   (begin
     ;; The ln function takes a signed value, so we need to make sure x fits in the signed 128 bit range.
-    (asserts! (< x (pow u2 u127)) ERR_X_OUT_OF_BOUNDS)
+    (asserts! (< x (pow u2 u127)) ERR-X-OUT-OF-BOUNDS)
 
     ;; This prevents y * ln(x) from overflowing, and at the same time guarantees y fits in the signed 128 bit range.
-    (asserts! (< y MILD_EXPONENT_BOUND) ERR_Y_OUT_OF_BOUNDS)
+    (asserts! (< y MILD_EXPONENT_BOUND) ERR-Y-OUT-OF-BOUNDS)
 
     (if (is-eq y u0) 
-      (ok (to-uint iONE_8))
+      (ok (to-uint iONE_16))
       (if (is-eq x u0) 
         (ok u0)
         (pow-priv x y)
@@ -618,37 +570,42 @@
   )
 )
 
-;; Natural exponentiation (e^x) with signed 8 decimal fixed point exponent.
+;; Natural exponentiation (e^x) with signed 16 decimal fixed point exponent.
 ;; Reverts if `x` is smaller than MIN_NATURAL_EXPONENT, or larger than `MAX_NATURAL_EXPONENT`.
-;; @desc exp-fixed
-;; @params x
-;; @returns (response uint)
-(define-read-only (exp-fixed (x int))
+(define-private (exp-fixed (x int))
   (begin
-    (asserts! (and (<= MIN_NATURAL_EXPONENT x) (<= x MAX_NATURAL_EXPONENT)) ERR_INVALID_EXPONENT)
+    (asserts! (and (<= MIN_NATURAL_EXPONENT x) (<= x MAX_NATURAL_EXPONENT)) (err ERR-INVALID-EXPONENT))
     (if (< x 0)
       ;; We only handle positive exponents: e^(-x) is computed as 1 / e^x. We can safely make x positive since it
       ;; fits in the signed 128 bit range (as it is larger than MIN_NATURAL_EXPONENT).
-      ;; Fixed point division requires multiplying by iONE_8.
-      (ok (/ (* iONE_8 iONE_8) (unwrap-panic (exp-pos (* -1 x)))))
+      ;; Fixed point division requires multiplying by iONE_16.
+      (ok (/ (* iONE_16 iONE_16) (unwrap-panic (exp-pos (* -1 x)))))
       (exp-pos x)
     )
   )
 )
 
-;; Natural logarithm (ln(a)) with signed 8 decimal fixed point argument.
-;; @desc ln-fixed 
-;; @params a
-;; @returns (response uint)
+;; Logarithm (log(arg, base), with signed 16 decimal fixed point base and argument.
+(define-private (log-fixed (arg int) (base int))
+  ;; This performs a simple base change: log(arg, base) = ln(arg) / ln(base).
+  (let
+    (
+      (logBase (* (unwrap-panic (ln-priv base)) iONE_16))
+      (logArg (* (unwrap-panic (ln-priv arg)) iONE_16))
+   )
+    (ok (/ (* logArg iONE_16) logBase))
+ )
+)
 
-(define-read-only (ln-fixed (a int))
+;; Natural logarithm (ln(a)) with signed 16 decimal fixed point argument.
+(define-private (ln-fixed (a int))
   (begin
-    (asserts! (> a 0) ERR_OUT_OF_BOUNDS)
-    (if (< a iONE_8)
+    (asserts! (> a 0) (err ERR-OUT-OF-BOUNDS))
+    (if (< a iONE_16)
       ;; Since ln(a^k) = k * ln(a), we can compute ln(a) as ln(a) = ln((1/a)^(-1)) = - ln((1/a)).
       ;; If a is less than one, 1/a will be greater than one.
-      ;; Fixed point division requires multiplying by iONE_8.
-      (ok (- 0 (unwrap-panic (ln-priv (/ (* iONE_8 iONE_8) a)))))
+      ;; Fixed point division requires multiplying by iONE_16.
+      (ok (- 0 (unwrap-panic (ln-priv (/ (* iONE_16 iONE_16) a)))))
       (ln-priv a)
    )
  )

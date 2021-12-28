@@ -26,7 +26,7 @@
 (define-constant ERR-INVALID-CLAIM-PERIOD (err u2042))
 (define-constant ERR-REFUND-NOT-AVAILABLE (err u2043))
 
-(define-constant ONE_8 (pow u10 u8)) ;; 8 decimal places
+(define-constant ONE_16 (pow u10 u16)) ;; 16 decimal places
 
 (define-data-var contract-owner principal tx-sender)
 
@@ -134,7 +134,7 @@
 
     (map-set listing (contract-of token-trait) (merge details { total-tickets: (+ (get total-tickets details) tickets ) }))
 
-    (unwrap! (contract-call? token-trait transfer-fixed (* (get amount-per-ticket details) tickets ONE_8) tx-sender (as-contract tx-sender) none) ERR-TRANSFER-FAILED)
+    (unwrap! (contract-call? token-trait transfer-fixed (* (get amount-per-ticket details) tickets ONE_16) tx-sender (as-contract tx-sender) none) ERR-TRANSFER-FAILED)
     (ok true)
   )
 )
@@ -218,7 +218,7 @@
       (asserts! (<= block-height (get registration-end details)) ERR-REGISTRATION-ENDED)      
       (asserts! (and (is-eq (contract-of ticket-trait) (get ticket details)) (> ticket-amount u0)) ERR-INVALID-TICKET)
     
-      (unwrap! (contract-call? ticket-trait transfer-fixed (* ticket-amount ONE_8) tx-sender (as-contract tx-sender) none) ERR-TICKET-TRANSFER-FAILED)
+      (unwrap! (contract-call? ticket-trait transfer-fixed (* ticket-amount ONE_16) tx-sender (as-contract tx-sender) none) ERR-TICKET-TRANSFER-FAILED)
       (unwrap! (contract-call? .token-wstx transfer-fixed wstx-locked-in-fixed tx-sender (as-contract tx-sender) none) ERR-TRANSFER-FAILED)
 
       (map-set 
@@ -286,7 +286,7 @@
     )  
 
     (as-contract (unwrap! (contract-call? .token-wstx transfer-fixed refund-amount tx-sender claimer none) ERR-TRANSFER-FAILED))
-    (as-contract (try! (contract-call? ticket-trait burn-fixed (* (get ticket-balance sub-details) ONE_8) tx-sender)))
+    (as-contract (try! (contract-call? ticket-trait burn-fixed (* (get ticket-balance sub-details) ONE_16) tx-sender)))
     (ok refund-amount)
   )
 )
@@ -435,9 +435,9 @@
       
       (if (and (>= (mod this-random total-subscribed) value-low-adjusted) (<= (mod this-random total-subscribed) value-high-adjusted))
         (begin
-          (as-contract (unwrap! (contract-call? token-trait transfer-fixed (* (get amount-per-ticket details) ONE_8) tx-sender claimer none) ERR-TRANSFER-FAILED))
+          (as-contract (unwrap! (contract-call? token-trait transfer-fixed (* (get amount-per-ticket details) ONE_16) tx-sender claimer none) ERR-TRANSFER-FAILED))
           (as-contract (unwrap! (contract-call? .token-wstx transfer-fixed wstx-per-ticket-in-fixed tx-sender (get fee-to-address details) none) ERR-TRANSFER-FAILED))
-          (as-contract (try! (contract-call? ticket-trait burn-fixed ONE_8 tx-sender)))
+          (as-contract (try! (contract-call? ticket-trait burn-fixed ONE_16 tx-sender)))
           (map-set listing token (merge details { last-random: this-random, tickets-won: (+ tickets-won u1) }))          
           (map-set 
             subscriber-at-token 
@@ -454,7 +454,7 @@
         )
         (begin
           (as-contract (unwrap! (contract-call? .token-wstx transfer-fixed (get wstx-per-ticket-in-fixed details) tx-sender claimer none) ERR-TRANSFER-FAILED))
-          (as-contract (try! (contract-call? ticket-trait burn-fixed ONE_8 tx-sender)))
+          (as-contract (try! (contract-call? ticket-trait burn-fixed ONE_16 tx-sender)))
           (map-set listing token (merge details { last-random: this-random }))
           (map-set 
             subscriber-at-token 

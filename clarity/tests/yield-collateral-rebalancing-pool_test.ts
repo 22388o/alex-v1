@@ -26,21 +26,21 @@ const yieldusdaAddress = "ST1HTBVD3JG9C05J7HBJTHGR0GGW7KXW28M5JS8QE.yield-usda"
 const ytpyieldusdaAddress = "ST1HTBVD3JG9C05J7HBJTHGR0GGW7KXW28M5JS8QE.ytp-yield-usda"
 const multisigytpyieldusda = "ST1HTBVD3JG9C05J7HBJTHGR0GGW7KXW28M5JS8QE.multisig-ytp-yield-usda"
 
-const ONE_8 = 100000000
-const expiry = 59760 * ONE_8
-const expiry79760 = 79760 * ONE_8
-const ltv_0 = 0.8 * ONE_8
-const conversion_ltv = 0.95 * ONE_8
-const bs_vol = 0.8 * ONE_8
-const moving_average = 0 * ONE_8 // for testing only
-const token_to_maturity = 1 * ONE_8 // for testing only
+const ONE_16 = 100000000
+const expiry = 59760 * ONE_16
+const expiry79760 = 79760 * ONE_16
+const ltv_0 = 0.8 * ONE_16
+const conversion_ltv = 0.95 * ONE_16
+const bs_vol = 0.8 * ONE_16
+const moving_average = 0 * ONE_16 // for testing only
+const token_to_maturity = 1 * ONE_16 // for testing only
 
-const wbtcPrice = 50000*ONE_8
+const wbtcPrice = 50000*ONE_16
 
-const weightX = 0.5 * ONE_8
-const weightY = 0.5 * ONE_8
+const weightX = 0.5 * ONE_16
+const weightY = 0.5 * ONE_16
 
-const wbtcQ = 100*ONE_8
+const wbtcQ = 100*ONE_16
 
 /**
  * Collateral Rebalancing Pool Test Cases  
@@ -61,46 +61,46 @@ Clarinet.test({
         let yieldUSDA = new YIELD_USDA(chain, deployer);
 
         // Deployer minting initial tokens
-        let result = usdaToken.mintFixed(deployer, deployer.address, 100000000 * ONE_8);
+        let result = usdaToken.mintFixed(deployer, deployer.address, 100000000 * ONE_16);
         result.expectOk();
-        result = usdaToken.mintFixed(deployer, wallet_1.address, 200000 * ONE_8);
+        result = usdaToken.mintFixed(deployer, wallet_1.address, 200000 * ONE_16);
         result.expectOk();
-        result = wbtcToken.mintFixed(deployer, deployer.address, 100000 * ONE_8);
+        result = wbtcToken.mintFixed(deployer, deployer.address, 100000 * ONE_16);
         result.expectOk();
-        result = wbtcToken.mintFixed(deployer, wallet_1.address, 100000 * ONE_8);
+        result = wbtcToken.mintFixed(deployer, wallet_1.address, 100000 * ONE_16);
         result.expectOk();
-        result = yieldUSDA.mintFixed(deployer, expiry, 100000000 * ONE_8, deployer.address);
+        result = yieldUSDA.mintFixed(deployer, expiry, 100000000 * ONE_16, deployer.address);
         result.expectOk();        
 
-        result = FWPTest.createPool(deployer, wstxAddress, usdaAddress, weightX, weightY, fwpwstxusdaAddress, multisigwstxusdaAddress, Math.round(wbtcPrice * wbtcQ / ONE_8), 0.8 * Math.round(wbtcPrice * wbtcQ / ONE_8));
+        result = FWPTest.createPool(deployer, wstxAddress, usdaAddress, weightX, weightY, fwpwstxusdaAddress, multisigwstxusdaAddress, Math.round(wbtcPrice * wbtcQ / ONE_16), 0.8 * Math.round(wbtcPrice * wbtcQ / ONE_16));
         result.expectOk().expectBool(true);
-        result = FWPTest.createPool(deployer, wstxAddress, wbtcAddress, weightX, weightY, fwpwstxwbtcAddress, multisigwstxwbtcAddress, Math.round(wbtcPrice * wbtcQ / ONE_8), 0.8 * wbtcQ);
+        result = FWPTest.createPool(deployer, wstxAddress, wbtcAddress, weightX, weightY, fwpwstxwbtcAddress, multisigwstxwbtcAddress, Math.round(wbtcPrice * wbtcQ / ONE_16), 0.8 * wbtcQ);
         result.expectOk().expectBool(true);
         result = FWPTest.setOracleEnabled(deployer, wstxAddress, usdaAddress, weightX, weightY);
         result.expectOk().expectBool(true);   
-        result = FWPTest.setOracleAverage(deployer, wstxAddress, usdaAddress, weightX, weightY, 0.95e8);
+        result = FWPTest.setOracleAverage(deployer, wstxAddress, usdaAddress, weightX, weightY, 0.95e16);
         result.expectOk().expectBool(true);  
         result = FWPTest.setOracleEnabled(deployer, wstxAddress, wbtcAddress, weightX, weightY);
         result.expectOk().expectBool(true);   
-        result = FWPTest.setOracleAverage(deployer, wstxAddress, wbtcAddress, weightX, weightY, 0.95e8);
+        result = FWPTest.setOracleAverage(deployer, wstxAddress, wbtcAddress, weightX, weightY, 0.95e16);
         result.expectOk().expectBool(true);          
 
         result = YTPTest.createPool(deployer, expiry, yieldwbtcAddress, wbtcAddress, ytpyieldwbtcAddress, multisigytpyieldwbtc, wbtcQ / 10, wbtcQ / 10);        
         result.expectOk().expectBool(true);
         result = YTPTest.setOracleEnabled(deployer, expiry, yieldwbtcAddress);
         result.expectOk().expectBool(true);
-        result = YTPTest.setOracleAverage(deployer, expiry, yieldwbtcAddress, 0.95e8);
+        result = YTPTest.setOracleAverage(deployer, expiry, yieldwbtcAddress, 0.95e16);
         result.expectOk().expectBool(true);
 
-        result = YTPTest.createPool(deployer, expiry, yieldusdaAddress, usdaAddress, ytpyieldusdaAddress, multisigytpyieldusda, Math.round(wbtcPrice * wbtcQ / ONE_8 / 10), Math.round(wbtcPrice * wbtcQ / ONE_8 / 10));        
+        result = YTPTest.createPool(deployer, expiry, yieldusdaAddress, usdaAddress, ytpyieldusdaAddress, multisigytpyieldusda, Math.round(wbtcPrice * wbtcQ / ONE_16 / 10), Math.round(wbtcPrice * wbtcQ / ONE_16 / 10));        
         result.expectOk().expectBool(true);    
         result = YTPTest.setOracleEnabled(deployer, expiry, yieldusdaAddress);
         result.expectOk().expectBool(true);
-        result = YTPTest.setOracleAverage(deployer, expiry, yieldusdaAddress, 0.95e8);
+        result = YTPTest.setOracleAverage(deployer, expiry, yieldusdaAddress, 0.95e16);
         result.expectOk().expectBool(true);    
 
         //Deployer creating a pool, initial tokens injected to the pool
-        result = YCRPTest.createPool(deployer, wbtcAddress, yieldusdaAddress, usdaAddress, expiry, yieldwbtcAddress, keywbtcAddress, multisigncrpwbtcAddress, ltv_0, conversion_ltv, bs_vol, moving_average, token_to_maturity, 50000 * ONE_8);
+        result = YCRPTest.createPool(deployer, wbtcAddress, yieldusdaAddress, usdaAddress, expiry, yieldwbtcAddress, keywbtcAddress, multisigncrpwbtcAddress, ltv_0, conversion_ltv, bs_vol, moving_average, token_to_maturity, 50000 * ONE_16);
         result.expectOk().expectBool(true);
 
         let call = await YCRPTest.getPoolValueInToken(wbtcAddress, yieldusdaAddress, usdaAddress, expiry);
@@ -116,7 +116,7 @@ Clarinet.test({
         position['yield-supply'].expectUint(80055488);
         position['key-supply'].expectUint(80055488);
         position['weight-x'].expectUint(66532499);
-        position['weight-y'].expectUint(ONE_8 - 66532499);        
+        position['weight-y'].expectUint(ONE_16 - 66532499);        
         position['balance-x'].expectUint(3326624950000);
         position['balance-y'].expectUint(33474000);
         position['strike'].expectUint(4999999700000);
@@ -126,20 +126,20 @@ Clarinet.test({
         position['moving-average'].expectUint(moving_average);
         
         // arbtrageur selling 100 usda for wbtc
-        result = YCRPTest.swapXForY(deployer, wbtcAddress, yieldusdaAddress, usdaAddress, expiry, 100 * ONE_8, 0);
+        result = YCRPTest.swapXForY(deployer, wbtcAddress, yieldusdaAddress, usdaAddress, expiry, 100 * ONE_16, 0);
         position = result.expectOk().expectTuple();
-        position['dx'].expectUint(100 * ONE_8);
+        position['dx'].expectUint(100 * ONE_16);
         position['dy'].expectUint(199140); 
 
         // arbtrageur selling 0.002 wbtc for usda
-        result = YCRPTest.swapYForX(deployer, wbtcAddress, yieldusdaAddress, usdaAddress, expiry, 0.002 * ONE_8, 0);
+        result = YCRPTest.swapYForX(deployer, wbtcAddress, yieldusdaAddress, usdaAddress, expiry, 0.002 * ONE_16, 0);
         position = result.expectOk().expectTuple();
         position['dx'].expectUint(22258157913);
-        position['dy'].expectUint(0.002 * ONE_8);        
+        position['dy'].expectUint(0.002 * ONE_16);        
 
         // borrow $5,000 more and convert to wbtc
         // remember, the first sell creates profit to LP
-        result = YCRPTest.addToPositionAndSwitch(deployer, wbtcAddress, yieldusdaAddress, usdaAddress, expiry, yieldwbtcAddress, keywbtcAddress, 5000 * ONE_8);
+        result = YCRPTest.addToPositionAndSwitch(deployer, wbtcAddress, yieldusdaAddress, usdaAddress, expiry, yieldwbtcAddress, keywbtcAddress, 5000 * ONE_16);
         position = result.expectOk().expectTuple();
         position['dy'].expectUint(7892273);        
         position['dx'].expectUint(7892442);
@@ -164,20 +164,20 @@ Clarinet.test({
         call.result.expectOk().expectUint(52704465);                     
         
         // simulate to expiry
-        chain.mineEmptyBlockUntil((expiry / ONE_8)) 
+        chain.mineEmptyBlockUntil((expiry / ONE_16)) 
 
         // but lender cannot yet redeem
-        result = YCRPTest.reducePositionYield(deployer, wbtcAddress, yieldusdaAddress, usdaAddress, expiry, yieldwbtcAddress, 0.5 * ONE_8);
+        result = YCRPTest.reducePositionYield(deployer, wbtcAddress, yieldusdaAddress, usdaAddress, expiry, yieldwbtcAddress, 0.5 * ONE_16);
         result.expectErr().expectUint(2017);        
 
         // simulate to expiry + 1
-        chain.mineEmptyBlockUntil((expiry / ONE_8) + 1)  
+        chain.mineEmptyBlockUntil((expiry / ONE_16) + 1)  
         
         call = await YCRPTest.getPoolValueInToken(wbtcAddress, yieldusdaAddress, usdaAddress, expiry);
         call.result.expectOk().expectUint(109521083); 
 
         // deployer holds less than total supply because he sold some yield-wbtc for wbtc
-        result = YCRPTest.reducePositionYield(deployer, wbtcAddress, yieldusdaAddress, usdaAddress, expiry, yieldwbtcAddress, ONE_8);        
+        result = YCRPTest.reducePositionYield(deployer, wbtcAddress, yieldusdaAddress, usdaAddress, expiry, yieldwbtcAddress, ONE_16);        
         position = result.expectOk().expectTuple();
         position['dx'].expectUint(0);
         position['dy'].expectUint(80055488);
@@ -191,7 +191,7 @@ Clarinet.test({
         position['key-supply'].expectUint(87947761);
              
         // also remove all key tokens
-        result = YCRPTest.reducePositionKey(deployer, wbtcAddress, yieldusdaAddress, usdaAddress, expiry, keywbtcAddress, ONE_8);        
+        result = YCRPTest.reducePositionKey(deployer, wbtcAddress, yieldusdaAddress, usdaAddress, expiry, keywbtcAddress, ONE_16);        
         position = result.expectOk().expectTuple();
         position['dx'].expectUint(0);
         position['dy'].expectUint(1827485);     
@@ -219,75 +219,75 @@ Clarinet.test({
         let yieldUSDA = new YIELD_USDA(chain, deployer);
 
         // Deployer minting initial tokens
-        let result = usdaToken.mintFixed(deployer, deployer.address, 100000000 * ONE_8);
+        let result = usdaToken.mintFixed(deployer, deployer.address, 100000000 * ONE_16);
         result.expectOk();
-        result = usdaToken.mintFixed(deployer, wallet_1.address, 200000 * ONE_8);
+        result = usdaToken.mintFixed(deployer, wallet_1.address, 200000 * ONE_16);
         result.expectOk();
-        result = wbtcToken.mintFixed(deployer, deployer.address, 100000 * ONE_8);
+        result = wbtcToken.mintFixed(deployer, deployer.address, 100000 * ONE_16);
         result.expectOk();
-        result = wbtcToken.mintFixed(deployer, wallet_1.address, 100000 * ONE_8);
+        result = wbtcToken.mintFixed(deployer, wallet_1.address, 100000 * ONE_16);
         result.expectOk();
-        result = yieldUSDA.mintFixed(deployer, expiry, 100000000 * ONE_8, deployer.address);
+        result = yieldUSDA.mintFixed(deployer, expiry, 100000000 * ONE_16, deployer.address);
         result.expectOk();        
 
-        result = FWPTest.createPool(deployer, wstxAddress, usdaAddress, weightX, weightY, fwpwstxusdaAddress, multisigwstxusdaAddress, Math.round(wbtcPrice * wbtcQ / ONE_8), 0.8 * Math.round(wbtcPrice * wbtcQ / ONE_8));
+        result = FWPTest.createPool(deployer, wstxAddress, usdaAddress, weightX, weightY, fwpwstxusdaAddress, multisigwstxusdaAddress, Math.round(wbtcPrice * wbtcQ / ONE_16), 0.8 * Math.round(wbtcPrice * wbtcQ / ONE_16));
         result.expectOk().expectBool(true);
-        result = FWPTest.createPool(deployer, wstxAddress, wbtcAddress, weightX, weightY, fwpwstxwbtcAddress, multisigwstxwbtcAddress, Math.round(wbtcPrice * wbtcQ / ONE_8), 0.8 * wbtcQ);
+        result = FWPTest.createPool(deployer, wstxAddress, wbtcAddress, weightX, weightY, fwpwstxwbtcAddress, multisigwstxwbtcAddress, Math.round(wbtcPrice * wbtcQ / ONE_16), 0.8 * wbtcQ);
         result.expectOk().expectBool(true);
         result = FWPTest.setOracleEnabled(deployer, wstxAddress, usdaAddress, weightX, weightY);
         result.expectOk().expectBool(true);   
-        result = FWPTest.setOracleAverage(deployer, wstxAddress, usdaAddress, weightX, weightY, 0.95e8);
+        result = FWPTest.setOracleAverage(deployer, wstxAddress, usdaAddress, weightX, weightY, 0.95e16);
         result.expectOk().expectBool(true);  
         result = FWPTest.setOracleEnabled(deployer, wstxAddress, wbtcAddress, weightX, weightY);
         result.expectOk().expectBool(true);   
-        result = FWPTest.setOracleAverage(deployer, wstxAddress, wbtcAddress, weightX, weightY, 0.95e8);
+        result = FWPTest.setOracleAverage(deployer, wstxAddress, wbtcAddress, weightX, weightY, 0.95e16);
         result.expectOk().expectBool(true);          
 
         result = YTPTest.createPool(deployer, expiry, yieldwbtcAddress, wbtcAddress, ytpyieldwbtcAddress, multisigytpyieldwbtc, wbtcQ / 10, wbtcQ / 10);        
         result.expectOk().expectBool(true);
         result = YTPTest.setOracleEnabled(deployer, expiry, yieldwbtcAddress);
         result.expectOk().expectBool(true);
-        result = YTPTest.setOracleAverage(deployer, expiry, yieldwbtcAddress, 0.95e8);
+        result = YTPTest.setOracleAverage(deployer, expiry, yieldwbtcAddress, 0.95e16);
         result.expectOk().expectBool(true);
 
-        result = YTPTest.createPool(deployer, expiry, yieldusdaAddress, usdaAddress, ytpyieldusdaAddress, multisigytpyieldusda, Math.round(wbtcPrice * wbtcQ / ONE_8 / 10), Math.round(wbtcPrice * wbtcQ / ONE_8 / 10));        
+        result = YTPTest.createPool(deployer, expiry, yieldusdaAddress, usdaAddress, ytpyieldusdaAddress, multisigytpyieldusda, Math.round(wbtcPrice * wbtcQ / ONE_16 / 10), Math.round(wbtcPrice * wbtcQ / ONE_16 / 10));        
         result.expectOk().expectBool(true);    
         result.expectOk().expectBool(true);
         result = YTPTest.setOracleEnabled(deployer, expiry, yieldusdaAddress);
         result.expectOk().expectBool(true);
-        result = YTPTest.setOracleAverage(deployer, expiry, yieldusdaAddress, 0.95e8);
+        result = YTPTest.setOracleAverage(deployer, expiry, yieldusdaAddress, 0.95e16);
         result.expectOk().expectBool(true); 
 
         // non-deployer creating a pool will throw an error
-        result = YCRPTest.createPool(wallet_1, wbtcAddress, yieldusdaAddress, usdaAddress, expiry, yieldwbtcAddress, keywbtcAddress, multisigncrpwbtcAddress, ltv_0, conversion_ltv, bs_vol, moving_average, token_to_maturity, 50000 * ONE_8);
+        result = YCRPTest.createPool(wallet_1, wbtcAddress, yieldusdaAddress, usdaAddress, expiry, yieldwbtcAddress, keywbtcAddress, multisigncrpwbtcAddress, ltv_0, conversion_ltv, bs_vol, moving_average, token_to_maturity, 50000 * ONE_16);
         result.expectErr().expectUint(1000);
 
         //Deployer creating a pool, initial tokens injected to the pool
-        result = YCRPTest.createPool(deployer, wbtcAddress, yieldusdaAddress, usdaAddress, expiry, yieldwbtcAddress, keywbtcAddress, multisigncrpwbtcAddress, ltv_0, conversion_ltv, bs_vol, moving_average, token_to_maturity, 50000 * ONE_8);
+        result = YCRPTest.createPool(deployer, wbtcAddress, yieldusdaAddress, usdaAddress, expiry, yieldwbtcAddress, keywbtcAddress, multisigncrpwbtcAddress, ltv_0, conversion_ltv, bs_vol, moving_average, token_to_maturity, 50000 * ONE_16);
         result.expectOk().expectBool(true);     
         
         // supplying a wrong pool-token throws an error
-        result = YCRPTest.addToPositionAndSwitch(wallet_1, wbtcAddress, yieldusdaAddress, usdaAddress, expiry, wrongPooltokenAddress, keywbtcAddress, 5000 * ONE_8);
+        result = YCRPTest.addToPositionAndSwitch(wallet_1, wbtcAddress, yieldusdaAddress, usdaAddress, expiry, wrongPooltokenAddress, keywbtcAddress, 5000 * ONE_16);
         result.expectErr().expectUint(2023);   
         
         // same for key-token
-        result = YCRPTest.addToPositionAndSwitch(wallet_1, wbtcAddress, yieldusdaAddress, usdaAddress, expiry, yieldwbtcAddress, wrongPooltokenAddress, 5000 * ONE_8);
+        result = YCRPTest.addToPositionAndSwitch(wallet_1, wbtcAddress, yieldusdaAddress, usdaAddress, expiry, yieldwbtcAddress, wrongPooltokenAddress, 5000 * ONE_16);
         result.expectErr().expectUint(2023);        
 
         // simulate to expiry + 1
-        chain.mineEmptyBlockUntil((expiry / ONE_8) + 1)
+        chain.mineEmptyBlockUntil((expiry / ONE_16) + 1)
 
         // supplying a wrong pool-token throws an error
-        result = YCRPTest.reducePositionYield(deployer, wbtcAddress,yieldusdaAddress, usdaAddress, expiry, wrongPooltokenAddress, ONE_8);        
+        result = YCRPTest.reducePositionYield(deployer, wbtcAddress,yieldusdaAddress, usdaAddress, expiry, wrongPooltokenAddress, ONE_16);        
         result.expectErr().expectUint(2023);
         // same for key-token
-        result = YCRPTest.reducePositionKey(deployer, wbtcAddress,yieldusdaAddress, usdaAddress, expiry, wrongPooltokenAddress, ONE_8);        
+        result = YCRPTest.reducePositionKey(deployer, wbtcAddress,yieldusdaAddress, usdaAddress, expiry, wrongPooltokenAddress, ONE_16);        
         result.expectErr().expectUint(2023);
                 
         // remove all liquidity
-        result = YCRPTest.reducePositionYield(deployer, wbtcAddress, yieldusdaAddress, usdaAddress, expiry, yieldwbtcAddress, ONE_8);        
+        result = YCRPTest.reducePositionYield(deployer, wbtcAddress, yieldusdaAddress, usdaAddress, expiry, yieldwbtcAddress, ONE_16);        
         result.expectOk();        
-        result = YCRPTest.reducePositionKey(deployer, wbtcAddress, yieldusdaAddress, usdaAddress, expiry, keywbtcAddress, ONE_8);        
+        result = YCRPTest.reducePositionKey(deployer, wbtcAddress, yieldusdaAddress, usdaAddress, expiry, keywbtcAddress, ONE_16);        
         result.expectOk();          
     }
 });
@@ -306,57 +306,57 @@ Clarinet.test({
         let yieldUSDA = new YIELD_USDA(chain, deployer);
 
         // Deployer minting initial tokens
-        let result = usdaToken.mintFixed(deployer, deployer.address, 100000000 * ONE_8);
+        let result = usdaToken.mintFixed(deployer, deployer.address, 100000000 * ONE_16);
         result.expectOk();
-        result = usdaToken.mintFixed(deployer, wallet_1.address, 200000 * ONE_8);
+        result = usdaToken.mintFixed(deployer, wallet_1.address, 200000 * ONE_16);
         result.expectOk();
-        result = wbtcToken.mintFixed(deployer, deployer.address, 100000 * ONE_8);
+        result = wbtcToken.mintFixed(deployer, deployer.address, 100000 * ONE_16);
         result.expectOk();
-        result = wbtcToken.mintFixed(deployer, wallet_1.address, 100000 * ONE_8);
+        result = wbtcToken.mintFixed(deployer, wallet_1.address, 100000 * ONE_16);
         result.expectOk();
-        result = yieldUSDA.mintFixed(deployer, expiry, 100000000 * ONE_8, deployer.address);
+        result = yieldUSDA.mintFixed(deployer, expiry, 100000000 * ONE_16, deployer.address);
         result.expectOk();   
         
-        result = FWPTest.createPool(deployer, wstxAddress, usdaAddress, weightX, weightY, fwpwstxusdaAddress, multisigwstxusdaAddress, Math.round(wbtcPrice * wbtcQ / ONE_8), 0.8 * Math.round(wbtcPrice * wbtcQ / ONE_8));
+        result = FWPTest.createPool(deployer, wstxAddress, usdaAddress, weightX, weightY, fwpwstxusdaAddress, multisigwstxusdaAddress, Math.round(wbtcPrice * wbtcQ / ONE_16), 0.8 * Math.round(wbtcPrice * wbtcQ / ONE_16));
         result.expectOk().expectBool(true);
-        result = FWPTest.createPool(deployer, wstxAddress, wbtcAddress, weightX, weightY, fwpwstxwbtcAddress, multisigwstxwbtcAddress, Math.round(wbtcPrice * wbtcQ / ONE_8), 0.8 * wbtcQ);
+        result = FWPTest.createPool(deployer, wstxAddress, wbtcAddress, weightX, weightY, fwpwstxwbtcAddress, multisigwstxwbtcAddress, Math.round(wbtcPrice * wbtcQ / ONE_16), 0.8 * wbtcQ);
         result.expectOk().expectBool(true);
         result = FWPTest.setOracleEnabled(deployer, wstxAddress, usdaAddress, weightX, weightY);
         result.expectOk().expectBool(true);   
-        result = FWPTest.setOracleAverage(deployer, wstxAddress, usdaAddress, weightX, weightY, 0.95e8);
+        result = FWPTest.setOracleAverage(deployer, wstxAddress, usdaAddress, weightX, weightY, 0.95e16);
         result.expectOk().expectBool(true);  
         result = FWPTest.setOracleEnabled(deployer, wstxAddress, wbtcAddress, weightX, weightY);
         result.expectOk().expectBool(true);   
-        result = FWPTest.setOracleAverage(deployer, wstxAddress, wbtcAddress, weightX, weightY, 0.95e8);
+        result = FWPTest.setOracleAverage(deployer, wstxAddress, wbtcAddress, weightX, weightY, 0.95e16);
         result.expectOk().expectBool(true);          
 
-        result = YTPTest.createPool(deployer, expiry, yieldusdaAddress, usdaAddress, ytpyieldusdaAddress, multisigytpyieldusda, Math.round(wbtcPrice * wbtcQ / ONE_8 / 10), Math.round(wbtcPrice * wbtcQ / ONE_8 / 10));        
+        result = YTPTest.createPool(deployer, expiry, yieldusdaAddress, usdaAddress, ytpyieldusdaAddress, multisigytpyieldusda, Math.round(wbtcPrice * wbtcQ / ONE_16 / 10), Math.round(wbtcPrice * wbtcQ / ONE_16 / 10));        
         result.expectOk().expectBool(true);
         result = YTPTest.setOracleEnabled(deployer, expiry, yieldusdaAddress);
         result.expectOk().expectBool(true);
-        result = YTPTest.setOracleAverage(deployer, expiry, yieldusdaAddress, 0.95e8);
+        result = YTPTest.setOracleAverage(deployer, expiry, yieldusdaAddress, 0.95e16);
         result.expectOk().expectBool(true); 
 
         //Deployer creating a pool, initial tokens injected to the pool
-        result = YCRPTest.createPool(deployer, wbtcAddress, yieldusdaAddress, usdaAddress, expiry, yieldwbtcAddress, keywbtcAddress, multisigncrpwbtcAddress, ltv_0, conversion_ltv, bs_vol, moving_average, token_to_maturity, 10000 * ONE_8);
+        result = YCRPTest.createPool(deployer, wbtcAddress, yieldusdaAddress, usdaAddress, expiry, yieldwbtcAddress, keywbtcAddress, multisigncrpwbtcAddress, ltv_0, conversion_ltv, bs_vol, moving_average, token_to_maturity, 10000 * ONE_16);
         result.expectOk().expectBool(true);   
 
         // simulate to half way to expiry
-        chain.mineEmptyBlockUntil((expiry / ONE_8) / 2)
+        chain.mineEmptyBlockUntil((expiry / ONE_16) / 2)
 
         // Deployer minting initial tokens
-        result = yieldUSDA.mintFixed(deployer, expiry79760, 100000000 * ONE_8, deployer.address);
+        result = yieldUSDA.mintFixed(deployer, expiry79760, 100000000 * ONE_16, deployer.address);
         result.expectOk();  
 
-        result = YTPTest.createPool(deployer, expiry79760, yieldusdaAddress, usdaAddress, ytpyieldusdaAddress, multisigytpyieldusda, Math.round(wbtcPrice * wbtcQ / ONE_8 / 10), Math.round(wbtcPrice * wbtcQ / ONE_8 / 10));        
+        result = YTPTest.createPool(deployer, expiry79760, yieldusdaAddress, usdaAddress, ytpyieldusdaAddress, multisigytpyieldusda, Math.round(wbtcPrice * wbtcQ / ONE_16 / 10), Math.round(wbtcPrice * wbtcQ / ONE_16 / 10));        
         result.expectOk().expectBool(true);
         result = YTPTest.setOracleEnabled(deployer, expiry79760, yieldusdaAddress);
         result.expectOk().expectBool(true);
-        result = YTPTest.setOracleAverage(deployer, expiry79760, yieldusdaAddress, 0.95e8);
+        result = YTPTest.setOracleAverage(deployer, expiry79760, yieldusdaAddress, 0.95e16);
         result.expectOk().expectBool(true); 
 
         //Deployer creating a pool, initial tokens injected to the pool
-        result = YCRPTest.createPool(deployer, wbtcAddress, yieldusdaAddress, usdaAddress, expiry79760, yieldwbtcAddress, keywbtcAddress, multisigncrpwbtcAddress, ltv_0, conversion_ltv, bs_vol, moving_average, token_to_maturity, 10000 * ONE_8);
+        result = YCRPTest.createPool(deployer, wbtcAddress, yieldusdaAddress, usdaAddress, expiry79760, yieldwbtcAddress, keywbtcAddress, multisigncrpwbtcAddress, ltv_0, conversion_ltv, bs_vol, moving_average, token_to_maturity, 10000 * ONE_16);
         result.expectOk().expectBool(true); 
     },    
 });
@@ -375,48 +375,48 @@ Clarinet.test({
         let yieldUSDA = new YIELD_USDA(chain, deployer);
 
         // Deployer minting initial tokens
-        let result = usdaToken.mintFixed(deployer, deployer.address, 100000000 * ONE_8);
+        let result = usdaToken.mintFixed(deployer, deployer.address, 100000000 * ONE_16);
         result.expectOk();
-        result = usdaToken.mintFixed(deployer, wallet_1.address, 200000 * ONE_8);
+        result = usdaToken.mintFixed(deployer, wallet_1.address, 200000 * ONE_16);
         result.expectOk();
-        result = wbtcToken.mintFixed(deployer, deployer.address, 100000 * ONE_8);
+        result = wbtcToken.mintFixed(deployer, deployer.address, 100000 * ONE_16);
         result.expectOk();
-        result = wbtcToken.mintFixed(deployer, wallet_1.address, 100000 * ONE_8);
+        result = wbtcToken.mintFixed(deployer, wallet_1.address, 100000 * ONE_16);
         result.expectOk();
-        result = yieldUSDA.mintFixed(deployer, expiry, 100000000 * ONE_8, deployer.address);
+        result = yieldUSDA.mintFixed(deployer, expiry, 100000000 * ONE_16, deployer.address);
         result.expectOk();      
         
-        result = FWPTest.createPool(deployer, wstxAddress, usdaAddress, weightX, weightY, fwpwstxusdaAddress, multisigwstxusdaAddress, Math.round(wbtcPrice * wbtcQ / ONE_8), 0.8 * Math.round(wbtcPrice * wbtcQ / ONE_8));
+        result = FWPTest.createPool(deployer, wstxAddress, usdaAddress, weightX, weightY, fwpwstxusdaAddress, multisigwstxusdaAddress, Math.round(wbtcPrice * wbtcQ / ONE_16), 0.8 * Math.round(wbtcPrice * wbtcQ / ONE_16));
         result.expectOk().expectBool(true);
-        result = FWPTest.createPool(deployer, wstxAddress, wbtcAddress, weightX, weightY, fwpwstxwbtcAddress, multisigwstxwbtcAddress, Math.round(wbtcPrice * wbtcQ / ONE_8), 0.8 * wbtcQ);
+        result = FWPTest.createPool(deployer, wstxAddress, wbtcAddress, weightX, weightY, fwpwstxwbtcAddress, multisigwstxwbtcAddress, Math.round(wbtcPrice * wbtcQ / ONE_16), 0.8 * wbtcQ);
         result.expectOk().expectBool(true);
         result = FWPTest.setOracleEnabled(deployer, wstxAddress, usdaAddress, weightX, weightY);
         result.expectOk().expectBool(true);   
-        result = FWPTest.setOracleAverage(deployer, wstxAddress, usdaAddress, weightX, weightY, 0.95e8);
+        result = FWPTest.setOracleAverage(deployer, wstxAddress, usdaAddress, weightX, weightY, 0.95e16);
         result.expectOk().expectBool(true);  
         result = FWPTest.setOracleEnabled(deployer, wstxAddress, wbtcAddress, weightX, weightY);
         result.expectOk().expectBool(true);   
-        result = FWPTest.setOracleAverage(deployer, wstxAddress, wbtcAddress, weightX, weightY, 0.95e8);
+        result = FWPTest.setOracleAverage(deployer, wstxAddress, wbtcAddress, weightX, weightY, 0.95e16);
         result.expectOk().expectBool(true);          
 
         result = YTPTest.createPool(deployer, expiry, yieldwbtcAddress, wbtcAddress, ytpyieldwbtcAddress, multisigytpyieldwbtc, wbtcQ / 10, wbtcQ / 10);        
         result.expectOk().expectBool(true);
         result = YTPTest.setOracleEnabled(deployer, expiry, yieldwbtcAddress);
         result.expectOk().expectBool(true);
-        result = YTPTest.setOracleAverage(deployer, expiry, yieldwbtcAddress, 0.95e8);
+        result = YTPTest.setOracleAverage(deployer, expiry, yieldwbtcAddress, 0.95e16);
         result.expectOk().expectBool(true);
 
-        result = YTPTest.createPool(deployer, expiry, yieldusdaAddress, usdaAddress, ytpyieldusdaAddress, multisigytpyieldusda, Math.round(wbtcPrice * wbtcQ / ONE_8 / 10), Math.round(wbtcPrice * wbtcQ / ONE_8 / 10));        
+        result = YTPTest.createPool(deployer, expiry, yieldusdaAddress, usdaAddress, ytpyieldusdaAddress, multisigytpyieldusda, Math.round(wbtcPrice * wbtcQ / ONE_16 / 10), Math.round(wbtcPrice * wbtcQ / ONE_16 / 10));        
         result.expectOk().expectBool(true);    
         result.expectOk().expectBool(true);
         result = YTPTest.setOracleEnabled(deployer, expiry, yieldusdaAddress);
         result.expectOk().expectBool(true);
-        result = YTPTest.setOracleAverage(deployer, expiry, yieldusdaAddress, 0.95e8);
+        result = YTPTest.setOracleAverage(deployer, expiry, yieldusdaAddress, 0.95e16);
         result.expectOk().expectBool(true); 
 
         let moving_average_0 = 0.95e+8
         //Deployer creating a pool, initial tokens injected to the pool
-        result = YCRPTest.createPool(deployer, wbtcAddress, yieldusdaAddress, usdaAddress, expiry, yieldwbtcAddress, keywbtcAddress, multisigncrpwbtcAddress, ltv_0, conversion_ltv, bs_vol, moving_average_0, token_to_maturity, 50000 * ONE_8);
+        result = YCRPTest.createPool(deployer, wbtcAddress, yieldusdaAddress, usdaAddress, expiry, yieldwbtcAddress, keywbtcAddress, multisigncrpwbtcAddress, ltv_0, conversion_ltv, bs_vol, moving_average_0, token_to_maturity, 50000 * ONE_16);
         result.expectOk().expectBool(true);
 
         let call = await YCRPTest.getPoolValueInToken(wbtcAddress, yieldusdaAddress, usdaAddress, expiry);
@@ -426,14 +426,14 @@ Clarinet.test({
         call = await YCRPTest.getLtv(wbtcAddress, yieldusdaAddress, usdaAddress, expiry);
         call.result.expectOk().expectUint(80104740);
 
-        call = await YCRPTest.getXgivenPrice(wbtcAddress, yieldusdaAddress, expiry, (Math.round( ONE_8 / (wbtcPrice * 1.1 / ONE_8))));
+        call = await YCRPTest.getXgivenPrice(wbtcAddress, yieldusdaAddress, expiry, (Math.round( ONE_16 / (wbtcPrice * 1.1 / ONE_16))));
         call.result.expectOk().expectUint(107937635837);
         result = YCRPTest.swapXForY(deployer, wbtcAddress, yieldusdaAddress,usdaAddress, expiry, 107360750371, 0);
         let position:any = result.expectOk().expectTuple();
         position['dx'].expectUint(107360750371);
         position['dy'].expectUint(2048349);
         
-        call = await YCRPTest.getYgivenPrice(wbtcAddress, yieldusdaAddress, expiry, Math.round( ONE_8 / (wbtcPrice * 1.1 * 0.98/ ONE_8)));
+        call = await YCRPTest.getYgivenPrice(wbtcAddress, yieldusdaAddress, expiry, Math.round( ONE_16 / (wbtcPrice * 1.1 * 0.98/ ONE_16)));
         call.result.expectOk().expectUint(666395);
         result = YCRPTest.swapYForX(deployer, wbtcAddress, yieldusdaAddress, usdaAddress, expiry, 1223378, 0);
         position = result.expectOk().expectTuple();
@@ -455,60 +455,60 @@ Clarinet.test({
         let yieldUSDA = new YIELD_USDA(chain, deployer);
 
         // Deployer minting initial tokens
-        let result = usdaToken.mintFixed(deployer, deployer.address, 100000000 * ONE_8);
+        let result = usdaToken.mintFixed(deployer, deployer.address, 100000000 * ONE_16);
         result.expectOk();
-        result = usdaToken.mintFixed(deployer, wallet_1.address, 200000 * ONE_8);
+        result = usdaToken.mintFixed(deployer, wallet_1.address, 200000 * ONE_16);
         result.expectOk();
-        result = wbtcToken.mintFixed(deployer, deployer.address, 100000 * ONE_8);
+        result = wbtcToken.mintFixed(deployer, deployer.address, 100000 * ONE_16);
         result.expectOk();
-        result = wbtcToken.mintFixed(deployer, wallet_1.address, 100000 * ONE_8);
+        result = wbtcToken.mintFixed(deployer, wallet_1.address, 100000 * ONE_16);
         result.expectOk();
-        result = yieldUSDA.mintFixed(deployer, expiry, 100000000 * ONE_8, deployer.address);
+        result = yieldUSDA.mintFixed(deployer, expiry, 100000000 * ONE_16, deployer.address);
         result.expectOk();      
         
-        result = FWPTest.createPool(deployer, wstxAddress, usdaAddress, weightX, weightY, fwpwstxusdaAddress, multisigwstxusdaAddress, Math.round(wbtcPrice * wbtcQ / ONE_8), 0.8 * Math.round(wbtcPrice * wbtcQ / ONE_8));
+        result = FWPTest.createPool(deployer, wstxAddress, usdaAddress, weightX, weightY, fwpwstxusdaAddress, multisigwstxusdaAddress, Math.round(wbtcPrice * wbtcQ / ONE_16), 0.8 * Math.round(wbtcPrice * wbtcQ / ONE_16));
         result.expectOk().expectBool(true);
-        result = FWPTest.createPool(deployer, wstxAddress, wbtcAddress, weightX, weightY, fwpwstxwbtcAddress, multisigwstxwbtcAddress, Math.round(wbtcPrice * wbtcQ / ONE_8), 0.8 * wbtcQ);
+        result = FWPTest.createPool(deployer, wstxAddress, wbtcAddress, weightX, weightY, fwpwstxwbtcAddress, multisigwstxwbtcAddress, Math.round(wbtcPrice * wbtcQ / ONE_16), 0.8 * wbtcQ);
         result.expectOk().expectBool(true);
         result = FWPTest.setOracleEnabled(deployer, wstxAddress, usdaAddress, weightX, weightY);
         result.expectOk().expectBool(true);   
-        result = FWPTest.setOracleAverage(deployer, wstxAddress, usdaAddress, weightX, weightY, 0.95e8);
+        result = FWPTest.setOracleAverage(deployer, wstxAddress, usdaAddress, weightX, weightY, 0.95e16);
         result.expectOk().expectBool(true);  
         result = FWPTest.setOracleEnabled(deployer, wstxAddress, wbtcAddress, weightX, weightY);
         result.expectOk().expectBool(true);   
-        result = FWPTest.setOracleAverage(deployer, wstxAddress, wbtcAddress, weightX, weightY, 0.95e8);
+        result = FWPTest.setOracleAverage(deployer, wstxAddress, wbtcAddress, weightX, weightY, 0.95e16);
         result.expectOk().expectBool(true);          
 
-        result = YTPTest.createPool(deployer, expiry, yieldwbtcAddress, wbtcAddress, ytpyieldwbtcAddress, multisigytpyieldwbtc, 1000*ONE_8, 1000*ONE_8);        
+        result = YTPTest.createPool(deployer, expiry, yieldwbtcAddress, wbtcAddress, ytpyieldwbtcAddress, multisigytpyieldwbtc, 1000*ONE_16, 1000*ONE_16);        
         result.expectOk().expectBool(true);
         result = YTPTest.setOracleEnabled(deployer, expiry, yieldwbtcAddress);
         result.expectOk().expectBool(true);
-        result = YTPTest.setOracleAverage(deployer, expiry, yieldwbtcAddress, 0.95e8);
+        result = YTPTest.setOracleAverage(deployer, expiry, yieldwbtcAddress, 0.95e16);
         result.expectOk().expectBool(true);
 
-        result = YTPTest.createPool(deployer, expiry, yieldusdaAddress, usdaAddress, ytpyieldusdaAddress, multisigytpyieldusda, Math.round(wbtcPrice * wbtcQ / ONE_8 / 10), Math.round(wbtcPrice * wbtcQ / ONE_8 / 10));        
+        result = YTPTest.createPool(deployer, expiry, yieldusdaAddress, usdaAddress, ytpyieldusdaAddress, multisigytpyieldusda, Math.round(wbtcPrice * wbtcQ / ONE_16 / 10), Math.round(wbtcPrice * wbtcQ / ONE_16 / 10));        
         result.expectOk().expectBool(true);    
         result.expectOk().expectBool(true);
         result = YTPTest.setOracleEnabled(deployer, expiry, yieldusdaAddress);
         result.expectOk().expectBool(true);
-        result = YTPTest.setOracleAverage(deployer, expiry, yieldusdaAddress, 0.95e8);
+        result = YTPTest.setOracleAverage(deployer, expiry, yieldusdaAddress, 0.95e16);
         result.expectOk().expectBool(true);        
 
         // sell some yield-token to create a positive yield
-        result = YTPTest.swapYForX(deployer, expiry, yieldusdaAddress, usdaAddress, 5*ONE_8, 0);
+        result = YTPTest.swapYForX(deployer, expiry, yieldusdaAddress, usdaAddress, 5*ONE_16, 0);
         let position:any = result.expectOk().expectTuple();
         
         let call = await YTPTest.getPrice(expiry, yieldusdaAddress);
         call.result.expectOk().expectUint(100000019);        
 
-        let ltv_00 = Math.round(ONE_8 * ONE_8 / 109095981);         //91662405
-        let collateral = ONE_8;
+        let ltv_00 = Math.round(ONE_16 * ONE_16 / 109095981);         //91662405
+        let collateral = ONE_16;
         let conversion_ltv_0 = 0.98e+8;
         let bs_vol_0 = 0.1e+8;
         let moving_average_0 = 0.95e+8
 
         //Deployer creating a pool, initial tokens injected to the pool
-        result = YCRPTest.createPool(deployer, wbtcAddress, yieldusdaAddress, usdaAddress, expiry, yieldwbtcAddress, keywbtcAddress, multisigncrpwbtcAddress, ltv_00, conversion_ltv_0, bs_vol_0, moving_average_0, token_to_maturity, 50000 * ONE_8);
+        result = YCRPTest.createPool(deployer, wbtcAddress, yieldusdaAddress, usdaAddress, expiry, yieldwbtcAddress, keywbtcAddress, multisigncrpwbtcAddress, ltv_00, conversion_ltv_0, bs_vol_0, moving_average_0, token_to_maturity, 50000 * ONE_16);
         result.expectOk().expectBool(true);
     
         call = await YCRPTest.getPoolValueInToken(wbtcAddress, yieldusdaAddress, wbtcAddress, expiry);
@@ -518,7 +518,7 @@ Clarinet.test({
         call.result.expectOk().expectUint(91769857);
 
                 // pegged CRP throws error if someone tries to swap
-        call = await YCRPTest.getXgivenPrice(wbtcAddress, yieldusdaAddress, expiry, Math.round( ONE_8 / (wbtcPrice * 1.1 / ONE_8)));
+        call = await YCRPTest.getXgivenPrice(wbtcAddress, yieldusdaAddress, expiry, Math.round( ONE_16 / (wbtcPrice * 1.1 / ONE_16)));
         call.result.expectOk().expectUint(121812670656);
         result = YCRPTest.swapXForY(deployer, usdaAddress, yieldusdaAddress, wbtcAddress, expiry, 121812670656, 0);
         position = result.expectErr().expectUint(2001);
@@ -539,52 +539,52 @@ Clarinet.test({
         let yieldUSDA = new YIELD_USDA(chain, deployer);
 
         // Deployer minting initial tokens
-        let result = usdaToken.mintFixed(deployer, deployer.address, 100000000 * ONE_8);
+        let result = usdaToken.mintFixed(deployer, deployer.address, 100000000 * ONE_16);
         result.expectOk();
-        result = usdaToken.mintFixed(deployer, wallet_1.address, 200000 * ONE_8);
+        result = usdaToken.mintFixed(deployer, wallet_1.address, 200000 * ONE_16);
         result.expectOk();
-        result = wbtcToken.mintFixed(deployer, deployer.address, 100000 * ONE_8);
+        result = wbtcToken.mintFixed(deployer, deployer.address, 100000 * ONE_16);
         result.expectOk();
-        result = wbtcToken.mintFixed(deployer, wallet_1.address, 100000 * ONE_8);
+        result = wbtcToken.mintFixed(deployer, wallet_1.address, 100000 * ONE_16);
         result.expectOk();
-        result = yieldUSDA.mintFixed(deployer, expiry, 100000000 * ONE_8, deployer.address);
+        result = yieldUSDA.mintFixed(deployer, expiry, 100000000 * ONE_16, deployer.address);
         result.expectOk();      
         
-        result = FWPTest.createPool(deployer, wstxAddress, usdaAddress, weightX, weightY, fwpwstxusdaAddress, multisigwstxusdaAddress, Math.round(wbtcPrice * wbtcQ / ONE_8), 0.8 * Math.round(wbtcPrice * wbtcQ / ONE_8));
+        result = FWPTest.createPool(deployer, wstxAddress, usdaAddress, weightX, weightY, fwpwstxusdaAddress, multisigwstxusdaAddress, Math.round(wbtcPrice * wbtcQ / ONE_16), 0.8 * Math.round(wbtcPrice * wbtcQ / ONE_16));
         result.expectOk().expectBool(true);
-        result = FWPTest.createPool(deployer, wstxAddress, wbtcAddress, weightX, weightY, fwpwstxwbtcAddress, multisigwstxwbtcAddress, Math.round(wbtcPrice * wbtcQ / ONE_8), 0.8 * wbtcQ);
+        result = FWPTest.createPool(deployer, wstxAddress, wbtcAddress, weightX, weightY, fwpwstxwbtcAddress, multisigwstxwbtcAddress, Math.round(wbtcPrice * wbtcQ / ONE_16), 0.8 * wbtcQ);
         result.expectOk().expectBool(true);
         result = FWPTest.setOracleEnabled(deployer, wstxAddress, usdaAddress, weightX, weightY);
         result.expectOk().expectBool(true);   
-        result = FWPTest.setOracleAverage(deployer, wstxAddress, usdaAddress, weightX, weightY, 0.95e8);
+        result = FWPTest.setOracleAverage(deployer, wstxAddress, usdaAddress, weightX, weightY, 0.95e16);
         result.expectOk().expectBool(true);  
         result = FWPTest.setOracleEnabled(deployer, wstxAddress, wbtcAddress, weightX, weightY);
         result.expectOk().expectBool(true);   
-        result = FWPTest.setOracleAverage(deployer, wstxAddress, wbtcAddress, weightX, weightY, 0.95e8);
+        result = FWPTest.setOracleAverage(deployer, wstxAddress, wbtcAddress, weightX, weightY, 0.95e16);
         result.expectOk().expectBool(true);          
 
         result = YTPTest.createPool(deployer, expiry, yieldwbtcAddress, wbtcAddress, ytpyieldwbtcAddress, multisigytpyieldwbtc, wbtcQ / 10, wbtcQ / 10);        
         result.expectOk().expectBool(true);
         result = YTPTest.setOracleEnabled(deployer, expiry, yieldwbtcAddress);
         result.expectOk().expectBool(true);
-        result = YTPTest.setOracleAverage(deployer, expiry, yieldwbtcAddress, 0.95e8);
+        result = YTPTest.setOracleAverage(deployer, expiry, yieldwbtcAddress, 0.95e16);
         result.expectOk().expectBool(true);
 
-        result = YTPTest.createPool(deployer, expiry, yieldusdaAddress, usdaAddress, ytpyieldusdaAddress, multisigytpyieldusda, Math.round(wbtcPrice * wbtcQ / ONE_8 / 10), Math.round(wbtcPrice * wbtcQ / ONE_8 / 10));        
+        result = YTPTest.createPool(deployer, expiry, yieldusdaAddress, usdaAddress, ytpyieldusdaAddress, multisigytpyieldusda, Math.round(wbtcPrice * wbtcQ / ONE_16 / 10), Math.round(wbtcPrice * wbtcQ / ONE_16 / 10));        
         result.expectOk().expectBool(true);    
         result.expectOk().expectBool(true);
         result = YTPTest.setOracleEnabled(deployer, expiry, yieldusdaAddress);
         result.expectOk().expectBool(true);
-        result = YTPTest.setOracleAverage(deployer, expiry, yieldusdaAddress, 0.95e8);
+        result = YTPTest.setOracleAverage(deployer, expiry, yieldusdaAddress, 0.95e16);
         result.expectOk().expectBool(true);             
 
-        let ltv_0_0 = 0.5 * ONE_8;
+        let ltv_0_0 = 0.5 * ONE_16;
         //Deployer creating a pool, initial tokens injected to the pool
-        result = YCRPTest.createPool(deployer, wbtcAddress, yieldusdaAddress, usdaAddress, expiry, yieldwbtcAddress, keywbtcAddress, multisigncrpwbtcAddress, ltv_0_0, conversion_ltv, bs_vol, moving_average, token_to_maturity, 50000 * ONE_8);
+        result = YCRPTest.createPool(deployer, wbtcAddress, yieldusdaAddress, usdaAddress, expiry, yieldwbtcAddress, keywbtcAddress, multisigncrpwbtcAddress, ltv_0_0, conversion_ltv, bs_vol, moving_average, token_to_maturity, 50000 * ONE_16);
         result.expectOk().expectBool(true);
 
         // attempt to add position to exceed MAX_IN/OUT_RATIO of fixed-weight-pool throws error
-        result = YCRPTest.addToPosition(deployer, wbtcAddress, yieldusdaAddress, usdaAddress, expiry, yieldwbtcAddress, keywbtcAddress, 0.11 * Math.round(wbtcPrice * wbtcQ / ONE_8));
+        result = YCRPTest.addToPosition(deployer, wbtcAddress, yieldusdaAddress, usdaAddress, expiry, yieldwbtcAddress, keywbtcAddress, 0.11 * Math.round(wbtcPrice * wbtcQ / ONE_16));
         result.expectErr().expectUint(1001);
     },    
 });
@@ -603,53 +603,53 @@ Clarinet.test({
         let yieldUSDA = new YIELD_USDA(chain, deployer);
 
         // Deployer minting initial tokens
-        let result = usdaToken.mintFixed(deployer, deployer.address, 100000000 * ONE_8);
+        let result = usdaToken.mintFixed(deployer, deployer.address, 100000000 * ONE_16);
         result.expectOk();
-        result = usdaToken.mintFixed(deployer, wallet_1.address, 200000 * ONE_8);
+        result = usdaToken.mintFixed(deployer, wallet_1.address, 200000 * ONE_16);
         result.expectOk();
-        result = wbtcToken.mintFixed(deployer, deployer.address, 100000 * ONE_8);
+        result = wbtcToken.mintFixed(deployer, deployer.address, 100000 * ONE_16);
         result.expectOk();
-        result = wbtcToken.mintFixed(deployer, wallet_1.address, 100000 * ONE_8);
+        result = wbtcToken.mintFixed(deployer, wallet_1.address, 100000 * ONE_16);
         result.expectOk();
-        result = yieldUSDA.mintFixed(deployer, expiry, 100000000 * ONE_8, deployer.address);
+        result = yieldUSDA.mintFixed(deployer, expiry, 100000000 * ONE_16, deployer.address);
         result.expectOk();        
 
-        result = FWPTest.createPool(deployer, wstxAddress, usdaAddress, weightX, weightY, fwpwstxusdaAddress, multisigwstxusdaAddress, Math.round(wbtcPrice * wbtcQ / ONE_8), 0.8 * Math.round(wbtcPrice * wbtcQ / ONE_8));
+        result = FWPTest.createPool(deployer, wstxAddress, usdaAddress, weightX, weightY, fwpwstxusdaAddress, multisigwstxusdaAddress, Math.round(wbtcPrice * wbtcQ / ONE_16), 0.8 * Math.round(wbtcPrice * wbtcQ / ONE_16));
         result.expectOk().expectBool(true);
-        result = FWPTest.createPool(deployer, wstxAddress, wbtcAddress, weightX, weightY, fwpwstxwbtcAddress, multisigwstxwbtcAddress, Math.round(wbtcPrice * wbtcQ / ONE_8), 0.8 * wbtcQ);
+        result = FWPTest.createPool(deployer, wstxAddress, wbtcAddress, weightX, weightY, fwpwstxwbtcAddress, multisigwstxwbtcAddress, Math.round(wbtcPrice * wbtcQ / ONE_16), 0.8 * wbtcQ);
         result.expectOk().expectBool(true);
         result = FWPTest.setOracleEnabled(deployer, wstxAddress, usdaAddress, weightX, weightY);
         result.expectOk().expectBool(true);   
-        result = FWPTest.setOracleAverage(deployer, wstxAddress, usdaAddress, weightX, weightY, 0.95e8);
+        result = FWPTest.setOracleAverage(deployer, wstxAddress, usdaAddress, weightX, weightY, 0.95e16);
         result.expectOk().expectBool(true);  
         result = FWPTest.setOracleEnabled(deployer, wstxAddress, wbtcAddress, weightX, weightY);
         result.expectOk().expectBool(true);   
-        result = FWPTest.setOracleAverage(deployer, wstxAddress, wbtcAddress, weightX, weightY, 0.95e8);
+        result = FWPTest.setOracleAverage(deployer, wstxAddress, wbtcAddress, weightX, weightY, 0.95e16);
         result.expectOk().expectBool(true);          
 
         result = YTPTest.createPool(deployer, expiry, yieldwbtcAddress, wbtcAddress, ytpyieldwbtcAddress, multisigytpyieldwbtc, wbtcQ / 10, wbtcQ / 10);        
         result.expectOk().expectBool(true);
         result = YTPTest.setOracleEnabled(deployer, expiry, yieldwbtcAddress);
         result.expectOk().expectBool(true);
-        result = YTPTest.setOracleAverage(deployer, expiry, yieldwbtcAddress, 0.95e8);
+        result = YTPTest.setOracleAverage(deployer, expiry, yieldwbtcAddress, 0.95e16);
         result.expectOk().expectBool(true);
 
-        result = YTPTest.createPool(deployer, expiry, yieldusdaAddress, usdaAddress, ytpyieldusdaAddress, multisigytpyieldusda, Math.round(wbtcPrice * wbtcQ / ONE_8 / 10), Math.round(wbtcPrice * wbtcQ / ONE_8 / 10));        
+        result = YTPTest.createPool(deployer, expiry, yieldusdaAddress, usdaAddress, ytpyieldusdaAddress, multisigytpyieldusda, Math.round(wbtcPrice * wbtcQ / ONE_16 / 10), Math.round(wbtcPrice * wbtcQ / ONE_16 / 10));        
         result.expectOk().expectBool(true);    
         result.expectOk().expectBool(true);
         result = YTPTest.setOracleEnabled(deployer, expiry, yieldusdaAddress);
         result.expectOk().expectBool(true);
-        result = YTPTest.setOracleAverage(deployer, expiry, yieldusdaAddress, 0.95e8);
+        result = YTPTest.setOracleAverage(deployer, expiry, yieldusdaAddress, 0.95e16);
         result.expectOk().expectBool(true);  
 
         //Deployer creating a pool, initial tokens injected to the pool
-        result = YCRPTest.createPool(deployer, wbtcAddress, yieldusdaAddress, usdaAddress, expiry, yieldwbtcAddress, keywbtcAddress, multisigncrpwbtcAddress, ltv_0, conversion_ltv, bs_vol, moving_average, token_to_maturity, 50000 * ONE_8);
+        result = YCRPTest.createPool(deployer, wbtcAddress, yieldusdaAddress, usdaAddress, expiry, yieldwbtcAddress, keywbtcAddress, multisigncrpwbtcAddress, ltv_0, conversion_ltv, bs_vol, moving_average, token_to_maturity, 50000 * ONE_16);
         result.expectOk().expectBool(true);
 
         result = YCRPTest.addToPositionAndSwitch(deployer, wbtcAddress, yieldusdaAddress, usdaAddress, expiry, yieldwbtcAddress, keywbtcAddress, 0);
         result.expectErr().expectUint(2003)
 
-        result = YCRPTest.addToPositionAndSwitch(deployer, wbtcAddress, yieldusdaAddress, usdaAddress, expiry, yieldwbtcAddress, keywbtcAddress, ONE_8 * ONE_8);//5000*ONE_8
+        result = YCRPTest.addToPositionAndSwitch(deployer, wbtcAddress, yieldusdaAddress, usdaAddress, expiry, yieldwbtcAddress, keywbtcAddress, ONE_16 * ONE_16);//5000*ONE_16
         result.expectErr().expectUint(1001)
 
         // arbtrageur attepmts to swap zero value
@@ -657,22 +657,22 @@ Clarinet.test({
         result.expectErr().expectUint(2003)
 
         // arbtrageur attepmts to swap in full value
-        result = YCRPTest.swapXForY(deployer, wbtcAddress, yieldusdaAddress, usdaAddress, expiry, ONE_8 * ONE_8, 0);
+        result = YCRPTest.swapXForY(deployer, wbtcAddress, yieldusdaAddress, usdaAddress, expiry, ONE_16 * ONE_16, 0);
         result.expectErr().expectUint(4001) 
 
         // simulate to expiry + 1
-        chain.mineEmptyBlockUntil((expiry / ONE_8) + 1)    
+        chain.mineEmptyBlockUntil((expiry / ONE_16) + 1)    
         
         // arbtrageur attepmts to retreive back with zero value
         result = YCRPTest.reducePositionYield(deployer, wbtcAddress, yieldusdaAddress, usdaAddress, expiry, yieldwbtcAddress, 0);        
         result.expectErr().expectUint(3000) 
 
         // arbitrageur attempts to retreuve back with small value
-        result = YCRPTest.reducePositionYield(deployer, wbtcAddress, yieldusdaAddress, usdaAddress, expiry, yieldwbtcAddress, 0.001 * ONE_8);        
+        result = YCRPTest.reducePositionYield(deployer, wbtcAddress, yieldusdaAddress, usdaAddress, expiry, yieldwbtcAddress, 0.001 * ONE_16);        
         result.expectOk().expectTuple();
 
         // arbtrageur attepmts to retreive back with full value
-        result = YCRPTest.reducePositionYield(deployer, wbtcAddress,yieldusdaAddress, usdaAddress, expiry, yieldwbtcAddress, 101*ONE_8);        
+        result = YCRPTest.reducePositionYield(deployer, wbtcAddress,yieldusdaAddress, usdaAddress, expiry, yieldwbtcAddress, 101*ONE_16);        
         result.expectErr().expectUint(5000) 
     },    
 });        
@@ -690,56 +690,56 @@ Clarinet.test({
         let yieldUSDA = new YIELD_USDA(chain, deployer);
 
         // Deployer minting initial tokens
-        let result = usdaToken.mintFixed(deployer, deployer.address, 100000000 * ONE_8);
+        let result = usdaToken.mintFixed(deployer, deployer.address, 100000000 * ONE_16);
         result.expectOk();
-        result = usdaToken.mintFixed(deployer, wallet_1.address, 200000 * ONE_8);
+        result = usdaToken.mintFixed(deployer, wallet_1.address, 200000 * ONE_16);
         result.expectOk();
-        result = wbtcToken.mintFixed(deployer, deployer.address, 100000 * ONE_8);
+        result = wbtcToken.mintFixed(deployer, deployer.address, 100000 * ONE_16);
         result.expectOk();
-        result = wbtcToken.mintFixed(deployer, wallet_1.address, 100000 * ONE_8);
+        result = wbtcToken.mintFixed(deployer, wallet_1.address, 100000 * ONE_16);
         result.expectOk();
-        result = yieldUSDA.mintFixed(deployer, expiry, 100000000 * ONE_8, deployer.address);
+        result = yieldUSDA.mintFixed(deployer, expiry, 100000000 * ONE_16, deployer.address);
         result.expectOk();        
 
-        result = FWPTest.createPool(deployer, wstxAddress, usdaAddress, weightX, weightY, fwpwstxusdaAddress, multisigwstxusdaAddress, Math.round(wbtcPrice * wbtcQ / ONE_8), 0.8 * Math.round(wbtcPrice * wbtcQ / ONE_8));
+        result = FWPTest.createPool(deployer, wstxAddress, usdaAddress, weightX, weightY, fwpwstxusdaAddress, multisigwstxusdaAddress, Math.round(wbtcPrice * wbtcQ / ONE_16), 0.8 * Math.round(wbtcPrice * wbtcQ / ONE_16));
         result.expectOk().expectBool(true);
-        result = FWPTest.createPool(deployer, wstxAddress, wbtcAddress, weightX, weightY, fwpwstxwbtcAddress, multisigwstxwbtcAddress, Math.round(wbtcPrice * wbtcQ / ONE_8), 0.8 * wbtcQ);
+        result = FWPTest.createPool(deployer, wstxAddress, wbtcAddress, weightX, weightY, fwpwstxwbtcAddress, multisigwstxwbtcAddress, Math.round(wbtcPrice * wbtcQ / ONE_16), 0.8 * wbtcQ);
         result.expectOk().expectBool(true);
         result = FWPTest.setOracleEnabled(deployer, wstxAddress, usdaAddress, weightX, weightY);
         result.expectOk().expectBool(true);   
-        result = FWPTest.setOracleAverage(deployer, wstxAddress, usdaAddress, weightX, weightY, 0.95e8);
+        result = FWPTest.setOracleAverage(deployer, wstxAddress, usdaAddress, weightX, weightY, 0.95e16);
         result.expectOk().expectBool(true);  
         result = FWPTest.setOracleEnabled(deployer, wstxAddress, wbtcAddress, weightX, weightY);
         result.expectOk().expectBool(true);   
-        result = FWPTest.setOracleAverage(deployer, wstxAddress, wbtcAddress, weightX, weightY, 0.95e8);
+        result = FWPTest.setOracleAverage(deployer, wstxAddress, wbtcAddress, weightX, weightY, 0.95e16);
         result.expectOk().expectBool(true);          
 
         result = YTPTest.createPool(deployer, expiry, yieldwbtcAddress, wbtcAddress, ytpyieldwbtcAddress, multisigytpyieldwbtc, wbtcQ / 10, wbtcQ / 10);        
         result.expectOk().expectBool(true);
         result = YTPTest.setOracleEnabled(deployer, expiry, yieldwbtcAddress);
         result.expectOk().expectBool(true);
-        result = YTPTest.setOracleAverage(deployer, expiry, yieldwbtcAddress, 0.95e8);
+        result = YTPTest.setOracleAverage(deployer, expiry, yieldwbtcAddress, 0.95e16);
         result.expectOk().expectBool(true);
 
-        result = YTPTest.createPool(deployer, expiry, yieldusdaAddress, usdaAddress, ytpyieldusdaAddress, multisigytpyieldusda, Math.round(wbtcPrice * wbtcQ / ONE_8 / 10), Math.round(wbtcPrice * wbtcQ / ONE_8 / 10));        
+        result = YTPTest.createPool(deployer, expiry, yieldusdaAddress, usdaAddress, ytpyieldusdaAddress, multisigytpyieldusda, Math.round(wbtcPrice * wbtcQ / ONE_16 / 10), Math.round(wbtcPrice * wbtcQ / ONE_16 / 10));        
         result.expectOk().expectBool(true);    
         result.expectOk().expectBool(true);
         result = YTPTest.setOracleEnabled(deployer, expiry, yieldusdaAddress);
         result.expectOk().expectBool(true);
-        result = YTPTest.setOracleAverage(deployer, expiry, yieldusdaAddress, 0.95e8);
+        result = YTPTest.setOracleAverage(deployer, expiry, yieldusdaAddress, 0.95e16);
         result.expectOk().expectBool(true);    
 
         //Deployer creating a pool, initial tokens injected to the pool
-        result = YCRPTest.createPool(deployer, wbtcAddress, yieldusdaAddress, usdaAddress, expiry, yieldwbtcAddress, keywbtcAddress, multisigncrpwbtcAddress, ltv_0, conversion_ltv, bs_vol, moving_average, token_to_maturity, 50000 * ONE_8);
+        result = YCRPTest.createPool(deployer, wbtcAddress, yieldusdaAddress, usdaAddress, expiry, yieldwbtcAddress, keywbtcAddress, multisigncrpwbtcAddress, ltv_0, conversion_ltv, bs_vol, moving_average, token_to_maturity, 50000 * ONE_16);
         result.expectOk().expectBool(true);
 
-        let call = await YCRPTest.getYgivenX(wbtcAddress, yieldusdaAddress, expiry, ONE_8);
+        let call = await YCRPTest.getYgivenX(wbtcAddress, yieldusdaAddress, expiry, ONE_16);
         call.result.expectOk().expectUint(1997);
 
         call = await YCRPTest.getYgivenX(wbtcAddress, yieldusdaAddress, expiry, 0);
         call.result.expectOk().expectUint(0);
 
-        call = await YCRPTest.getYgivenX(wbtcAddress, yieldusdaAddress, 0, ONE_8);
+        call = await YCRPTest.getYgivenX(wbtcAddress, yieldusdaAddress, 0, ONE_16);
         call.result.expectErr().expectUint(2001);
 
         call = await YCRPTest.getXgivenY(wbtcAddress, yieldusdaAddress, expiry, 500);
@@ -768,55 +768,55 @@ Clarinet.test({
         let MultiSigTest = new MS_CRP_WBTC_USDA(chain, deployer);
         let YieldToken = new YIELD_WBTC(chain, deployer);
         let KeyToken = new KEY_WBTC_USDA(chain, deployer);
-        const feeRateX = 0.1*ONE_8; // 10%
-        const feeRateY = 0.1*ONE_8;
-        const feeRebate = 0.5*ONE_8;
+        const feeRateX = 0.1*ONE_16; // 10%
+        const feeRateY = 0.1*ONE_16;
+        const feeRebate = 0.5*ONE_16;
 
         let usdaToken = new USDAToken(chain, deployer);
         let wbtcToken = new WBTCToken(chain, deployer);
         let yieldUSDA = new YIELD_USDA(chain, deployer);
 
         // Deployer minting initial tokens  
-        let result = usdaToken.mintFixed(deployer, deployer.address, 500000000 * ONE_8);
+        let result = usdaToken.mintFixed(deployer, deployer.address, 500000000 * ONE_16);
         result.expectOk();
-        result = usdaToken.mintFixed(deployer, wallet_1.address, 200000 * ONE_8);
+        result = usdaToken.mintFixed(deployer, wallet_1.address, 200000 * ONE_16);
         result.expectOk();
-        result = wbtcToken.mintFixed(deployer, deployer.address, 500000 * ONE_8);
+        result = wbtcToken.mintFixed(deployer, deployer.address, 500000 * ONE_16);
         result.expectOk();
-        result = wbtcToken.mintFixed(deployer, wallet_1.address, 500000 * ONE_8);
+        result = wbtcToken.mintFixed(deployer, wallet_1.address, 500000 * ONE_16);
         result.expectOk();
-        result = yieldUSDA.mintFixed(deployer, expiry, 100000000 * ONE_8, deployer.address);
+        result = yieldUSDA.mintFixed(deployer, expiry, 100000000 * ONE_16, deployer.address);
         result.expectOk();        
 
-        result = FWPTest.createPool(deployer, wstxAddress, usdaAddress, weightX, weightY, fwpwstxusdaAddress, multisigwstxusdaAddress, Math.round(wbtcPrice * wbtcQ / ONE_8), 0.8 * Math.round(wbtcPrice * wbtcQ / ONE_8));
+        result = FWPTest.createPool(deployer, wstxAddress, usdaAddress, weightX, weightY, fwpwstxusdaAddress, multisigwstxusdaAddress, Math.round(wbtcPrice * wbtcQ / ONE_16), 0.8 * Math.round(wbtcPrice * wbtcQ / ONE_16));
         result.expectOk().expectBool(true);
-        result = FWPTest.createPool(deployer, wstxAddress, wbtcAddress, weightX, weightY, fwpwstxwbtcAddress, multisigwstxwbtcAddress, Math.round(wbtcPrice * wbtcQ / ONE_8), 0.8 * wbtcQ);
+        result = FWPTest.createPool(deployer, wstxAddress, wbtcAddress, weightX, weightY, fwpwstxwbtcAddress, multisigwstxwbtcAddress, Math.round(wbtcPrice * wbtcQ / ONE_16), 0.8 * wbtcQ);
         result.expectOk().expectBool(true);
         result = FWPTest.setOracleEnabled(deployer, wstxAddress, usdaAddress, weightX, weightY);
         result.expectOk().expectBool(true);   
-        result = FWPTest.setOracleAverage(deployer, wstxAddress, usdaAddress, weightX, weightY, 0.95e8);
+        result = FWPTest.setOracleAverage(deployer, wstxAddress, usdaAddress, weightX, weightY, 0.95e16);
         result.expectOk().expectBool(true);  
         result = FWPTest.setOracleEnabled(deployer, wstxAddress, wbtcAddress, weightX, weightY);
         result.expectOk().expectBool(true);   
-        result = FWPTest.setOracleAverage(deployer, wstxAddress, wbtcAddress, weightX, weightY, 0.95e8);
+        result = FWPTest.setOracleAverage(deployer, wstxAddress, wbtcAddress, weightX, weightY, 0.95e16);
         result.expectOk().expectBool(true);          
 
         result = YTPTest.createPool(deployer, expiry, yieldwbtcAddress, wbtcAddress, ytpyieldwbtcAddress, multisigytpyieldwbtc, wbtcQ / 10, wbtcQ / 10);        
         result.expectOk().expectBool(true);
         result = YTPTest.setOracleEnabled(deployer, expiry, yieldwbtcAddress);
         result.expectOk().expectBool(true);
-        result = YTPTest.setOracleAverage(deployer, expiry, yieldwbtcAddress, 0.95e8);
+        result = YTPTest.setOracleAverage(deployer, expiry, yieldwbtcAddress, 0.95e16);
         result.expectOk().expectBool(true);
 
-        result = YTPTest.createPool(deployer, expiry, yieldusdaAddress, usdaAddress, ytpyieldusdaAddress, multisigytpyieldusda, Math.round(wbtcPrice * wbtcQ / ONE_8 / 10), Math.round(wbtcPrice * wbtcQ / ONE_8 / 10));        
+        result = YTPTest.createPool(deployer, expiry, yieldusdaAddress, usdaAddress, ytpyieldusdaAddress, multisigytpyieldusda, Math.round(wbtcPrice * wbtcQ / ONE_16 / 10), Math.round(wbtcPrice * wbtcQ / ONE_16 / 10));        
         result.expectOk().expectBool(true);    
         result = YTPTest.setOracleEnabled(deployer, expiry, yieldusdaAddress);
         result.expectOk().expectBool(true);
-        result = YTPTest.setOracleAverage(deployer, expiry, yieldusdaAddress, 0.95e8);
+        result = YTPTest.setOracleAverage(deployer, expiry, yieldusdaAddress, 0.95e16);
         result.expectOk().expectBool(true);    
         
         //Deployer creating a pool, initial tokens injected to the pool
-        result = YCRPTest.createPool(deployer, wbtcAddress, yieldusdaAddress, usdaAddress, expiry, yieldwbtcAddress, keywbtcAddress, multisigncrpwbtcAddress, ltv_0, conversion_ltv, bs_vol, moving_average, token_to_maturity, 50000 * ONE_8);
+        result = YCRPTest.createPool(deployer, wbtcAddress, yieldusdaAddress, usdaAddress, expiry, yieldwbtcAddress, keywbtcAddress, multisigncrpwbtcAddress, ltv_0, conversion_ltv, bs_vol, moving_average, token_to_maturity, 50000 * ONE_16);
         result.expectOk().expectBool(true);
 
         let ROresult:any = YieldToken.totalSupply(expiry)
@@ -851,7 +851,7 @@ Clarinet.test({
 
         chain.mineEmptyBlockUntil(2441)
         
-        result = CRPTest.createPool(deployer, wbtcAddress, usdaAddress, expiry, yieldwbtcAddress, keywbtcAddress, multisigncrpwbtcAddress, ltv_0, conversion_ltv, bs_vol, moving_average, token_to_maturity, 50000 * ONE_8);
+        result = CRPTest.createPool(deployer, wbtcAddress, usdaAddress, expiry, yieldwbtcAddress, keywbtcAddress, multisigncrpwbtcAddress, ltv_0, conversion_ltv, bs_vol, moving_average, token_to_maturity, 50000 * ONE_16);
         result.expectOk().expectBool(true); 
 
         result = MultiSigTest.endProposal(1)
@@ -861,22 +861,22 @@ Clarinet.test({
         result.expectOk().expectBool(true) // Success      
     
         // Swap
-        result = YCRPTest.swapXForY(deployer, wbtcAddress, yieldusdaAddress, usdaAddress, expiry, 100 * ONE_8, 0);
+        result = YCRPTest.swapXForY(deployer, wbtcAddress, yieldusdaAddress, usdaAddress, expiry, 100 * ONE_16, 0);
         let position:any = result.expectOk().expectTuple();
-        position['dx'].expectUint(100 * ONE_8);  // 10% of fee charged
+        position['dx'].expectUint(100 * ONE_16);  // 10% of fee charged
         position['dy'].expectUint(199140);         
 
-        // fee : 10 * ONE_8 
-        // fee-rebate : 0.5 * ONE_8
+        // fee : 10 * ONE_16 
+        // fee-rebate : 0.5 * ONE_16
         let call = await YCRPTest.getPoolDetails(wbtcAddress, yieldusdaAddress, expiry);
         position = call.result.expectOk().expectTuple();
-        position['balance-x'].expectUint(3336624950000);    // 3326726300000 + 0.95 * 100* ONE_8
+        position['balance-x'].expectUint(3336624950000);    // 3326726300000 + 0.95 * 100* ONE_16
         position['balance-y'].expectUint(33274860); 
 
-        result = YCRPTest.swapYForX(deployer, wbtcAddress, yieldusdaAddress, usdaAddress, expiry, 0.001 * ONE_8, 0);
+        result = YCRPTest.swapYForX(deployer, wbtcAddress, yieldusdaAddress, usdaAddress, expiry, 0.001 * ONE_16, 0);
         position = result.expectOk().expectTuple();
         position['dx'].expectUint(11293774764);
-        position['dy'].expectUint(0.001 * ONE_8);    
+        position['dy'].expectUint(0.001 * ONE_16);    
 
         call = await YCRPTest.getPoolDetails(wbtcAddress, yieldusdaAddress, expiry);
         position = call.result.expectOk().expectTuple();

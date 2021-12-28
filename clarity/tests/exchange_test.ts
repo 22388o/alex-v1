@@ -37,11 +37,11 @@ Clarinet.test({
         let ExchangeTest = new Exchange(chain, deployer);
         let alexToken = new ALEXToken(chain, deployer);
 
-        let result:any = await alexToken.mintFixed(deployer, deployer.address, 100e8);
+        let result:any = await alexToken.mintFixed(deployer, deployer.address, 100e16);
         result.expectOk();
 
         result = await alexToken.getBalance(deployer.address);
-        result.result.expectOk().expectUint(100e8);
+        result.result.expectOk().expectUint(100e16);
         
         result = ExchangeTest.exchange(deployer, 'SPZP1114C4EA044RE54M6G5ZC2NYK9SAK9SJN0M');
         result.expectOk().expectUint(1);

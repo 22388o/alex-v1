@@ -34,19 +34,19 @@ import {
   const fwpwstxwbtcAddress = "ST1HTBVD3JG9C05J7HBJTHGR0GGW7KXW28M5JS8QE.fwp-wstx-wbtc-50-50"
   const multisigwstxwbtcAddress = "ST1HTBVD3JG9C05J7HBJTHGR0GGW7KXW28M5JS8QE.multisig-fwp-wstx-wbtc-50-50"
     
-  const ONE_8 = 100000000;
-  const expiry = 59760 * ONE_8;
-  const ltv_0 = 0.8 * ONE_8;
-  const conversion_ltv = 0.95 * ONE_8;
-  const bs_vol = 0.8 * ONE_8;
-  const moving_average = 0 * ONE_8; // for testing only
+  const ONE_16 = 100000000;
+  const expiry = 59760 * ONE_16;
+  const ltv_0 = 0.8 * ONE_16;
+  const conversion_ltv = 0.95 * ONE_16;
+  const bs_vol = 0.8 * ONE_16;
+  const moving_average = 0 * ONE_16; // for testing only
   
-  const wbtcPrice = 50000 * ONE_8;
+  const wbtcPrice = 50000 * ONE_16;
   
-  const weightX = 0.5 * ONE_8;
-  const weightY = 0.5 * ONE_8;
+  const weightX = 0.5 * ONE_16;
+  const weightY = 0.5 * ONE_16;
   
-  const wbtcQ = 100 * ONE_8;
+  const wbtcQ = 100 * ONE_16;
   
   /**
    * Collateral Rebalancing Pool Test Cases
@@ -67,27 +67,27 @@ import {
       let wstxToken = new WSTXToken(chain, deployer);
 
       // Deployer minting initial tokens
-      let result = usdaToken.mintFixed(deployer, deployer.address, 100000000 * ONE_8);
+      let result = usdaToken.mintFixed(deployer, deployer.address, 100000000 * ONE_16);
       result.expectOk();
-      result = usdaToken.mintFixed(deployer, wallet_1.address, 200000 * ONE_8);
+      result = usdaToken.mintFixed(deployer, wallet_1.address, 200000 * ONE_16);
       result.expectOk();
-      result = wbtcToken.mintFixed(deployer, deployer.address, 100000 * ONE_8);
+      result = wbtcToken.mintFixed(deployer, deployer.address, 100000 * ONE_16);
       result.expectOk();
-      result = wbtcToken.mintFixed(deployer, wallet_1.address, 100000 * ONE_8);
+      result = wbtcToken.mintFixed(deployer, wallet_1.address, 100000 * ONE_16);
       result.expectOk();
   
       // take away what was minted for testing to another address
       let block = await chain.mineBlock([
         Tx.contractCall("yield-wbtc", "transfer", [
-          types.uint(1),
-          types.uint(2000000000000),
+          'u' + BigInt(1),
+          'u' + BigInt(2000000000000),
           types.principal(deployer.address),
           types.principal(wallet_1.address)
         ], deployer.address),
       ]);
       block.receipts[0].result.expectErr();
 
-      result = FWPTest.createPool(deployer, wstxAddress, wbtcAddress, weightX, weightY, fwpwstxwbtcAddress, multisigwstxwbtcAddress, Math.round(wbtcPrice * wbtcQ / ONE_8), 0.8 * wbtcQ);
+      result = FWPTest.createPool(deployer, wstxAddress, wbtcAddress, weightX, weightY, fwpwstxwbtcAddress, multisigwstxwbtcAddress, Math.round(wbtcPrice * wbtcQ / ONE_16), 0.8 * wbtcQ);
       result.expectOk().expectBool(true);
       
       result = FWPTest.createPool(
@@ -98,8 +98,8 @@ import {
         weightY,
         fwpwstxusdaAddress,
         multisigfwpwstxusda,
-        Math.round(wbtcPrice * wbtcQ / ONE_8), 
-        0.8 * Math.round(wbtcPrice * wbtcQ / ONE_8)
+        Math.round(wbtcPrice * wbtcQ / ONE_16), 
+        0.8 * Math.round(wbtcPrice * wbtcQ / ONE_16)
       );
       result.expectOk().expectBool(true);
   
@@ -111,8 +111,8 @@ import {
       );
 
       let position: any = call.result.expectOk().expectTuple();
-      position["balance-x"].expectUint(5000000 * ONE_8);
-      position["balance-y"].expectUint(4000000 * ONE_8);
+      position["balance-x"].expectUint(5000000 * ONE_16);
+      position["balance-y"].expectUint(4000000 * ONE_16);
   
       result = FWPTest.setOracleEnabled(
         deployer,
@@ -128,13 +128,13 @@ import {
         usdaAddress,
         weightX,
         weightY,
-        0.95e8,
+        0.95e16,
       );
       result.expectOk().expectBool(true);
 
       result = FWPTest.setOracleEnabled(deployer, wstxAddress, wbtcAddress, weightX, weightY);
       result.expectOk().expectBool(true);   
-      result = FWPTest.setOracleAverage(deployer, wstxAddress, wbtcAddress, weightX, weightY, 0.95e8);
+      result = FWPTest.setOracleAverage(deployer, wstxAddress, wbtcAddress, weightX, weightY, 0.95e16);
       result.expectOk().expectBool(true);     
 
       result = YTPTest.createPool(
@@ -173,8 +173,8 @@ import {
         conversion_ltv,
         bs_vol,
         moving_average,
-        1 * ONE_8,
-        50000 * ONE_8,
+        1 * ONE_16,
+        50000 * ONE_16,
       );
       result.expectOk().expectBool(true);
 
@@ -194,10 +194,10 @@ import {
       position["yield-supply"].expectUint(79999040);
       position["key-supply"].expectUint(79999040);
       position["weight-x"].expectUint(66533150);
-      position["weight-y"].expectUint(ONE_8 - 66533150);
+      position["weight-y"].expectUint(ONE_16 - 66533150);
       position["balance-x"].expectUint(3326657500000);
       position["balance-y"].expectUint(33465520);
-      position["strike"].expectUint(50000 * ONE_8);
+      position["strike"].expectUint(50000 * ONE_16);
       position["ltv-0"].expectUint(ltv_0);
       position["bs-vol"].expectUint(bs_vol);
       position["conversion-ltv"].expectUint(conversion_ltv);
@@ -209,7 +209,7 @@ import {
       call.result.expectOk().expectUint(9595000000000000);
   
       // simulate to expiry + 1
-      chain.mineEmptyBlockUntil((expiry / ONE_8) + 1);
+      chain.mineEmptyBlockUntil((expiry / ONE_16) + 1);
   
       call = await CRPTest.getPoolValueInToken(wbtcAddress, usdaAddress, expiry);
       call.result.expectOk().expectUint(99929107);
@@ -226,7 +226,7 @@ import {
         usdaAddress,
         expiry,
         yieldwbtcAddress,
-        ONE_8,
+        ONE_16,
       );
       position = result.expectOk().expectTuple();
       position["dx"].expectUint(0);
@@ -256,7 +256,7 @@ import {
         usdaAddress,
         expiry, 
         keywbtcAddress,
-        ONE_8,
+        ONE_16,
       );
       position = result.expectOk().expectTuple();
       position["dx"].expectUint(0);

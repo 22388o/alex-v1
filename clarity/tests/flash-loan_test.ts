@@ -27,7 +27,7 @@ const loanuserwbtcAddress = "ST1HTBVD3JG9C05J7HBJTHGR0GGW7KXW28M5JS8QE.flash-loa
 const unauthorisedTokenAddress = "ST1HTBVD3JG9C05J7HBJTHGR0GGW7KXW28M5JS8QE.token-unauthorised"
 const unauthorisedFlashLoanUserAddress = "ST1HTBVD3JG9C05J7HBJTHGR0GGW7KXW28M5JS8QE.flash-loan-user-unauthorised"
 
-const ONE_8 = 100000000
+const ONE_16 = 100000000
 const expiry = 23040e+8 //0x0218711A0000 => 2304000000000
 const expiryBuff = new Uint8Array([0x02,0x18,0x71,0x1A,0x00,0x00]).buffer
 const nextExpiry = 51840e+8
@@ -35,10 +35,10 @@ const ltv_0 = 0.8e+8
 const conversion_ltv = 0.95e+8
 const bs_vol = 0.8e+8
 const moving_average = 0.95e+8
-const token_to_maturity = 2100e8;
+const token_to_maturity = 2100e16;
 
 const wbtcPrice = 50000e+8
-const wbtcQ = 10e8
+const wbtcQ = 10e16
 
 const weightX = 0.5e+8
 const weightY = 0.5e+8
@@ -65,43 +65,43 @@ Clarinet.test({
         // let wstxToken = new WSTXToken(chain, deployer);
         
         // Deployer minting initial tokens
-        let result = usdaToken.mintFixed(deployer, deployer.address, 100000000 * ONE_8);
+        let result = usdaToken.mintFixed(deployer, deployer.address, 100000000 * ONE_16);
         result.expectOk();
-        result = usdaToken.mintFixed(deployer, wallet_1.address, 200000 * ONE_8);
+        result = usdaToken.mintFixed(deployer, wallet_1.address, 200000 * ONE_16);
         result.expectOk();
-        result = wbtcToken.mintFixed(deployer, deployer.address, 100000 * ONE_8);
+        result = wbtcToken.mintFixed(deployer, deployer.address, 100000 * ONE_16);
         result.expectOk();
-        result = wbtcToken.mintFixed(deployer, wallet_1.address, 100000 * ONE_8);
+        result = wbtcToken.mintFixed(deployer, wallet_1.address, 100000 * ONE_16);
         result.expectOk();
-        // result = wstxToken.mintFixed(deployer, deployer.address, 100000000 * ONE_8);
+        // result = wstxToken.mintFixed(deployer, deployer.address, 100000000 * ONE_16);
         // result.expectOk();
-        // result = wstxToken.mintFixed(wallet_1, wallet_1.address, 200000 * ONE_8);
+        // result = wstxToken.mintFixed(wallet_1, wallet_1.address, 200000 * ONE_16);
         // result.expectOk(); 
-        result = wbtcToken.mintFixed(deployer, wallet_5.address, 100000 * ONE_8);
+        result = wbtcToken.mintFixed(deployer, wallet_5.address, 100000 * ONE_16);
         result.expectOk(); 
-        // result = wstxToken.mintFixed(wallet_5, wallet_5.address, 200000 * ONE_8);
+        // result = wstxToken.mintFixed(wallet_5, wallet_5.address, 200000 * ONE_16);
         // result.expectOk();
         chain.mineEmptyBlock(3);
         
-        result = FWPTest.createPool(deployer, wstxAddress, usdaAddress, weightX, weightY, fwpwstxusdaAddress, multisigwstxusdaAddress, Math.round(wbtcPrice * wbtcQ / ONE_8), Math.round(wbtcPrice * wbtcQ / ONE_8));
+        result = FWPTest.createPool(deployer, wstxAddress, usdaAddress, weightX, weightY, fwpwstxusdaAddress, multisigwstxusdaAddress, Math.round(wbtcPrice * wbtcQ / ONE_16), Math.round(wbtcPrice * wbtcQ / ONE_16));
         result.expectOk().expectBool(true);
-        result = FWPTest.createPool(deployer, wstxAddress, wbtcAddress, weightX, weightY, fwpwstxwbtcAddress, multisigwstxwbtcAddress, Math.round(wbtcPrice * wbtcQ / ONE_8), wbtcQ);
+        result = FWPTest.createPool(deployer, wstxAddress, wbtcAddress, weightX, weightY, fwpwstxwbtcAddress, multisigwstxwbtcAddress, Math.round(wbtcPrice * wbtcQ / ONE_16), wbtcQ);
         result.expectOk().expectBool(true);
         result = FWPTest.setOracleEnabled(deployer, wstxAddress, usdaAddress, weightX, weightY);
         result.expectOk().expectBool(true);   
-        result = FWPTest.setOracleAverage(deployer, wstxAddress, usdaAddress, weightX, weightY, 0.95e8);
+        result = FWPTest.setOracleAverage(deployer, wstxAddress, usdaAddress, weightX, weightY, 0.95e16);
         result.expectOk().expectBool(true);  
         result = FWPTest.setOracleEnabled(deployer, wstxAddress, wbtcAddress, weightX, weightY);
         result.expectOk().expectBool(true);   
-        result = FWPTest.setOracleAverage(deployer, wstxAddress, wbtcAddress, weightX, weightY, 0.95e8);
+        result = FWPTest.setOracleAverage(deployer, wstxAddress, wbtcAddress, weightX, weightY, 0.95e16);
         result.expectOk().expectBool(true);    
 
         result = YTPTest.createPool(deployer, expiry, yieldusdaAddress, usdaAddress, ytpyieldusdaAddress, multisigytpyieldusda, 500000e+8, 500000e+8);        
         result.expectOk().expectBool(true);
         
-        result = CRPTest.createPool(deployer, usdaAddress, wstxAddress, expiry, yieldusdaAddress, keyusdaAddress, multisigncrpusdaAddress, ltv_0, conversion_ltv, bs_vol, moving_average, token_to_maturity, 100*ONE_8);
+        result = CRPTest.createPool(deployer, usdaAddress, wstxAddress, expiry, yieldusdaAddress, keyusdaAddress, multisigncrpusdaAddress, ltv_0, conversion_ltv, bs_vol, moving_average, token_to_maturity, 100*ONE_16);
         result.expectOk().expectBool(true);
-        result = CRPTest.createPool(deployer, usdaAddress, wbtcAddress, expiry, yieldusdaAddress, keyusdawbtcAddress, multisigncrpusdawbtcAddress, ltv_0, conversion_ltv, bs_vol, moving_average, token_to_maturity, ONE_8);
+        result = CRPTest.createPool(deployer, usdaAddress, wbtcAddress, expiry, yieldusdaAddress, keyusdawbtcAddress, multisigncrpusdawbtcAddress, ltv_0, conversion_ltv, bs_vol, moving_average, token_to_maturity, ONE_16);
         result.expectOk().expectBool(true);        
       
         let call = await FLTest.getBalanceSFT(keyusdaAddress, expiry, wallet_5.address);
@@ -115,9 +115,9 @@ Clarinet.test({
         position = call.result.expectOk().expectUint(0);        
 
         // Let's borrow 100 WSTX to lever up
-        result = FLTest.flashLoan(wallet_5, loanuserAddress, wstxAddress, 1000*ONE_8, expiryBuff);
+        result = FLTest.flashLoan(wallet_5, loanuserAddress, wstxAddress, 1000*ONE_16, expiryBuff);
         result.expectOk();
-        result = FLTest.flashLoan(wallet_5, loanuserwbtcAddress, wbtcAddress, ONE_8, expiryBuff);
+        result = FLTest.flashLoan(wallet_5, loanuserwbtcAddress, wbtcAddress, ONE_16, expiryBuff);
         result.expectOk();        
 
         // spent ~$231 to buy levered position (0.02 uints)
@@ -145,7 +145,7 @@ Clarinet.test({
         result.expectOk().expectBool(true);    
         
         // and now we just expired
-        chain.mineEmptyBlockUntil(expiry / ONE_8 + 1);
+        chain.mineEmptyBlockUntil(expiry / ONE_16 + 1);
         result = FLTest.rollPosition(wallet_5, usdaAddress, wstxAddress, keyusdaAddress, loanuserAddress, expiry, nextExpiry);
         result.expectOk().expectUint(29751732527);
 
@@ -168,10 +168,10 @@ Clarinet.test({
         let FLTest = new FLTestAgent1(chain, deployer);
 
         // trying to call flash-loan with un-approved flash-loan-user throws an error.
-        let result = FLTest.flashLoan(deployer, unauthorisedFlashLoanUserAddress, usdaAddress, 1000*ONE_8, expiryBuff);
+        let result = FLTest.flashLoan(deployer, unauthorisedFlashLoanUserAddress, usdaAddress, 1000*ONE_16, expiryBuff);
         result.expectErr().expectUint(1000);
 
-        result = FLTest.flashLoan(deployer, loanuserAddress, unauthorisedTokenAddress, 1000*ONE_8, expiryBuff);
+        result = FLTest.flashLoan(deployer, loanuserAddress, unauthorisedTokenAddress, 1000*ONE_16, expiryBuff);
         result.expectErr().expectUint(1000);        
     }
 });

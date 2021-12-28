@@ -80,7 +80,7 @@ export class CoreClient extends Client {
   }
 
   getUser(userId: number): ReadOnlyFn {
-    return this.callReadOnlyFn("get-user", [types.uint(userId)]);
+    return this.callReadOnlyFn("get-user", ['u' + BigInt(userId)]);
   }
 
   setActivationThreshold(sender: Account, threshold: number): Tx {
@@ -88,7 +88,7 @@ export class CoreClient extends Client {
       this.contractName,
       "set-activation-threshold",
       [
-        types.uint(threshold)
+        'u' + BigInt(threshold)
       ],
       sender.address
     );
@@ -111,7 +111,7 @@ export class CoreClient extends Client {
       "add-to-balance",
       [
         types.principal(token),
-        types.uint(amount)
+        'u' + BigInt(amount)
       ],
       sender.address
     );
@@ -124,16 +124,16 @@ export class CoreClient extends Client {
   getStakerAtCycleOrDefault(rewardCycle: number, userId: number, token: string): ReadOnlyFn {
     return this.callReadOnlyFn("get-staker-at-cycle-or-default", [
       types.principal(token),
-      types.uint(rewardCycle),
-      types.uint(userId),
+      'u' + BigInt(rewardCycle),
+      'u' + BigInt(userId),
     ]);
   }
 
   getStakingReward(rewardCycle: number, userId: number, token: string): ReadOnlyFn {
     return this.callReadOnlyFn("get-staking-reward", [
       types.principal(token),
-      types.uint(rewardCycle),
-      types.uint(userId),
+      'u' + BigInt(rewardCycle),
+      'u' + BigInt(userId),
     ]);
   }  
 
@@ -145,7 +145,7 @@ export class CoreClient extends Client {
     return Tx.contractCall(
       this.contractName,
       "stake-tokens",
-      [types.principal(token), types.uint(amountTokens), types.uint(lockPeriod)],
+      [types.principal(token), 'u' + BigInt(amountTokens), 'u' + BigInt(lockPeriod)],
       staker.address
     );
   }
@@ -158,7 +158,7 @@ export class CoreClient extends Client {
     return Tx.contractCall(
       this.contractName,
       "claim-staking-reward",
-      [types.principal(token), types.uint(targetCycle)],
+      [types.principal(token), 'u' + BigInt(targetCycle)],
       sender.address
     );
   }
@@ -166,7 +166,7 @@ export class CoreClient extends Client {
   getCoinbaseAmount(rewardCycle: number, token: string): ReadOnlyFn {
     return this.callReadOnlyFn("get-coinbase-amount-or-default", [
       types.principal(token),
-      types.uint(rewardCycle)
+      'u' + BigInt(rewardCycle)
     ]);
   }  
 
@@ -176,8 +176,8 @@ export class CoreClient extends Client {
       this.contractName,
       "set-coinbase-amount",
       [
-        types.principal(token), types.uint(coinbaseOne), types.uint(coinbaseTwo), 
-        types.uint(coinbaseThree) ,types.uint(coinbaseFour), types.uint(coinbaseFive)
+        types.principal(token), 'u' + BigInt(coinbaseOne), 'u' + BigInt(coinbaseTwo), 
+        'u' + BigInt(coinbaseThree) ,'u' + BigInt(coinbaseFour), 'u' + BigInt(coinbaseFive)
       ],
       user.address
     );

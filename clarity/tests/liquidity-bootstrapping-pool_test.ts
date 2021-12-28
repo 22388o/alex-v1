@@ -10,18 +10,18 @@ const poolTokenAddress = "ST1HTBVD3JG9C05J7HBJTHGR0GGW7KXW28M5JS8QE.lbp-alex-usd
 const multisigAddress = "ST1HTBVD3JG9C05J7HBJTHGR0GGW7KXW28M5JS8QE.multisig-lbp-alex-usda-90-10"
 const wrongPoolTokenAddress = "ST1HTBVD3JG9C05J7HBJTHGR0GGW7KXW28M5JS8QE.fwp-wstx-usda-50-50"
 
-const ONE_8 = 1e+8;
+const ONE_16 = 1e+8;
 
-const weightX1 = 0.9 * ONE_8;
-const weightX2 = 0.1 * ONE_8;
-const expiry = 1000 * ONE_8;
+const weightX1 = 0.9 * ONE_16;
+const weightX2 = 0.1 * ONE_16;
+const expiry = 1000 * ONE_16;
 
-const priceMax = 1.5 * ONE_8;
-const priceMin = 0.1 * ONE_8;
-const price0 = 1 * ONE_8;
+const priceMax = 1.5 * ONE_16;
+const priceMin = 0.1 * ONE_16;
+const price0 = 1 * ONE_16;
 
-const alexQty = 1000 * ONE_8;
-const usdaQty = Math.round(price0 * alexQty * (ONE_8 - weightX1) / weightX1 / ONE_8);
+const alexQty = 1000 * ONE_16;
+const usdaQty = Math.round(price0 * alexQty * (ONE_16 - weightX1) / weightX1 / ONE_16);
 
 
 Clarinet.test({
@@ -33,9 +33,9 @@ Clarinet.test({
         let usdaToken = new USDAToken(chain, deployer);
         let alexToken = new ALEXToken(chain, deployer);
 
-        let result = usdaToken.mintFixed(deployer, deployer.address, 100000000 * ONE_8);
+        let result = usdaToken.mintFixed(deployer, deployer.address, 100000000 * ONE_16);
         result.expectOk();
-        result = alexToken.mintFixed(deployer, deployer.address, 100000000 * ONE_8);
+        result = alexToken.mintFixed(deployer, deployer.address, 100000000 * ONE_16);
         result.expectOk();        
         
         // Deployer creating a pool, initial tokens injected to the pool
@@ -62,9 +62,9 @@ Clarinet.test({
         position['max-price'].expectUint(priceMax);     
 
         // implied price is 0.995064480178316
-        result = LBPTest.swapYForX(deployer, alexAddress, usdaAddress, expiry, ONE_8, 0);
+        result = LBPTest.swapYForX(deployer, alexAddress, usdaAddress, expiry, ONE_16, 0);
         position = result.expectOk().expectTuple();
-        position['dy'].expectUint(ONE_8);
+        position['dy'].expectUint(ONE_16);
         position['dx'].expectUint(100496000);   
         
         // swap triggers change in weight
@@ -81,9 +81,9 @@ Clarinet.test({
         position['weight-x-t'].expectUint(89759279);          
         
         // buy some alex so it doesn't fall below min-price.
-        result = LBPTest.swapYForX(deployer, alexAddress, usdaAddress, expiry, 30 * ONE_8, 0);
+        result = LBPTest.swapYForX(deployer, alexAddress, usdaAddress, expiry, 30 * ONE_16, 0);
         position = result.expectOk().expectTuple();
-        position['dy'].expectUint(30 * ONE_8);
+        position['dy'].expectUint(30 * ONE_16);
         position['dx'].expectUint(3613216209);
         
         // after swap, weight now halves.
@@ -92,9 +92,9 @@ Clarinet.test({
         position['weight-x-t'].expectUint(50120362);          
 
         // implied price is now 0.14679128195479
-        result = LBPTest.swapYForX(deployer, alexAddress, usdaAddress, expiry, ONE_8, 0);
+        result = LBPTest.swapYForX(deployer, alexAddress, usdaAddress, expiry, ONE_16, 0);
         position = result.expectOk().expectTuple();
-        position['dy'].expectUint(ONE_8);
+        position['dy'].expectUint(ONE_16);
         position['dx'].expectUint(679045564);
 
         // Check pool details and print
@@ -105,7 +105,7 @@ Clarinet.test({
         position['balance-y'].expectUint(14311111111);         
         
         // launch not going well, so withdraw liquidity
-        result = LBPTest.reducePosition(deployer, alexAddress, usdaAddress, expiry, poolTokenAddress, 0.5 * ONE_8);
+        result = LBPTest.reducePosition(deployer, alexAddress, usdaAddress, expiry, poolTokenAddress, 0.5 * ONE_16);
         position = result.expectOk().expectTuple();
         position['dx'].expectUint(47803621113);
         position['dy'].expectUint(7155555555);
@@ -121,9 +121,9 @@ Clarinet.test({
 
         // no trades between blocks 500 and 998, so weight doesn't change, price doesn't change
         // until swap occurs.
-        result = LBPTest.swapYForX(deployer, alexAddress, usdaAddress, expiry, ONE_8, 0);
+        result = LBPTest.swapYForX(deployer, alexAddress, usdaAddress, expiry, ONE_16, 0);
         position = result.expectOk().expectTuple();
-        position['dy'].expectUint(ONE_8);
+        position['dy'].expectUint(ONE_16);
         position['dx'].expectUint(676432711);     
         
         // and weight now is at min.
@@ -132,7 +132,7 @@ Clarinet.test({
         position['weight-x-t'].expectUint(10160482);     
 
         // resulting in alex price falling below min-price, throwing error
-        result = LBPTest.swapYForX(deployer, alexAddress, usdaAddress, expiry, ONE_8, 0);
+        result = LBPTest.swapYForX(deployer, alexAddress, usdaAddress, expiry, ONE_16, 0);
         position = result.expectErr().expectUint(2021);
 
         // all time passed
@@ -150,7 +150,7 @@ Clarinet.test({
         position['balance-y'].expectUint(7255555556);  
 
         // withdraw all remaining liquidity
-        result = LBPTest.reducePosition(deployer, alexAddress, usdaAddress, expiry, poolTokenAddress, ONE_8);
+        result = LBPTest.reducePosition(deployer, alexAddress, usdaAddress, expiry, poolTokenAddress, ONE_16);
         position = result.expectOk().expectTuple();
         position['dx'].expectUint(47127188403);
         position['dy'].expectUint(7255555556);
@@ -174,9 +174,9 @@ Clarinet.test({
       let usdaToken = new USDAToken(chain, deployer);
       let alexToken = new ALEXToken(chain, deployer);
 
-      let result = usdaToken.mintFixed(deployer, deployer.address, 100000000 * ONE_8);
+      let result = usdaToken.mintFixed(deployer, deployer.address, 100000000 * ONE_16);
       result.expectOk();
-      result = alexToken.mintFixed(deployer, deployer.address, 100000000 * ONE_8);
+      result = alexToken.mintFixed(deployer, deployer.address, 100000000 * ONE_16);
       result.expectOk();       
       
       // non-deployer creating a pool will throw an error
@@ -191,11 +191,11 @@ Clarinet.test({
       chain.mineEmptyBlockUntil(1001);
 
       // supplying a wrong pool token throws an error
-      result = LBPTest.reducePosition(deployer, alexAddress, usdaAddress, expiry, wrongPoolTokenAddress, ONE_8);
+      result = LBPTest.reducePosition(deployer, alexAddress, usdaAddress, expiry, wrongPoolTokenAddress, ONE_16);
       result.expectErr().expectUint(2026);
       
       // withdraw all remaining liquidity
-      result = LBPTest.reducePosition(deployer, alexAddress, usdaAddress, expiry, poolTokenAddress, ONE_8);
+      result = LBPTest.reducePosition(deployer, alexAddress, usdaAddress, expiry, poolTokenAddress, ONE_16);
       result.expectOk();           
   },
 });

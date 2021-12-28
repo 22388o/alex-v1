@@ -6,7 +6,6 @@ import {
   types,
 } from "https://deno.land/x/clarinet@v0.13.0/index.ts";
 
-
 class ALEXToken {
   chain: Chain;
   deployer: Account;
@@ -32,7 +31,7 @@ class ALEXToken {
   mint(sender: Account, recipient: string, amount : number) {
     let block = this.chain.mineBlock([
       Tx.contractCall("token-t-alex", "mint", [
-        types.uint(amount),
+        'u' + BigInt(amount),
         types.principal(recipient)        
       ], sender.address),
     ]);
@@ -42,7 +41,7 @@ class ALEXToken {
   mintFixed(sender: Account, recipient: string, amount : number) {
     let block = this.chain.mineBlock([
       Tx.contractCall("token-t-alex", "mint-fixed", [
-        types.uint(amount),
+        'u' + BigInt(amount),
         types.principal(recipient)        
       ], sender.address),
     ]);
@@ -52,7 +51,7 @@ class ALEXToken {
   transferToken(sender: Account, amount: number, receiver: string, memo:ArrayBuffer) {
     let block = this.chain.mineBlock([
         Tx.contractCall("token-t-alex", "transfer-fixed", [
-          types.uint(amount),
+          'u' + BigInt(amount),
           types.principal(sender.address),
           types.principal(receiver),
           types.some(types.buff(memo))
@@ -92,7 +91,7 @@ class USDAToken {
   mint(sender: Account, recipient: string, amount : number) {
     let block = this.chain.mineBlock([
       Tx.contractCall("token-usda", "mint", [
-        types.uint(amount),
+        'u' + BigInt(amount),
         types.principal(recipient)        
       ], sender.address),
     ]);
@@ -102,7 +101,7 @@ class USDAToken {
   mintFixed(sender: Account, recipient: string, amount : number) {
     let block = this.chain.mineBlock([
       Tx.contractCall("token-usda", "mint-fixed", [
-        types.uint(amount),
+        'u' + BigInt(amount),
         types.principal(recipient)        
       ], sender.address),
     ]);
@@ -112,7 +111,7 @@ class USDAToken {
   transferToken(sender: Account, amount: number, receiver: string, memo:ArrayBuffer) {
     let block = this.chain.mineBlock([
         Tx.contractCall("token-usda", "transfer-fixed", [
-          types.uint(amount),
+          'u' + BigInt(amount),
           types.principal(sender.address),
           types.principal(receiver),
           types.some(types.buff(memo))
@@ -154,7 +153,7 @@ class WBTCToken {
   mint(sender: Account, recipient: string, amount : number) {
     let block = this.chain.mineBlock([
       Tx.contractCall("token-wbtc", "mint", [
-        types.uint(amount),
+        'u' + BigInt(amount),
         types.principal(recipient)        
       ], sender.address),
     ]);
@@ -164,7 +163,7 @@ class WBTCToken {
   mintFixed(sender: Account, recipient: string, amount : number) {
     let block = this.chain.mineBlock([
       Tx.contractCall("token-wbtc", "mint-fixed", [
-        types.uint(amount),
+        'u' + BigInt(amount),
         types.principal(recipient)        
       ], sender.address),
     ]);
@@ -174,7 +173,7 @@ class WBTCToken {
   transferToken(sender: Account, amount: number, receiver: string, memo:ArrayBuffer) {
     let block = this.chain.mineBlock([
         Tx.contractCall("token-wbtc", "transfer-fixed", [
-          types.uint(amount),
+          'u' + BigInt(amount),
           types.principal(sender.address),
           types.principal(receiver),
           types.some(types.buff(memo))
@@ -214,7 +213,7 @@ class WSTXToken {
   mint(sender: Account, recipient: string, amount : number) {
     let block = this.chain.mineBlock([
       Tx.contractCall("token-wstx", "mint", [
-        types.uint(amount),
+        'u' + BigInt(amount),
         types.principal(recipient)        
       ], sender.address),
     ]);
@@ -224,7 +223,7 @@ class WSTXToken {
   mintFixed(sender: Account, recipient: string, amount : number) {
     let block = this.chain.mineBlock([
       Tx.contractCall("token-wstx", "mint-fixed", [
-        types.uint(amount),
+        'u' + BigInt(amount),
         types.principal(recipient)        
       ], sender.address),
     ]);
@@ -234,7 +233,7 @@ class WSTXToken {
   transferToken(sender: Account, amount: number, receiver: string, memo:ArrayBuffer) {
     let block = this.chain.mineBlock([
         Tx.contractCall("token-wstx", "transfer-fixed", [
-          types.uint(amount),
+          'u' + BigInt(amount),
           types.principal(sender.address),
           types.principal(receiver),
           types.some(types.buff(memo))
@@ -302,13 +301,13 @@ class YTP_YIELD_WBTC {
 
   balanceOf(expiry: number, wallet: string) {
     return this.chain.callReadOnlyFn("ytp-yield-wbtc", "get-balance-fixed", [
-      types.uint(expiry), types.principal(wallet),
+      'u' + BigInt(expiry), types.principal(wallet),
     ], this.deployer.address);
   }
   
   totalSupply(expiry: number) {
     return this.chain.callReadOnlyFn("ytp-yield-wbtc", "get-total-supply-fixed", [
-      types.uint(expiry)
+      'u' + BigInt(expiry)
     ], this.deployer.address);
   }
 }
@@ -325,13 +324,13 @@ class YTP_YIELD_USDA {
 
   balanceOf(expiry: number, wallet: string) {
     return this.chain.callReadOnlyFn("ytp-yield-usda", "get-balance-fixed", [
-      types.uint(expiry), types.principal(wallet),
+      'u' + BigInt(expiry), types.principal(wallet),
     ], this.deployer.address);
   }
   
   totalSupply(expiry: number) {
     return this.chain.callReadOnlyFn("ytp-yield-usda", "get-total-supply-fixed", [
-      types.uint(expiry)
+      'u' + BigInt(expiry)
     ], this.deployer.address);
   }
 }
@@ -348,14 +347,14 @@ class KEY_USDA_WBTC {
 
   balanceOf(expiry: number, wallet: string) {
     return this.chain.callReadOnlyFn("key-usda-wbtc", "get-balance-fixed", [
-      types.uint(expiry),
+      'u' + BigInt(expiry),
       types.principal(wallet),
     ], this.deployer.address);
   }
   
   totalSupply(expiry: number) {
     return this.chain.callReadOnlyFn("key-usda-wbtc", "get-total-supply-fixed", [
-      types.uint(expiry)
+      'u' + BigInt(expiry)
     ], this.deployer.address);
   }
 }
@@ -372,14 +371,14 @@ class KEY_WBTC_USDA {
 
   balanceOf(expiry: number, wallet: string) {
     return this.chain.callReadOnlyFn("key-wbtc-usda", "get-balance-fixed", [
-      types.uint(expiry),
+      'u' + BigInt(expiry),
       types.principal(wallet),
     ], this.deployer.address);
   }
   
   totalSupply(expiry: number) {
     return this.chain.callReadOnlyFn("key-wbtc-usda", "get-total-supply-fixed", [
-      types.uint(expiry)
+      'u' + BigInt(expiry)
     ], this.deployer.address);
   }
 }
@@ -396,21 +395,21 @@ class YIELD_WBTC {
 
   balanceOf(expiry: number, wallet: string) {
     return this.chain.callReadOnlyFn("yield-wbtc", "get-balance-fixed", [
-      types.uint(expiry), types.principal(wallet),
+      'u' + BigInt(expiry), types.principal(wallet),
     ], this.deployer.address);
   }
   
   totalSupply(expiry: number) {
     return this.chain.callReadOnlyFn("yield-wbtc", "get-total-supply-fixed", [
-      types.uint(expiry)
+      'u' + BigInt(expiry)
     ], this.deployer.address);
   }
   
   mintFixed(sender: Account, expiry: number, amount: number, recipient: string) {
     let block = this.chain.mineBlock([
       Tx.contractCall("yield-wbtc", "mint-fixed", [
-        types.uint(expiry),
-        types.uint(amount),
+        'u' + BigInt(expiry),
+        'u' + BigInt(amount),
         types.principal(recipient)
       ], sender.address),
     ]);
@@ -444,7 +443,7 @@ class ALEXLottery {
   mint(sender: Account, recipient: string, amount : number) {
     let block = this.chain.mineBlock([
       Tx.contractCall("lottery-t-alex", "mint", [
-        types.uint(amount),
+        'u' + BigInt(amount),
         types.principal(recipient)        
       ], sender.address),
     ]);
@@ -454,7 +453,7 @@ class ALEXLottery {
   mintFixed(sender: Account, recipient: string, amount : number) {
     let block = this.chain.mineBlock([
       Tx.contractCall("lottery-t-alex", "mint-fixed", [
-        types.uint(amount),
+        'u' + BigInt(amount),
         types.principal(recipient)        
       ], sender.address),
     ]);
@@ -464,7 +463,7 @@ class ALEXLottery {
   transferToken(sender: Account, amount: number, receiver: string, memo:ArrayBuffer) {
     let block = this.chain.mineBlock([
         Tx.contractCall("lottery-t-alex", "transfer-fixed", [
-          types.uint(amount),
+          'u' + BigInt(amount),
           types.principal(sender.address),
           types.principal(receiver),
           types.some(types.buff(memo))
@@ -489,21 +488,21 @@ class YIELD_USDA {
 
   balanceOf(expiry: number, wallet: string) {
     return this.chain.callReadOnlyFn("yield-usda", "get-balance-fixed", [
-      types.uint(expiry), types.principal(wallet),
+      'u' + BigInt(expiry), types.principal(wallet),
     ], this.deployer.address);
   }
   
   totalSupply(expiry: number) {
     return this.chain.callReadOnlyFn("yield-usda", "get-total-supply-fixed", [
-      types.uint(expiry)
+      'u' + BigInt(expiry)
     ], this.deployer.address);
   }
   
   mintFixed(sender: Account, expiry: number, amount: number, recipient: string) {
     let block = this.chain.mineBlock([
       Tx.contractCall("yield-usda", "mint-fixed", [
-        types.uint(expiry),
-        types.uint(amount),
+        'u' + BigInt(expiry),
+        'u' + BigInt(amount),
         types.principal(recipient)
       ], sender.address),
     ]);

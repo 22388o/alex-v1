@@ -2,7 +2,7 @@ import { assertEquals, describe, Tx, TxReceipt, types } from "./token-alex-src/d
 import { CoreClient } from "./token-alex-src/core-client.ts";
 import { it } from "./token-alex-src/testutil.ts";
 
-const ONE_8 = 1e8;
+const ONE_16 = 1e16;
 const token = 'ST1HTBVD3JG9C05J7HBJTHGR0GGW7KXW28M5JS8QE.token-t-alex';
 
 describe("STAKING :", () => {
@@ -168,7 +168,7 @@ describe("STAKING :", () => {
         // arrange
         const staker = accounts.get("wallet_2")!;
         const deployer = accounts.get("deployer")!;            
-        const amountTokens = 200 * ONE_8;
+        const amountTokens = 200 * ONE_16;
         const lockPeriod = 2;
         chain.mineBlock([
           clients.core.addToken(deployer, token),
@@ -189,7 +189,7 @@ describe("STAKING :", () => {
         // arrange
         const staker = accounts.get("wallet_2")!;
         const deployer = accounts.get("deployer")!;
-        const amountTokens = 200 * ONE_8;
+        const amountTokens = 200 * ONE_16;
         const lockPeriod = 0;
         const block = chain.mineBlock([
           clients.core.setActivationThreshold(deployer, 1),
@@ -216,7 +216,7 @@ describe("STAKING :", () => {
         // arrange
         const staker = accounts.get("wallet_2")!;
         const deployer = accounts.get("deployer")!;        
-        const amountTokens = 200 * ONE_8;
+        const amountTokens = 200 * ONE_16;
         const lockPeriod = 33;
         const block = chain.mineBlock([
 
@@ -272,7 +272,7 @@ describe("STAKING :", () => {
         // arrange
         const staker = accounts.get("wallet_2")!;
         const deployer = accounts.get("deployer")!;        
-        const amountTokens = 20 * ONE_8;
+        const amountTokens = 20 * ONE_16;
         const lockPeriod = 5;
         const block = chain.mineBlock([
 
@@ -287,7 +287,7 @@ describe("STAKING :", () => {
 
         // act
         const receipt = chain.mineBlock([
-          clients.core.stakeTokens(amountTokens + ONE_8, lockPeriod, staker, token),
+          clients.core.stakeTokens(amountTokens + ONE_16, lockPeriod, staker, token),
         ]).receipts[0];
 
         // assert
@@ -300,7 +300,7 @@ describe("STAKING :", () => {
         // arrange
         const staker = accounts.get("wallet_2")!;
         const deployer = accounts.get("deployer")!;            
-        const amountTokens = 20 * ONE_8;
+        const amountTokens = 20 * ONE_16;
         const lockPeriod = 5;
         const block = chain.mineBlock([
           clients.core.setActivationThreshold(deployer, 1),
@@ -322,7 +322,8 @@ describe("STAKING :", () => {
         receipt.result.expectOk().expectBool(true);
         assertEquals(receipt.events.length, 2);
         receipt.events.expectFungibleTokenTransferEvent(
-          amountTokens,
+          // clients.token.fixedToDecimals(amountTokens),
+          amountTokens / 1e8,
           staker.address,
           clients.core.getVaultAddress(),
           "alex"
@@ -333,7 +334,7 @@ describe("STAKING :", () => {
         // arrange
         const staker = accounts.get("wallet_2")!;
         const deployer = accounts.get("deployer")!;            
-        const amountTokens = 20 * ONE_8;
+        const amountTokens = 20 * ONE_16;
         const lockPeriod = 5;
 
         const block = chain.mineBlock([
@@ -365,7 +366,8 @@ describe("STAKING :", () => {
           assertEquals(receipt.events.length, 2);
 
           receipt.events.expectFungibleTokenTransferEvent(
-            amountTokens,
+            // clients.token.fixedToDecimals(amountTokens),
+            amountTokens / 1e8,
             staker.address,
             clients.core.getVaultAddress(),
             "alex"
@@ -377,7 +379,7 @@ describe("STAKING :", () => {
         // arrange
         const staker = accounts.get("wallet_2")!;
         const deployer = accounts.get("deployer")!;            
-        const amountTokens = 20 * ONE_8;
+        const amountTokens = 20 * ONE_16;
         const lockPeriod = 1;
         const block = chain.mineBlock([
           clients.core.setActivationThreshold(deployer, 1),
@@ -404,8 +406,8 @@ describe("STAKING :", () => {
         ).result;
 
         assertEquals(result.expectTuple(), {
-          'amount-staked': types.uint(amountTokens),
-          'to-return': types.uint(amountTokens),
+          'amount-staked': 'u' + BigInt(amountTokens),
+          'to-return': 'u' + BigInt(amountTokens),
         });
       });
 
@@ -413,7 +415,7 @@ describe("STAKING :", () => {
         // arrange
         const staker = accounts.get("wallet_2")!;
         const deployer = accounts.get("deployer")!;            
-        const amountTokens = 20 * ONE_8;
+        const amountTokens = 20 * ONE_16;
         const lockPeriod = 8;
         const block = chain.mineBlock([
           clients.core.setActivationThreshold(deployer, 1),
@@ -441,8 +443,8 @@ describe("STAKING :", () => {
           ).result;
 
           assertEquals(result.expectTuple(), {
-            'amount-staked': types.uint(amountTokens),
-            'to-return': types.uint(rewardCycle === lockPeriod ? amountTokens : 0),
+            'amount-staked': 'u' + BigInt(amountTokens),
+            'to-return': 'u' + BigInt(rewardCycle === lockPeriod ? amountTokens : 0),
           });
         }
       });
@@ -461,11 +463,11 @@ describe("STAKING :", () => {
         }
 
         const StakingRecords: StakingRecord[] = [
-          new StakingRecord(1, 4, 20 * ONE_8),
-          new StakingRecord(3, 8, 432 * ONE_8),
-          new StakingRecord(7, 3, 10 * ONE_8),
-          new StakingRecord(8, 2, 15 * ONE_8),
-          new StakingRecord(9, 5, 123 * ONE_8),
+          new StakingRecord(1, 4, 20 * ONE_16),
+          new StakingRecord(3, 8, 432 * ONE_16),
+          new StakingRecord(7, 3, 10 * ONE_16),
+          new StakingRecord(8, 2, 15 * ONE_16),
+          new StakingRecord(9, 5, 123 * ONE_16),
         ];
 
         const totalAmountTokens = StakingRecords.reduce(
@@ -540,8 +542,8 @@ describe("STAKING :", () => {
           });
           
           assertEquals(result.expectTuple(), {
-            'amount-staked': types.uint(expected['amount-staked']),
-            'to-return': types.uint(expected['to-return']),
+            'amount-staked': 'u' + BigInt(expected['amount-staked']),
+            'to-return': 'u' + BigInt(expected['to-return']),
           });
         }
       });
@@ -657,7 +659,7 @@ describe("STAKING :", () => {
         const staker = accounts.get("wallet_1")!;
         const deployer = accounts.get("deployer")!;        
         const targetCycle = 1;
-        const amount = 200 * ONE_8;
+        const amount = 200 * ONE_16;
         const setupBlock = chain.mineBlock([
           clients.core.setActivationThreshold(deployer, 1),
           clients.core.addToken(deployer, token),
@@ -674,7 +676,7 @@ describe("STAKING :", () => {
 
         // act
         const receipt = chain.mineBlock([
-          clients.core.setCoinbaseAmount(deployer, token, ONE_8, ONE_8, ONE_8, ONE_8, ONE_8),
+          clients.core.setCoinbaseAmount(deployer, token, ONE_16, ONE_16, ONE_16, ONE_16, ONE_16),
           clients.core.claimStakingReward(targetCycle, staker, token),
           clients.core.claimStakingReward(targetCycle, staker, token),
         ]).receipts[2];
@@ -690,7 +692,7 @@ describe("STAKING :", () => {
         const staker = accounts.get("wallet_2")!;
         const deployer = accounts.get("deployer")!;        
         const targetCycle = 1;
-        const amountTokens = 200 * ONE_8;
+        const amountTokens = 200 * ONE_16;
         const setupBlock = chain.mineBlock([
           clients.core.setActivationThreshold(deployer, 1),
           clients.core.addToken(deployer, token),
@@ -705,19 +707,19 @@ describe("STAKING :", () => {
 
         // act
         const receipts = chain.mineBlock([
-          clients.core.setCoinbaseAmount(deployer, token, ONE_8, ONE_8, ONE_8, ONE_8, ONE_8),
+          clients.core.setCoinbaseAmount(deployer, token, ONE_16, ONE_16, ONE_16, ONE_16, ONE_16),
           clients.core.claimStakingReward(targetCycle, staker, token),
         ]).receipts;
 
         // assert
         let result:any = receipts[1].result.expectOk().expectTuple();
-        result['entitled-token'].expectUint(ONE_8);
+        result['entitled-token'].expectUint(ONE_16);
         result['to-return'].expectUint(amountTokens);
 
         assertEquals(receipts[1].events.length, 3);
 
         receipts[1].events.expectFungibleTokenTransferEvent(
-          amountTokens,
+          amountTokens / 1e8,
           clients.core.getVaultAddress(),
           staker.address,
           "alex"
@@ -738,11 +740,11 @@ describe("STAKING :", () => {
         }
 
         const StakingRecords: StakingRecord[] = [
-          new StakingRecord(1, 4, 20 * ONE_8),
-          new StakingRecord(3, 8, 432 * ONE_8),
-          new StakingRecord(7, 3, 10 * ONE_8),
-          new StakingRecord(8, 2, 15 * ONE_8),
-          new StakingRecord(9, 5, 123 * ONE_8),
+          new StakingRecord(1, 4, 20 * ONE_16),
+          new StakingRecord(3, 8, 432 * ONE_16),
+          new StakingRecord(7, 3, 10 * ONE_16),
+          new StakingRecord(8, 2, 15 * ONE_16),
+          new StakingRecord(9, 5, 123 * ONE_16),
         ];
 
         const totalAmountTokens = StakingRecords.reduce(
@@ -788,14 +790,14 @@ describe("STAKING :", () => {
         );
 
         chain.mineBlock([
-          clients.core.setCoinbaseAmount(deployer, token, ONE_8, ONE_8, ONE_8, ONE_8, ONE_8)]);
+          clients.core.setCoinbaseAmount(deployer, token, ONE_16, ONE_16, ONE_16, ONE_16, ONE_16)]);
 
         // act + assert
         for (let rewardCycle = 0; rewardCycle < maxCycle; rewardCycle++) {
           let toReturn = 0;
           let coinbaseAmount = parseFloat(clients.core.getCoinbaseAmount(rewardCycle, token).result.substr(1));
           let stakingReward = parseFloat(clients.core.getStakingReward(1, rewardCycle, token).result.substr(1)); 
-          let entitledToken = coinbaseAmount * stakingReward / ONE_8;          
+          let entitledToken = coinbaseAmount * stakingReward / ONE_16;          
 
           StakingRecords.forEach((record) => {
             let lastCycle = record.stackInCycle + record.lockPeriod;
@@ -816,16 +818,16 @@ describe("STAKING :", () => {
           } else if (toReturn === 0) {
             // only mints entitled tokens
             let result:any = receipt.result.expectOk().expectTuple();
-            result['entitled-token'].expectUint(ONE_8);
+            result['entitled-token'].expectUint(ONE_16);
             result['to-return'].expectUint(0);
             assertEquals(receipt.events.length, 1);
           } else {        
             let result:any = receipt.result.expectOk().expectTuple();
-            result['entitled-token'].expectUint(ONE_8);
+            result['entitled-token'].expectUint(ONE_16);
             assertEquals(receipt.events.length, 3);
 
             receipt.events.expectFungibleTokenTransferEvent(
-              toReturn,
+              toReturn / 1e8,
               clients.core.getVaultAddress(),
               staker.address,
               "alex"

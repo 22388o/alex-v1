@@ -15,7 +15,7 @@
 (define-constant ERR-AMOUNT-EXCEED-RESERVE (err u2024))
 (define-constant ERR-INVALID-TOKEN (err u2026))
 
-(define-constant ONE_8 (pow u10 u8)) ;; 8 decimal places
+(define-constant ONE_16 (pow u10 u16)) ;; 16 decimal places
 
 (define-data-var contract-owner principal tx-sender)
 (define-map approved-contracts principal bool)
@@ -386,13 +386,13 @@
 
 ;; @desc stake-tokens
 ;; @params token-trait; ft-trait
-;; @params amount-token
+;; @params amount-token-in-fixed
 ;; @params lock-period
 ;; @response (ok response)
-(define-public (stake-tokens (token-trait <ft-trait>) (amount-token uint) (lock-period uint))
+(define-public (stake-tokens (token-trait <ft-trait>) (amount-token-in-fixed uint) (lock-period uint))
   (begin
     (asserts! (default-to false (map-get? approved-tokens (contract-of token-trait))) ERR-INVALID-TOKEN)
-    (stake-tokens-at-cycle token-trait tx-sender (get-or-create-user-id (contract-of token-trait) tx-sender) amount-token block-height lock-period)
+    (stake-tokens-at-cycle token-trait tx-sender (get-or-create-user-id (contract-of token-trait) tx-sender) amount-token-in-fixed block-height lock-period)
   )
 )
 
@@ -400,11 +400,11 @@
 ;; @params token-trait; ft-trait
 ;; @params user
 ;; @params user-id
-;; @params amount-token
+;; @params amount-token-in-fixed
 ;; @params start-height 
 ;; @params lock-period
 ;; @returns (ok response)
-(define-private (stake-tokens-at-cycle (token-trait <ft-trait>) (user principal) (user-id uint) (amount-token uint) (start-height uint) (lock-period uint))
+(define-private (stake-tokens-at-cycle (token-trait <ft-trait>) (user principal) (user-id uint) (amount-token-in-fixed uint) (start-height uint) (lock-period uint))
   (let
     (
       (token (contract-of token-trait))
@@ -413,16 +413,16 @@
       (commitment {
         token: token,
         staker-id: user-id,
-        amount: amount-token,
+        amount: amount-token-in-fixed,
         first: target-cycle,
         last: (+ target-cycle lock-period)
       })
     )    
     (asserts! (>= block-height (get-activation-block-or-default token)) ERR-CONTRACT-NOT-ACTIVATED)
     (asserts! (and (> lock-period u0) (<= lock-period MAX-REWARD-CYCLES)) ERR-CANNOT-STAKE)
-    (asserts! (> amount-token u0) ERR-CANNOT-STAKE)
-    (unwrap! (contract-call? token-trait transfer-fixed amount-token tx-sender .alex-vault none) ERR-TRANSFER-FAILED)
-    (try! (as-contract (add-to-balance token amount-token)))
+    (asserts! (> amount-token-in-fixed u0) ERR-CANNOT-STAKE)
+    (unwrap! (contract-call? token-trait transfer-fixed amount-token-in-fixed tx-sender .alex-vault none) ERR-TRANSFER-FAILED)
+    (try! (as-contract (add-to-balance token amount-token-in-fixed)))
     (match (fold stake-tokens-closure REWARD-CYCLE-INDEXES (ok commitment))
       ok-value (ok true)
       err-value (err err-value)
@@ -451,7 +451,7 @@
       (
         (token (get token commitment))
         (staker-id (get staker-id commitment))
-        (amount-token (get amount commitment))
+        (amount-token-in-fixed (get amount commitment))
         (first-cycle (get first commitment))
         (last-cycle (get last commitment))
         (target-cycle (+ first-cycle reward-cycle-idx))
@@ -463,8 +463,8 @@
         (if (and (>= target-cycle first-cycle) (< target-cycle last-cycle))
           (begin
             (if (is-eq target-cycle (- last-cycle u1))
-              (set-tokens-staked token staker-id target-cycle amount-token amount-token)
-              (set-tokens-staked token staker-id target-cycle amount-token u0)
+              (set-tokens-staked token staker-id target-cycle amount-token-in-fixed amount-token-in-fixed)
+              (set-tokens-staked token staker-id target-cycle amount-token-in-fixed u0)
             )
             true
           )
@@ -679,18 +679,18 @@
 ;; @params a
 ;; @params b
 ;; @returns uint
-(define-read-only (mul-down (a uint) (b uint))
-    (/ (* a b) ONE_8)
+(define-private (mul-down (a uint) (b uint))
+    (/ (* a b) ONE_16)
 )
 
 ;; @desc div-down
 ;; @params a
 ;; @params b
 ;; @returns uint
-(define-read-only (div-down (a uint) (b uint))
+(define-private (div-down (a uint) (b uint))
   (if (is-eq a u0)
     u0
-    (/ (* a ONE_8) b)
+    (/ (* a ONE_16) b)
   )
 )
 

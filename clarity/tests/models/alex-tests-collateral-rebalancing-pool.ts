@@ -19,7 +19,7 @@ import {
       return this.chain.callReadOnlyFn("collateral-rebalancing-pool", "get-pool-details", [
         types.principal(token),
         types.principal(collateral),
-        types.uint(expiry)
+        'u' + BigInt(expiry)
       ], this.deployer.address);
     }    
 
@@ -28,7 +28,7 @@ import {
       return this.chain.callReadOnlyFn("collateral-rebalancing-pool", "get-pool-value-in-token", [
         types.principal(token),
         types.principal(collateral),
-        types.uint(expiry)
+        'u' + BigInt(expiry)
       ], this.deployer.address);
     }
 
@@ -37,7 +37,7 @@ import {
       return this.chain.callReadOnlyFn("collateral-rebalancing-pool", "get-pool-value-in-collateral", [
         types.principal(token),
         types.principal(collateral),
-        types.uint(expiry)
+        'u' + BigInt(expiry)
       ], this.deployer.address);
     }    
     
@@ -46,7 +46,7 @@ import {
       return this.chain.callReadOnlyFn("collateral-rebalancing-pool", "get-weight-y", [
         types.principal(token),
         types.principal(collateral),
-        types.uint(expiry),
+        'u' + BigInt(expiry),
       ], this.deployer.address);
     }
 
@@ -62,7 +62,7 @@ import {
       return this.chain.callReadOnlyFn("collateral-rebalancing-pool", "get-ltv", [
         types.principal(token),
         types.principal(collateral),
-        types.uint(expiry)
+        'u' + BigInt(expiry)
       ], this.deployer.address);
     }
 
@@ -70,8 +70,8 @@ import {
       return this.chain.callReadOnlyFn("collateral-rebalancing-pool", "get-token-given-position", [
         types.principal(token),
         types.principal(collateral),
-        types.uint(expiry),
-        types.uint(dx)
+        'u' + BigInt(expiry),
+        'u' + BigInt(dx)
       ], this.deployer.address);
     }    
   
@@ -80,16 +80,16 @@ import {
         Tx.contractCall("collateral-rebalancing-pool", "create-pool", [
           types.principal(token),
           types.principal(collateral),
-          types.uint(expiry),
+          'u' + BigInt(expiry),
           types.principal(yieldToken),
           types.principal(keyToken),
           types.principal(multiSig),
-          types.uint(ltv_0),
-          types.uint(conversion_ltv),
-          types.uint(bs_vol),
-          types.uint(moving_average),
-          types.uint(token_to_maturity),
-          types.uint(dX)
+          'u' + BigInt(ltv_0),
+          'u' + BigInt(conversion_ltv),
+          'u' + BigInt(bs_vol),
+          'u' + BigInt(moving_average),
+          'u' + BigInt(token_to_maturity),
+          'u' + BigInt(dX)
         ], user.address),
       ]);
       return block.receipts[0].result;
@@ -100,10 +100,10 @@ import {
           Tx.contractCall("collateral-rebalancing-pool", "add-to-position", [
             types.principal(token),
             types.principal(collateral),
-            types.uint(expiry),            
+            'u' + BigInt(expiry),            
             types.principal(yieldToken),
             types.principal(keyToken),
-            types.uint(dX)
+            'u' + BigInt(dX)
           ], user.address),
         ]);
         return block.receipts[0].result;
@@ -114,10 +114,10 @@ import {
           Tx.contractCall("collateral-rebalancing-pool", "add-to-position-and-switch", [
             types.principal(token),
             types.principal(collateral),
-            types.uint(expiry),            
+            'u' + BigInt(expiry),            
             types.principal(yieldToken),
             types.principal(keyToken),
-            types.uint(dX)
+            'u' + BigInt(dX)
           ], user.address),
         ]);
         return block.receipts[0].result;        
@@ -128,9 +128,9 @@ import {
           Tx.contractCall("collateral-rebalancing-pool", "reduce-position-yield", [
             types.principal(token),
             types.principal(collateral),
-            types.uint(expiry),
+            'u' + BigInt(expiry),
             types.principal(yieldToken),
-            types.uint(percent)
+            'u' + BigInt(percent)
           ], user.address),
         ]);
         return block.receipts[0].result;
@@ -141,9 +141,9 @@ import {
           Tx.contractCall("collateral-rebalancing-pool", "reduce-position-key", [
             types.principal(token),
             types.principal(collateral),
-            types.uint(expiry),
+            'u' + BigInt(expiry),
             types.principal(keyToken),
-            types.uint(percent)
+            'u' + BigInt(percent)
           ], user.address),
         ]);
         return block.receipts[0].result;
@@ -154,9 +154,9 @@ import {
         Tx.contractCall("collateral-rebalancing-pool", "swap-x-for-y", [
           types.principal(token),
           types.principal(collateral),
-          types.uint(expiry),
-          types.uint(dX),
-          types.some(types.uint(dy_min))
+          'u' + BigInt(expiry),
+          'u' + BigInt(dX),
+          types.some('u' + BigInt(dy_min))
         ], user.address),
       ]);
       return block.receipts[0].result;
@@ -167,9 +167,9 @@ import {
           Tx.contractCall("collateral-rebalancing-pool", "swap-y-for-x", [
             types.principal(token),
             types.principal(collateral),
-            types.uint(expiry),
-            types.uint(dY),
-            types.some(types.uint(min_dx))
+            'u' + BigInt(expiry),
+            'u' + BigInt(dY),
+            types.some('u' + BigInt(min_dx))
           ], user.address),
         ]);
         return block.receipts[0].result;
@@ -180,8 +180,8 @@ import {
         Tx.contractCall("collateral-rebalancing-pool", "get-y-given-x", [
           types.principal(token),
           types.principal(collateral),
-          types.uint(expiry),
-          types.uint(dX)
+          'u' + BigInt(expiry),
+          'u' + BigInt(dX)
         ], user.address),
       ]);
       return block.receipts[0].result;
@@ -192,8 +192,8 @@ import {
           Tx.contractCall("collateral-rebalancing-pool", "get-x-given-y", [
             types.principal(token),
             types.principal(collateral),
-            types.uint(expiry),
-            types.uint(dY)
+            'u' + BigInt(expiry),
+            'u' + BigInt(dY)
           ], user.address),
         ]);
         return block.receipts[0].result;
@@ -204,7 +204,7 @@ import {
           Tx.contractCall("collateral-rebalancing-pool", "get-balances", [
             types.principal(token),
             types.principal(collateral),
-            types.uint(expiry)
+            'u' + BigInt(expiry)
           ], user.address),
         ]);
         return block.receipts[0].result;
@@ -215,7 +215,7 @@ import {
         Tx.contractCall("collateral-rebalancing-pool", "get-fee-to-address", [
           types.principal(token),
           types.principal(collateral),
-          types.uint(expiry)
+          'u' + BigInt(expiry)
         ], user.address),
       ]);
       return block.receipts[0].result;
@@ -226,8 +226,8 @@ import {
         Tx.contractCall("collateral-rebalancing-pool", "set-fee-rate-x", [
           types.principal(token),
           types.principal(collateral),
-          types.uint(expiry),
-          types.uint(feerate)
+          'u' + BigInt(expiry),
+          'u' + BigInt(feerate)
         ], user.address),
       ]);
       return block.receipts[0].result;
@@ -238,8 +238,8 @@ import {
         Tx.contractCall("collateral-rebalancing-pool", "set-fee-rate-y", [
           types.principal(token),
           types.principal(collateral),
-          types.uint(expiry),
-          types.uint(feerate)
+          'u' + BigInt(expiry),
+          'u' + BigInt(feerate)
         ], user.address),
       ]);
       return block.receipts[0].result;
@@ -250,7 +250,7 @@ import {
         Tx.contractCall("collateral-rebalancing-pool", "get-fee-rate-x", [
           types.principal(token),
           types.principal(collateral),
-          types.uint(expiry)
+          'u' + BigInt(expiry)
         ], user.address),
       ]);
       return block.receipts[0].result;
@@ -261,7 +261,7 @@ import {
         Tx.contractCall("collateral-rebalancing-pool", "get-fee-rate-y", [
           types.principal(token),
           types.principal(collateral),
-          types.uint(expiry)
+          'u' + BigInt(expiry)
         ], user.address),
       ]);
       return block.receipts[0].result;
@@ -271,15 +271,15 @@ import {
       return this.chain.callReadOnlyFn("collateral-rebalancing-pool", "get-position-given-burn-key", [
         types.principal(token),
         types.principal(collateral),
-        types.uint(expiry),
-        types.uint(shares)
+        'u' + BigInt(expiry),
+        'u' + BigInt(shares)
       ], this.deployer.address);
     }
 
     burnKeyToken(user: Account, expiry: number, amount: number) {
       let block = this.chain.mineBlock([Tx.contractCall("key-wbtc-usda", "burn-fixed", [
-        types.uint(expiry),
-        types.uint(amount),
+        'u' + BigInt(expiry),
+        'u' + BigInt(amount),
         types.principal(user.address)        
       ], user.address),
       ]);
@@ -288,8 +288,8 @@ import {
 
     transfer(user: Account, token: string, expiry: number, amount: number, sender: string, recipient: string) {
       let block = this.chain.mineBlock([Tx.contractCall(token, "transfer-fixed", [
-        types.uint(expiry),
-        types.uint(amount),
+        'u' + BigInt(expiry),
+        'u' + BigInt(amount),
         types.principal(sender),
         types.principal(recipient),
       ], user.address),
@@ -299,7 +299,7 @@ import {
 
     getBalance(token: string, expiry: number, owner: string) {
       return this.chain.callReadOnlyFn(token, "get-balance-fixed", [
-        types.uint(expiry),
+        'u' + BigInt(expiry),
         types.principal(owner)
       ], this.deployer.address);
     }
@@ -308,8 +308,8 @@ import {
       return this.chain.callReadOnlyFn("collateral-rebalancing-pool", "get-x-given-price", [
           types.principal(token),
           types.principal(collateral),
-          types.uint(expiry),
-          types.uint(price)
+          'u' + BigInt(expiry),
+          'u' + BigInt(price)
         ], this.deployer.address);
     }    
 
@@ -317,8 +317,8 @@ import {
       return this.chain.callReadOnlyFn("collateral-rebalancing-pool", "get-y-given-price", [
         types.principal(token),
         types.principal(collateral),
-        types.uint(expiry),
-        types.uint(price)
+        'u' + BigInt(expiry),
+        'u' + BigInt(price)
       ], this.deployer.address);
     }    
 
@@ -327,8 +327,8 @@ import {
         Tx.contractCall("collateral-rebalancing-pool", "set-fee-rebate", [
           types.principal(token),
           types.principal(collateral),
-          types.uint(expiry),
-          types.uint(rebate)
+          'u' + BigInt(expiry),
+          'u' + BigInt(rebate)
         ], user.address),
       ]);
       return block.receipts[0].result;
@@ -338,7 +338,7 @@ import {
       return this.chain.callReadOnlyFn("collateral-rebalancing-pool", "get-fee-rebate", [
         types.principal(token),
         types.principal(collateral),
-        types.uint(expiry)
+        'u' + BigInt(expiry)
       ], this.deployer.address);
     }
     

@@ -6,7 +6,7 @@ import {
     ALEXToken,
   } from './models/alex-tests-tokens.ts';
 
-const ONE_8 = 100000000
+const ONE_16 = 1e16
 const ACTIVATION_THRESHOLD = 1
 const REGISTRATION_START = 50
 const REGISTRATION_END = 100
@@ -42,28 +42,28 @@ Clarinet.test({
         let lottery = new ALEXLottery(chain, deployer);
         let talexToken = new ALEXToken(chain, deployer);
         
-        let result:any = talexToken.mintFixed(deployer, deployer.address, 100 * ONE_8);
+        let result:any = talexToken.mintFixed(deployer, deployer.address, 100 * ONE_16);
         result.expectOk();
-        result = lottery.mintFixed(deployer, wallet_1.address, 100 * ONE_8);
+        result = lottery.mintFixed(deployer, wallet_1.address, 100 * ONE_16);
         result.expectOk();
-        result = lottery.mintFixed(deployer, wallet_2.address, 10 * ONE_8);
+        result = lottery.mintFixed(deployer, wallet_2.address, 10 * ONE_16);
         result.expectOk();        
 
         // if REGISTRATION_START > REGISTRATION_END, contract should throw error 'INVALID_REGISTRATION_PERIOD'
         // swapping these params for testing
-        result = ALPTest.createPool(deployer, TOKEN_TRAIT_ADDRESS , TICKET_TRAIT_ADDRESS, FEE_TO_ADDRESS, 100, 3e7, REGISTRATION_END, REGISTRATION_START, CLAIM_END, ACTIVATION_THRESHOLD).receipts[0].result;
+        result = ALPTest.createPool(deployer, TOKEN_TRAIT_ADDRESS , TICKET_TRAIT_ADDRESS, FEE_TO_ADDRESS, 100, 3e15, REGISTRATION_END, REGISTRATION_START, CLAIM_END, ACTIVATION_THRESHOLD).receipts[0].result;
         result.expectErr().expectUint(ErrCode.ERR_INVALID_REGISTRATION_PERIOD);
 
         // if CLAIM_END < REGISTRATION_END, contract should throw error 'INVALID_CLAIM_PERIOD'
-        result = ALPTest.createPool(deployer, TOKEN_TRAIT_ADDRESS , TICKET_TRAIT_ADDRESS, FEE_TO_ADDRESS, 100, 3e7, REGISTRATION_START, REGISTRATION_END,  REGISTRATION_END, ACTIVATION_THRESHOLD).receipts[0].result;
+        result = ALPTest.createPool(deployer, TOKEN_TRAIT_ADDRESS , TICKET_TRAIT_ADDRESS, FEE_TO_ADDRESS, 100, 3e15, REGISTRATION_START, REGISTRATION_END,  REGISTRATION_END, ACTIVATION_THRESHOLD).receipts[0].result;
         result.expectErr().expectUint(ErrCode.ERR_INVALID_CLAIM_PERIOD);
 
         // Deployer creating a pool, FEE_TO_ADDRESS will be the one that's getting added in the pool
-        result = ALPTest.createPool(deployer, TOKEN_TRAIT_ADDRESS , TICKET_TRAIT_ADDRESS, FEE_TO_ADDRESS, 100, 3e7, REGISTRATION_START, REGISTRATION_END,  CLAIM_END, ACTIVATION_THRESHOLD).receipts[0].result;
+        result = ALPTest.createPool(deployer, TOKEN_TRAIT_ADDRESS , TICKET_TRAIT_ADDRESS, FEE_TO_ADDRESS, 100, 3e15, REGISTRATION_START, REGISTRATION_END,  CLAIM_END, ACTIVATION_THRESHOLD).receipts[0].result;
         result.expectOk().expectBool(true);
 
         // Wallet-1 i.e. not an owner trying to create pool, will get authorization error
-        result = ALPTest.createPool(wallet_1, TOKEN_TRAIT_ADDRESS, TICKET_TRAIT_ADDRESS, FEE_TO_ADDRESS, 100, 3e7, REGISTRATION_START, REGISTRATION_END, CLAIM_END, ACTIVATION_THRESHOLD).receipts[0].result;
+        result = ALPTest.createPool(wallet_1, TOKEN_TRAIT_ADDRESS, TICKET_TRAIT_ADDRESS, FEE_TO_ADDRESS, 100, 3e15, REGISTRATION_START, REGISTRATION_END, CLAIM_END, ACTIVATION_THRESHOLD).receipts[0].result;
         result.expectErr().expectUint(ErrCode.ERR_UNAUTHORIZED);
 
         // getRegistrationStart should return REGISTRATION_START value
@@ -88,7 +88,7 @@ Clarinet.test({
         result.expectErr().expectUint(ErrCode.ERR_INVALID_TICKET)
 
         // check with more number of tickets than owned by user
-        result = ALPTest.addToPosition (deployer, TOKEN_TRAIT_ADDRESS, TICKETS_NUM * ONE_8).receipts[0].result;
+        result = ALPTest.addToPosition (deployer, TOKEN_TRAIT_ADDRESS, TICKETS_NUM * 100000).receipts[0].result;
         result.expectErr().expectUint(ErrCode.ERR_TRANSFER_FAILED);
 
         // Check with authorized user, (OK true) should be returned
@@ -112,15 +112,15 @@ Clarinet.test({
         let lottery = new ALEXLottery(chain, deployer);
         let talexToken = new ALEXToken(chain, deployer);
         
-        let result:any = talexToken.mintFixed(deployer, deployer.address, 100 * ONE_8);
+        let result:any = talexToken.mintFixed(deployer, deployer.address, 100 * ONE_16);
         result.expectOk();
-        result = lottery.mintFixed(deployer, wallet_1.address, 100 * ONE_8);
+        result = lottery.mintFixed(deployer, wallet_1.address, 100 * ONE_16);
         result.expectOk();
-        result = lottery.mintFixed(deployer, wallet_2.address, 10 * ONE_8);
+        result = lottery.mintFixed(deployer, wallet_2.address, 10 * ONE_16);
         result.expectOk();        
 
         // Deployer creating a pool, FEE_TO_ADDRESS will be the one that's getting added in the pool
-        result = ALPTest.createPool(deployer, TOKEN_TRAIT_ADDRESS , TICKET_TRAIT_ADDRESS, FEE_TO_ADDRESS, 100, 3e7, REGISTRATION_START, REGISTRATION_END, CLAIM_END, ACTIVATION_THRESHOLD).receipts[0].result;
+        result = ALPTest.createPool(deployer, TOKEN_TRAIT_ADDRESS , TICKET_TRAIT_ADDRESS, FEE_TO_ADDRESS, 100, 3e15, REGISTRATION_START, REGISTRATION_END, CLAIM_END, ACTIVATION_THRESHOLD).receipts[0].result;
         result.expectOk().expectBool(true);
  
         // Add to position expects the same TOKEN_TRAIT_ADDRESSN that pool was created with
@@ -175,15 +175,15 @@ Clarinet.test({
         let lottery = new ALEXLottery(chain, deployer);
         let talexToken = new ALEXToken(chain, deployer);
         
-        let result:any = talexToken.mintFixed(deployer, deployer.address, 1000 * ONE_8);
+        let result:any = talexToken.mintFixed(deployer, deployer.address, 1000 * ONE_16);
         result.expectOk();
-        result = lottery.mintFixed(deployer, wallet_1.address, 100 * ONE_8);
+        result = lottery.mintFixed(deployer, wallet_1.address, 100 * ONE_16);
         result.expectOk();
-        result = lottery.mintFixed(deployer, wallet_2.address, 10 * ONE_8);
+        result = lottery.mintFixed(deployer, wallet_2.address, 10 * ONE_16);
         result.expectOk();        
 
         // Deployer creating a pool, FEE_TO_ADDRESS will be the one that's getting added in the pool
-        result = ALPTest.createPool(deployer, TOKEN_TRAIT_ADDRESS , TICKET_TRAIT_ADDRESS, FEE_TO_ADDRESS, 100, 3e7, REGISTRATION_START, REGISTRATION_END,  CLAIM_END, ACTIVATION_THRESHOLD).receipts[0].result;
+        result = ALPTest.createPool(deployer, TOKEN_TRAIT_ADDRESS , TICKET_TRAIT_ADDRESS, FEE_TO_ADDRESS, 100, 3e15, REGISTRATION_START, REGISTRATION_END,  CLAIM_END, ACTIVATION_THRESHOLD).receipts[0].result;
         result.expectOk().expectBool(true);
 
         // Add to position expects the same TOKEN_TRAIT_ADDRESSN that pool was created with
@@ -244,15 +244,15 @@ Clarinet.test({
         let lottery = new ALEXLottery(chain, deployer);
         let talexToken = new ALEXToken(chain, deployer);
         
-        let result:any = talexToken.mintFixed(deployer, deployer.address, 100 * ONE_8);
+        let result:any = talexToken.mintFixed(deployer, deployer.address, 100 * ONE_16);
         result.expectOk();
-        result = lottery.mintFixed(deployer, wallet_1.address, 100 * ONE_8);
+        result = lottery.mintFixed(deployer, wallet_1.address, 100 * ONE_16);
         result.expectOk();
-        result = lottery.mintFixed(deployer, wallet_2.address, 10 * ONE_8);
+        result = lottery.mintFixed(deployer, wallet_2.address, 10 * ONE_16);
         result.expectOk();        
 
         // Deployer creating a pool, FEE_TO_ADDRESS will be the one that's getting added in the pool
-        result = ALPTest.createPool(deployer, TOKEN_TRAIT_ADDRESS , TICKET_TRAIT_ADDRESS, FEE_TO_ADDRESS, 100, 3e7, REGISTRATION_START, REGISTRATION_END,  CLAIM_END, ACTIVATION_THRESHOLD);
+        result = ALPTest.createPool(deployer, TOKEN_TRAIT_ADDRESS , TICKET_TRAIT_ADDRESS, FEE_TO_ADDRESS, 100, 3e15, REGISTRATION_START, REGISTRATION_END,  CLAIM_END, ACTIVATION_THRESHOLD);
         result.receipts[0].result.expectOk().expectBool(true);
 
         chain.mineEmptyBlockUntil(REGISTRATION_START)
@@ -273,15 +273,15 @@ Clarinet.test({
         let lottery = new ALEXLottery(chain, deployer);
         let talexToken = new ALEXToken(chain, deployer);
         
-        let result:any = talexToken.mintFixed(deployer, deployer.address, 100 * ONE_8);
+        let result:any = talexToken.mintFixed(deployer, deployer.address, 100 * ONE_16);
         result.expectOk();
-        result = lottery.mintFixed(deployer, wallet_1.address, 100 * ONE_8);
+        result = lottery.mintFixed(deployer, wallet_1.address, 100 * ONE_16);
         result.expectOk();
-        result = lottery.mintFixed(deployer, wallet_2.address, 10 * ONE_8);
+        result = lottery.mintFixed(deployer, wallet_2.address, 10 * ONE_16);
         result.expectOk();        
 
         // Deployer creating a pool, FEE_TO_ADDRESS will be the one that's getting added in the pool
-        result = ALPTest.createPool(deployer, TOKEN_TRAIT_ADDRESS , TICKET_TRAIT_ADDRESS, FEE_TO_ADDRESS, 100, 3e7, REGISTRATION_START, REGISTRATION_END,  CLAIM_END, ACTIVATION_THRESHOLD);
+        result = ALPTest.createPool(deployer, TOKEN_TRAIT_ADDRESS , TICKET_TRAIT_ADDRESS, FEE_TO_ADDRESS, 100, 3e15, REGISTRATION_START, REGISTRATION_END,  CLAIM_END, ACTIVATION_THRESHOLD);
         result.receipts[0].result.expectOk().expectBool(true);
 
         // Add to position expects the same TOKEN_TRAIT_ADDRESSN that pool was created with
@@ -312,15 +312,15 @@ Clarinet.test({
         let lottery = new ALEXLottery(chain, deployer);
         let talexToken = new ALEXToken(chain, deployer);
         
-        let result:any = talexToken.mintFixed(deployer, deployer.address, 100 * ONE_8);
+        let result:any = talexToken.mintFixed(deployer, deployer.address, 100 * ONE_16);
         result.expectOk();
-        result = lottery.mintFixed(deployer, wallet_1.address, 100 * ONE_8);
+        result = lottery.mintFixed(deployer, wallet_1.address, 100 * ONE_16);
         result.expectOk();
-        result = lottery.mintFixed(deployer, wallet_2.address, 10 * ONE_8);
+        result = lottery.mintFixed(deployer, wallet_2.address, 10 * ONE_16);
         result.expectOk();        
 
         // Deployer creating a pool, FEE_TO_ADDRESS will be the one that's getting added in the pool
-        result = ALPTest.createPool(deployer, TOKEN_TRAIT_ADDRESS , TICKET_TRAIT_ADDRESS, FEE_TO_ADDRESS, 100, 3e7, REGISTRATION_START, REGISTRATION_END,  CLAIM_END, ACTIVATION_THRESHOLD);
+        result = ALPTest.createPool(deployer, TOKEN_TRAIT_ADDRESS , TICKET_TRAIT_ADDRESS, FEE_TO_ADDRESS, 100, 3e15, REGISTRATION_START, REGISTRATION_END,  CLAIM_END, ACTIVATION_THRESHOLD);
         result.receipts[0].result.expectOk().expectBool(true);
 
         // Add to position expects the same TOKEN_TRAIT_ADDRESSN that pool was created with
@@ -343,7 +343,7 @@ Clarinet.test({
         result['total-subscribed'].expectUint(100)
         result['total-tickets'].expectUint(1)
         result['users-nonce'].expectUint(1)
-        result['wstx-per-ticket-in-fixed'].expectUint(30000000)
+        result['wstx-per-ticket-in-fixed'].expectUint(0.3e16)
         assertEquals(result['fee-to-address'], FEE_TO_ADDRESS);
         assertEquals(result['ticket'], TICKET_TRAIT_ADDRESS)
     }
@@ -360,15 +360,15 @@ Clarinet.test({
         let lottery = new ALEXLottery(chain, deployer);
         let talexToken = new ALEXToken(chain, deployer);
         
-        let result:any = talexToken.mintFixed(deployer, deployer.address, 100 * ONE_8);
+        let result:any = talexToken.mintFixed(deployer, deployer.address, 100 * ONE_16);
         result.expectOk();
-        result = lottery.mintFixed(deployer, wallet_1.address, 100 * ONE_8);
+        result = lottery.mintFixed(deployer, wallet_1.address, 100 * ONE_16);
         result.expectOk();
-        result = lottery.mintFixed(deployer, wallet_2.address, 10 * ONE_8);
+        result = lottery.mintFixed(deployer, wallet_2.address, 10 * ONE_16);
         result.expectOk();        
 
         // Deployer creating a pool, FEE_TO_ADDRESS will be the one that's getting added in the pool
-        result = ALPTest.createPool(deployer, TOKEN_TRAIT_ADDRESS , TICKET_TRAIT_ADDRESS, FEE_TO_ADDRESS, 100, 3e7, REGISTRATION_START, REGISTRATION_END, CLAIM_END, ACTIVATION_THRESHOLD);
+        result = ALPTest.createPool(deployer, TOKEN_TRAIT_ADDRESS , TICKET_TRAIT_ADDRESS, FEE_TO_ADDRESS, 100, 3e15, REGISTRATION_START, REGISTRATION_END, CLAIM_END, ACTIVATION_THRESHOLD);
         result.receipts[0].result.expectOk().expectBool(true);
 
         // Add to position expects the same TOKEN_TRAIT_ADDRESSN that pool was created with
@@ -387,7 +387,7 @@ Clarinet.test({
         result['tickets-won'].expectUint(0)
         result['value-high'].expectUint(100)
         result['value-low'].expectUint(1)
-        result['wstx-locked-in-fixed'].expectUint(3000000000)
+        result['wstx-locked-in-fixed'].expectUint(30e16)
 
         // subscriber at token should return default values with unavailble user-id
         result = ALPTest.getSubscriberAtTokenOrDefault(TOKEN_TRAIT_ADDRESS, 2).result;
@@ -412,15 +412,15 @@ Clarinet.test({
         let lottery = new ALEXLottery(chain, deployer);
         let talexToken = new ALEXToken(chain, deployer);
         
-        let result:any = talexToken.mintFixed(deployer, deployer.address, 100 * ONE_8);
+        let result:any = talexToken.mintFixed(deployer, deployer.address, 100 * ONE_16);
         result.expectOk();
-        result = lottery.mintFixed(deployer, wallet_1.address, 100 * ONE_8);
+        result = lottery.mintFixed(deployer, wallet_1.address, 100 * ONE_16);
         result.expectOk();
-        result = lottery.mintFixed(deployer, wallet_2.address, 10 * ONE_8);
+        result = lottery.mintFixed(deployer, wallet_2.address, 10 * ONE_16);
         result.expectOk();        
 
         // Deployer creating a pool, FEE_TO_ADDRESS will be the one that's getting added in the pool
-        result = ALPTest.createPool(deployer, TOKEN_TRAIT_ADDRESS , TICKET_TRAIT_ADDRESS, FEE_TO_ADDRESS, 100, 3e7, REGISTRATION_START, REGISTRATION_END, CLAIM_END, ACTIVATION_THRESHOLD);
+        result = ALPTest.createPool(deployer, TOKEN_TRAIT_ADDRESS , TICKET_TRAIT_ADDRESS, FEE_TO_ADDRESS, 100, 3e15, REGISTRATION_START, REGISTRATION_END, CLAIM_END, ACTIVATION_THRESHOLD);
         result.receipts[0].result.expectOk().expectBool(true);
 
         // Add to position expects the same TOKEN_TRAIT_ADDRESSN that pool was created with

@@ -2,7 +2,7 @@
 (use-trait sft-trait .trait-semi-fungible.semi-fungible-trait)
 (use-trait flash-loan-user-trait .trait-flash-loan-user.flash-loan-user-trait)
 
-(define-constant ONE_8 (pow u10 u8))
+(define-constant ONE_16 (pow u10 u16))
 
 ;; @desc roll-position
 ;; @param token; ft-trait
@@ -15,13 +15,13 @@
 (define-public (roll-position (token <ft-trait>) (collateral <ft-trait>) (the-key-token <sft-trait>) (flash-loan-user <flash-loan-user-trait>) (expiry uint) (expiry-to-roll uint))
     (let
         (
-            (reduce-data (try! (contract-call? .collateral-rebalancing-pool reduce-position-key token collateral expiry the-key-token ONE_8)))
+            (reduce-data (try! (contract-call? .collateral-rebalancing-pool reduce-position-key token collateral expiry the-key-token ONE_16)))
             (collateral-amount (get dx reduce-data))
             (token-amount (get dy reduce-data))
             (token-to-collateral 
                                 (if (is-eq token-amount u0) 
                                     u0 
-                                    (try! (contract-call? .fixed-weight-pool swap-helper token collateral u50000000 u50000000 token-amount none)) 
+                                    (try! (contract-call? .fixed-weight-pool swap-helper token collateral u5000000000000000 u5000000000000000 token-amount none)) 
                                 )
             )
             (expiry-to-roll-buff (uint-to-buff expiry-to-roll))

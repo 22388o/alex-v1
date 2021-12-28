@@ -21,7 +21,7 @@ import {
         Tx.contractCall("alex-vault", "flash-loan", [
           types.principal(loanuser),
           types.principal(token),
-          types.uint(amount),
+          'u' + BigInt(amount),
           types.some(types.buff(memo))
         ], user.address),
       ]);
@@ -35,8 +35,8 @@ import {
           types.principal(collateral),
           types.principal(keyToken),
           types.principal(loanuser),
-          types.uint(expiry),
-          types.uint(expiry_to_roll)
+          'u' + BigInt(expiry),
+          'u' + BigInt(expiry_to_roll)
         ], user.address),
       ]);
       return block.receipts[0].result;
@@ -50,7 +50,7 @@ import {
 
     getBalanceSFT(token: string, expiry: number, owner: string) {
       return this.chain.callReadOnlyFn(token, "get-balance-fixed", [
-        types.uint(expiry),
+        'u' + BigInt(expiry),
         types.principal(owner)
       ], this.deployer.address);
     }        

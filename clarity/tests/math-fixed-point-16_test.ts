@@ -12,13 +12,13 @@ const ONE_16 = 10000000000000000
 
         let call = chain.callReadOnlyFn("math-fixed-point-16", "scale-up",
             [
-                types.uint(5),
+                'u' + BigInt(5),
             ], deployer.address);
         call.result.expectUint(5*ONE_16);
 
         call = chain.callReadOnlyFn("math-fixed-point-16", "scale-down",
             [
-                types.uint(5*ONE_16),
+                'u' + BigInt(5*ONE_16),
             ], deployer.address);
         call.result.expectUint(5);
     },
@@ -32,15 +32,15 @@ Clarinet.test({
 
         let call = chain.callReadOnlyFn("math-fixed-point-16", "mul-up",
             [
-                types.uint(5*ONE_16),
-                types.uint(5*ONE_16),
+                'u' + BigInt(5*ONE_16),
+                'u' + BigInt(5*ONE_16),
             ], deployer.address);
         call.result.expectUint(25*ONE_16);
 
         call = chain.callReadOnlyFn("math-fixed-point-16", "mul-down",
             [
-                types.uint(5*ONE_16),
-                types.uint(5*ONE_16),
+                'u' + BigInt(5*ONE_16),
+                'u' + BigInt(5*ONE_16),
             ], deployer.address);
         call.result.expectUint(25*ONE_16);
     },
@@ -54,15 +54,15 @@ Clarinet.test({
 
         let call = chain.callReadOnlyFn("math-fixed-point-16", "div-up",
             [
-                types.uint(10*ONE_16),
-                types.uint(5*ONE_16),
+                'u' + BigInt(10*ONE_16),
+                'u' + BigInt(5*ONE_16),
             ], deployer.address);
         call.result.expectUint(2*ONE_16);
 
         call = chain.callReadOnlyFn("math-fixed-point-16", "div-down",
             [
-                types.uint(10*ONE_16),
-                types.uint(5*ONE_16),
+                'u' + BigInt(10*ONE_16),
+                'u' + BigInt(5*ONE_16),
             ], deployer.address);
         call.result.expectUint(2*ONE_16);
     },
@@ -74,10 +74,10 @@ Clarinet.test({
         
         let deployer = accounts.get("deployer")!;
 
-        let call = chain.callReadOnlyFn("math-fixed-point-16", "pow-up",
+        let call = chain.callReadOnlyFn("math-fixed-point-16", "pow-down",
             [
-                "u50000000000000000",
-                "u50000000000000000"
+                "u5000000000000000000000",
+                "u5000000000000000"
             ], deployer.address);
         assertEquals(call.result, "u312499999999999501311150364854883986")
 

@@ -19,8 +19,8 @@ import {
       return this.chain.callReadOnlyFn("fixed-weight-pool", "get-pool-details", [
         types.principal(tokenX),
         types.principal(tokenY),
-        types.uint(weightX),
-        types.uint(weightY),
+        'u' + BigInt(weightX),
+        'u' + BigInt(weightY),
       ], this.deployer.address);
     }
 
@@ -28,8 +28,8 @@ import {
       return this.chain.callReadOnlyFn("fixed-weight-pool", "get-oracle-resilient", [
         types.principal(tokenX),
         types.principal(tokenY),
-        types.uint(weightX),
-        types.uint(weightY),
+        'u' + BigInt(weightX),
+        'u' + BigInt(weightY),
       ], this.deployer.address);
     }    
 
@@ -37,8 +37,8 @@ import {
       return this.chain.callReadOnlyFn("fixed-weight-pool", "get-oracle-instant", [
         types.principal(tokenX),
         types.principal(tokenY),
-        types.uint(weightX),
-        types.uint(weightY),
+        'u' + BigInt(weightX),
+        'u' + BigInt(weightY),
       ], this.deployer.address);
     }      
 
@@ -47,8 +47,8 @@ import {
         Tx.contractCall("fixed-weight-pool", "set-oracle-enabled", [
           types.principal(tokenX),
           types.principal(tokenY),
-          types.uint(weightX),
-          types.uint(weightY)
+          'u' + BigInt(weightX),
+          'u' + BigInt(weightY)
         ], user.address),
       ]);
       return block.receipts[0].result;
@@ -59,9 +59,9 @@ import {
         Tx.contractCall("fixed-weight-pool", "set-oracle-average", [
           types.principal(tokenX),
           types.principal(tokenY),
-          types.uint(weightX),
-          types.uint(weightY),
-          types.uint(average)
+          'u' + BigInt(weightX),
+          'u' + BigInt(weightY),
+          'u' + BigInt(average)
         ], user.address),
       ]);
       return block.receipts[0].result;
@@ -72,12 +72,12 @@ import {
         Tx.contractCall("fixed-weight-pool", "create-pool", [
           types.principal(tokenX),
           types.principal(tokenY),
-          types.uint(weightX),
-          types.uint(weightY),
+          'u' + BigInt(weightX),
+          'u' + BigInt(weightY),
           types.principal(pooltoken),
           types.principal(multisig),
-          types.uint(balanceX),
-          types.uint(balanceY),
+          'u' + BigInt(balanceX),
+          'u' + BigInt(balanceY),
         ], user.address),
       ]);
       return block.receipts[0].result;
@@ -88,11 +88,11 @@ import {
         Tx.contractCall("fixed-weight-pool", "add-to-position", [
           types.principal(tokenX),
           types.principal(tokenY),
-          types.uint(weightX),
-          types.uint(weightY),
+          'u' + BigInt(weightX),
+          'u' + BigInt(weightY),
           types.principal(pooltoken),
-          types.uint(dX),
-          types.some(types.uint(dY)),
+          'u' + BigInt(dX),
+          types.some('u' + BigInt(dY)),
         ], user.address),
       ]);
       return block.receipts[0].result;
@@ -103,10 +103,10 @@ import {
         Tx.contractCall("fixed-weight-pool", "reduce-position", [
           types.principal(tokenX),
           types.principal(tokenY),
-          types.uint(weightX),
-          types.uint(weightY),
+          'u' + BigInt(weightX),
+          'u' + BigInt(weightY),
           types.principal(pooltoken),
-          types.uint(percentage),
+          'u' + BigInt(percentage),
         ], user.address),
       ]);
       return block.receipts[0].result;
@@ -117,10 +117,10 @@ import {
         Tx.contractCall("fixed-weight-pool", "swap-x-for-y", [
           types.principal(tokenX),
           types.principal(tokenY),
-          types.uint(weightX),
-          types.uint(weightY),
-          types.uint(dx),
-          types.some(types.uint(dy_min))
+          'u' + BigInt(weightX),
+          'u' + BigInt(weightY),
+          'u' + BigInt(dx),
+          types.some('u' + BigInt(dy_min))
         ], user.address),
       ]);
       return block.receipts[0].result;
@@ -131,10 +131,10 @@ import {
         Tx.contractCall("fixed-weight-pool", "swap-y-for-x", [
           types.principal(tokenX),
           types.principal(tokenY),
-          types.uint(weightX),
-          types.uint(weightY),
-          types.uint(dy),
-          types.some(types.uint(dx_min))
+          'u' + BigInt(weightX),
+          'u' + BigInt(weightY),
+          'u' + BigInt(dy),
+          types.some('u' + BigInt(dx_min))
         ], user.address),
       ]);
       return block.receipts[0].result;
@@ -144,9 +144,9 @@ import {
       return this.chain.callReadOnlyFn("fixed-weight-pool", "get-x-given-price", [
         types.principal(tokenX),
         types.principal(tokenY),
-        types.uint(weightX),
-        types.uint(weightY),
-        types.uint(price)
+        'u' + BigInt(weightX),
+        'u' + BigInt(weightY),
+        'u' + BigInt(price)
       ], this.deployer.address);
     } 
     
@@ -154,9 +154,9 @@ import {
       return this.chain.callReadOnlyFn("fixed-weight-pool", "get-y-given-price", [
         types.principal(tokenX),
         types.principal(tokenY),
-        types.uint(weightX),
-        types.uint(weightY),
-        types.uint(price)
+        'u' + BigInt(weightX),
+        'u' + BigInt(weightY),
+        'u' + BigInt(price)
       ], this.deployer.address);
     } 
   
@@ -165,8 +165,8 @@ import {
         Tx.contractCall("fixed-weight-pool", "set-fee-to-address", [
           types.principal(tokenX),
           types.principal(tokenY),
-          types.uint(weightX),
-          types.uint(weightY),
+          'u' + BigInt(weightX),
+          'u' + BigInt(weightY),
           types.principal(address) 
         ], user.address),
       ]);
@@ -178,8 +178,8 @@ import {
         Tx.contractCall("fixed-weight-pool", "get-fee-to-address", [
           types.principal(tokenX),
           types.principal(tokenY),
-          types.uint(weightX),
-          types.uint(weightY)
+          'u' + BigInt(weightX),
+          'u' + BigInt(weightY)
         ], user.address),
       ]);
       return block.receipts[0].result;
@@ -190,8 +190,8 @@ import {
         Tx.contractCall("fixed-weight-pool", "get-fee-rate-x", [
           types.principal(tokenX),
           types.principal(tokenY),
-          types.uint(weightX),
-          types.uint(weightY)
+          'u' + BigInt(weightX),
+          'u' + BigInt(weightY)
         ], user.address),
       ]);
       return block.receipts[0].result;
@@ -202,8 +202,8 @@ import {
         Tx.contractCall("fixed-weight-pool", "get-fee-rate-y", [
           types.principal(tokenX),
           types.principal(tokenY),
-          types.uint(weightX),
-          types.uint(weightY)
+          'u' + BigInt(weightX),
+          'u' + BigInt(weightY)
         ], user.address),
       ]);
       return block.receipts[0].result;
@@ -216,9 +216,9 @@ import {
         Tx.contractCall("fixed-weight-pool", "set-fee-rate-x", [
           types.principal(tokenX),
           types.principal(tokenY),
-          types.uint(weightX),
-          types.uint(weightY),
-          types.uint(feerate)
+          'u' + BigInt(weightX),
+          'u' + BigInt(weightY),
+          'u' + BigInt(feerate)
         ], user.address),
       ]);
       return block.receipts[0].result;
@@ -229,9 +229,9 @@ import {
         Tx.contractCall("fixed-weight-pool", "set-fee-rate-y", [
           types.principal(tokenX),
           types.principal(tokenY),
-          types.uint(weightX),
-          types.uint(weightY),
-          types.uint(feerate)
+          'u' + BigInt(weightX),
+          'u' + BigInt(weightY),
+          'u' + BigInt(feerate)
         ], user.address),
       ]);
       return block.receipts[0].result;
@@ -241,9 +241,9 @@ import {
       return this.chain.callReadOnlyFn("fixed-weight-pool", "get-y-given-x", [
         types.principal(tokenX),
         types.principal(tokenY),
-        types.uint(weightX),
-        types.uint(weightY),
-        types.uint(dx)
+        'u' + BigInt(weightX),
+        'u' + BigInt(weightY),
+        'u' + BigInt(dx)
       ], this.deployer.address);
     }
     
@@ -251,9 +251,9 @@ import {
       return this.chain.callReadOnlyFn("fixed-weight-pool", "get-x-given-y", [
         types.principal(tokenX),
         types.principal(tokenY),
-        types.uint(weightX),
-        types.uint(weightY),
-        types.uint(dy)
+        'u' + BigInt(weightX),
+        'u' + BigInt(weightY),
+        'u' + BigInt(dy)
       ], this.deployer.address);
     }
 
@@ -262,9 +262,9 @@ import {
         Tx.contractCall("fixed-weight-pool", "set-fee-rebate", [
           types.principal(tokenX),
           types.principal(tokenY),
-          types.uint(weightX),
-          types.uint(weightY),
-          types.uint(rebate)
+          'u' + BigInt(weightX),
+          'u' + BigInt(weightY),
+          'u' + BigInt(rebate)
         ], user.address),
       ]);
       return block.receipts[0].result;
@@ -274,8 +274,8 @@ import {
       return this.chain.callReadOnlyFn("fixed-weight-pool", "get-fee-rebate", [
         types.principal(tokenX),
         types.principal(tokenY),
-        types.uint(weightX),
-        types.uint(weightY),
+        'u' + BigInt(weightX),
+        'u' + BigInt(weightY),
       ], this.deployer.address);
     }
   

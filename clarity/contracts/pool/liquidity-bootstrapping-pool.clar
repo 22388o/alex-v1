@@ -7,7 +7,7 @@
 
 ;; constants
 ;;
-(define-constant ONE_8 u100000000) ;; 8 decimal places
+(define-constant ONE_16 u100000000) ;; 8 decimal places
 
 (define-constant ERR-NOT-AUTHORIZED (err u1000))
 (define-constant ERR-INVALID-POOL (err u2001))
@@ -163,7 +163,7 @@
 ;; @returns (response uint uint)
 (define-read-only (get-weight-x (token-x-trait <ft-trait>) (token-y-trait <ft-trait>) (expiry uint))
     (begin
-        (asserts! (<= (* block-height ONE_8) expiry) ERR-ALREADY-EXPIRED)
+        (asserts! (<= (* block-height ONE_16) expiry) ERR-ALREADY-EXPIRED)
         (let 
             (
                 (token-x (contract-of token-x-trait))
@@ -176,7 +176,7 @@
                 (listed (get listed pool))
 
                 ;; weight-t = weight-x-0 - (block-height - listed) * (weight-x-0 - weight-x-1) / (expiry - listed)
-                (now-to-listed (- (* block-height ONE_8) listed))
+                (now-to-listed (- (* block-height ONE_16) listed))
                 (expiry-to-listed (- expiry listed))
                 (weight-diff (- weight-x-0 weight-x-1))
                 (time-ratio (div-down now-to-listed expiry-to-listed))
@@ -261,7 +261,7 @@
                 balance-y: u0,
                 pool-multisig: (contract-of multisig-vote),
                 pool-token: (contract-of the-pool-token),
-                listed: (* block-height ONE_8),
+                listed: (* block-height ONE_16),
                 weight-x-0: weight-x-0,
                 weight-x-1: weight-x-1,
                 weight-x-t: weight-x-0,
@@ -294,7 +294,7 @@
 ;; @returns (response (tuple uint uint) uint)
 (define-public (reduce-position (token-x-trait <ft-trait>) (token-y-trait <ft-trait>) (expiry uint) (the-pool-token <ft-trait>) (percent uint))
     (begin
-        (asserts! (<= percent ONE_8) ERR-PERCENT-GREATER-THAN-ONE) 
+        (asserts! (<= percent ONE_16) ERR-PERCENT-GREATER-THAN-ONE) 
         (let
             (
                 (token-x (contract-of token-x-trait))
@@ -303,7 +303,7 @@
                 (balance-x (get balance-x pool))
                 (balance-y (get balance-y pool))
                 (total-shares (unwrap-panic (contract-call? the-pool-token get-balance-fixed tx-sender)))
-                (shares (if (is-eq percent ONE_8) total-shares (mul-down total-shares percent)))
+                (shares (if (is-eq percent ONE_16) total-shares (mul-down total-shares percent)))
                 (total-supply (get total-supply pool))     
                 (reduce-data (try! (get-position-given-burn token-x-trait token-y-trait expiry shares)))
                 (dx (get dx reduce-data))
@@ -338,7 +338,7 @@
 (define-public (swap-x-for-y (token-x-trait <ft-trait>) (token-y-trait <ft-trait>) (expiry uint) (dx uint) (min-dy (optional uint)))
     (begin
         ;; swap is allowed only until expiry
-        (asserts! (<= (* block-height ONE_8) expiry) ERR-ALREADY-EXPIRED)
+        (asserts! (<= (* block-height ONE_16) expiry) ERR-ALREADY-EXPIRED)
         (let
             (
                 (token-x (contract-of token-x-trait))
@@ -349,7 +349,7 @@
 
                 ;; swap triggers update of weight
                 (weight-x (try! (get-weight-x token-x-trait token-y-trait expiry)))
-                (weight-y (- ONE_8 weight-x))
+                (weight-y (- ONE_16 weight-x))
                 (dy (try! (get-y-given-x token-x-trait token-y-trait expiry dx)))
 
                 (pool-updated (merge pool {
@@ -382,7 +382,7 @@
 (define-public (swap-y-for-x (token-x-trait <ft-trait>) (token-y-trait <ft-trait>) (expiry uint) (dy uint) (min-dx (optional uint)))
     (begin
         ;; swap is allowed only until expiry
-        (asserts! (<= (* block-height ONE_8) expiry) ERR-ALREADY-EXPIRED)
+        (asserts! (<= (* block-height ONE_16) expiry) ERR-ALREADY-EXPIRED)
         (let
             (
                 (token-x (contract-of token-x-trait))
@@ -393,7 +393,7 @@
 
                 ;; swap triggers update of weight
                 (weight-x (try! (get-weight-x token-x-trait token-y-trait expiry)))
-                (weight-y (- ONE_8 weight-x))            
+                (weight-y (- ONE_16 weight-x))            
                 (dx (try! (get-x-given-y token-x-trait token-y-trait expiry dy)))
 
                 (pool-updated (merge pool {
@@ -452,7 +452,7 @@
             (pool (unwrap! (map-get? pools-data-map { token-x: (contract-of token-x-trait), token-y: (contract-of token-y-trait), expiry: expiry }) ERR-INVALID-POOL))
             (weight-x (get weight-x-t pool))
         )
-        (contract-call? .weighted-equation get-y-given-x (get balance-x pool) (get balance-y pool) weight-x (- ONE_8 weight-x) dx)        
+        (contract-call? .weighted-equation get-y-given-x (get balance-x pool) (get balance-y pool) weight-x (- ONE_16 weight-x) dx)        
     )
 )
 
@@ -468,7 +468,7 @@
             (pool (unwrap! (map-get? pools-data-map { token-x: (contract-of token-x-trait), token-y: (contract-of token-y-trait), expiry: expiry }) ERR-INVALID-POOL))
             (weight-x (get weight-x-t pool))
         )
-        (contract-call? .weighted-equation get-x-given-y (get balance-x pool) (get balance-y pool) weight-x (- ONE_8 weight-x) dy)
+        (contract-call? .weighted-equation get-x-given-y (get balance-x pool) (get balance-y pool) weight-x (- ONE_16 weight-x) dy)
     )
 )
 
@@ -485,7 +485,7 @@
             (balance-x (get balance-x pool))
             (balance-y (get balance-y pool))
             (weight-x (get weight-x-t pool))
-            (weight-y (- ONE_8 weight-x))            
+            (weight-y (- ONE_16 weight-x))            
         )
         (contract-call? .weighted-equation get-x-given-price balance-x balance-y weight-x weight-y price)
     )
@@ -504,7 +504,7 @@
             (balance-x (get balance-x pool))
             (balance-y (get balance-y pool))
             (weight-x (get weight-x-t pool))
-            (weight-y (- ONE_8 weight-x))            
+            (weight-y (- ONE_16 weight-x))            
         )
         (contract-call? .weighted-equation get-y-given-price balance-x balance-y weight-x weight-y price)
     )
@@ -525,7 +525,7 @@
             (balance-y (get balance-y pool))
             (total-supply (get total-supply pool))
             (weight-x (get weight-x-t pool))
-            (weight-y (- ONE_8 weight-x))       
+            (weight-y (- ONE_16 weight-x))       
         )
         (contract-call? .weighted-equation get-token-given-position balance-x balance-y weight-x weight-y total-supply dx (default-to u340282366920938463463374607431768211455 max-dy))
     )
@@ -545,7 +545,7 @@
             (balance-y (get balance-y pool))
             (total-supply (get total-supply pool))     
             (weight-x (get weight-x-t pool))
-            (weight-y (- ONE_8 weight-x))                         
+            (weight-y (- ONE_16 weight-x))                         
         )
         (contract-call? .weighted-equation get-position-given-mint balance-x balance-y weight-x weight-y total-supply shares)
     )
@@ -565,7 +565,7 @@
             (balance-y (get balance-y pool))
             (total-supply (get total-supply pool))
             (weight-x (get weight-x-t pool))
-            (weight-y (- ONE_8 weight-x))                  
+            (weight-y (- ONE_16 weight-x))                  
         )
         (contract-call? .weighted-equation get-position-given-burn balance-x balance-y weight-x weight-y total-supply shares)
     )
@@ -588,7 +588,7 @@
 ;; @param b
 ;; @returns uint
 (define-read-only (mul-down (a uint) (b uint))
-    (/ (* a b) ONE_8)
+    (/ (* a b) ONE_16)
 )
 
 ;; @desc mul-up
@@ -602,7 +602,7 @@
        )
         (if (is-eq product u0)
             u0
-            (+ u1 (/ (- product u1) ONE_8))
+            (+ u1 (/ (- product u1) ONE_16))
        )
    )
 )
@@ -614,7 +614,7 @@
 (define-read-only (div-down (a uint) (b uint))
     (if (is-eq a u0)
         u0
-        (/ (* a ONE_8) b)
+        (/ (* a ONE_16) b)
     )
 )
 
@@ -625,7 +625,7 @@
 (define-read-only (div-up (a uint) (b uint))
     (if (is-eq a u0)
         u0
-        (+ u1 (/ (- (* a ONE_8) u1) b))
+        (+ u1 (/ (- (* a ONE_16) u1) b))
     )
 )
 

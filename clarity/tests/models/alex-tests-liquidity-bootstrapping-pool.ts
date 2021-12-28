@@ -19,7 +19,7 @@ import {
       return this.chain.callReadOnlyFn("liquidity-bootstrapping-pool", "get-pool-details", [
         types.principal(tokenX),
         types.principal(tokenY),
-        types.uint(expiry),
+        'u' + BigInt(expiry),
       ], this.deployer.address);
     }
   
@@ -28,15 +28,15 @@ import {
         Tx.contractCall("liquidity-bootstrapping-pool", "create-pool", [
           types.principal(tokenX),
           types.principal(tokenY),
-          types.uint(weightX1),
-          types.uint(weightX2),
-          types.uint(expiry),
+          'u' + BigInt(weightX1),
+          'u' + BigInt(weightX2),
+          'u' + BigInt(expiry),
           types.principal(pooltoken),
           types.principal(multisig),
-          types.uint(price_x_min),
-          types.uint(price_x_max),
-          types.uint(dX),
-          types.uint(dY),
+          'u' + BigInt(price_x_min),
+          'u' + BigInt(price_x_max),
+          'u' + BigInt(dX),
+          'u' + BigInt(dY),
         ], user.address),
       ]);
       return block.receipts[0].result;
@@ -47,9 +47,9 @@ import {
         Tx.contractCall("liquidity-bootstrapping-pool", "set-price-range", [
           types.principal(tokenX),
           types.principal(tokenY),
-          types.uint(expiry),
-          types.uint(min_price),
-          types.uint(max_price)
+          'u' + BigInt(expiry),
+          'u' + BigInt(min_price),
+          'u' + BigInt(max_price)
         ], user.address),
       ]);
       return block.receipts[0].result;
@@ -59,7 +59,7 @@ import {
       return this.chain.callReadOnlyFn("liquidity-bootstrapping-pool", "get-price-range", [
         types.principal(tokenX),
         types.principal(tokenY),
-        types.uint(expiry)
+        'u' + BigInt(expiry)
       ], this.deployer.address);
     }     
 
@@ -67,7 +67,7 @@ import {
       return this.chain.callReadOnlyFn("liquidity-bootstrapping-pool", "get-weight-x", [
         types.principal(tokenX),
         types.principal(tokenY),
-        types.uint(expiry)
+        'u' + BigInt(expiry)
       ], this.deployer.address);
     }      
 
@@ -76,7 +76,7 @@ import {
         Tx.contractCall("liquidity-bootstrapping-pool", "set-pool-multisig", [
           types.principal(tokenX),
           types.principal(tokenY),
-          types.uint(expiry),
+          'u' + BigInt(expiry),
           types.principal(new_multisig)
         ], user.address),
       ]);
@@ -88,9 +88,9 @@ import {
         Tx.contractCall("liquidity-bootstrapping-pool", "reduce-position", [
           types.principal(tokenX),
           types.principal(tokenY),
-          types.uint(expiry),
+          'u' + BigInt(expiry),
           types.principal(pooltoken),
-          types.uint(percentage),
+          'u' + BigInt(percentage),
         ], user.address),
       ]);
       return block.receipts[0].result;
@@ -101,9 +101,9 @@ import {
         Tx.contractCall("liquidity-bootstrapping-pool", "swap-y-for-x", [
           types.principal(tokenX),
           types.principal(tokenY),
-          types.uint(expiry),
-          types.uint(dy),
-          types.some(types.uint(min_dx))
+          'u' + BigInt(expiry),
+          'u' + BigInt(dy),
+          types.some('u' + BigInt(min_dx))
         ], user.address),
       ]);
       return block.receipts[0].result;
@@ -113,8 +113,8 @@ import {
       return this.chain.callReadOnlyFn("liquidity-bootstrapping-pool", "get-x-given-y", [
         types.principal(tokenX),
         types.principal(tokenY),
-        types.uint(expiry),
-        types.uint(dy)
+        'u' + BigInt(expiry),
+        'u' + BigInt(dy)
       ], this.deployer.address);
     } 
     
@@ -122,8 +122,8 @@ import {
       return this.chain.callReadOnlyFn("liquidity-bootstrapping-pool", "get-y-given-x", [
         types.principal(tokenX),
         types.principal(tokenY),
-        types.uint(expiry),
-        types.uint(dx)
+        'u' + BigInt(expiry),
+        'u' + BigInt(dx)
       ], this.deployer.address);
     }
   

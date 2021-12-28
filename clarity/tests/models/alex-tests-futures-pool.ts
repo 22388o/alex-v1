@@ -28,7 +28,7 @@ class FuturesPool{
             "alex-reserve-pool",
             "set-activation-threshold",
             [
-                types.uint(threshold)
+                'u' + BigInt(threshold)
             ],
             sender.address
         );
@@ -68,9 +68,9 @@ class FuturesPool{
             "add-to-position",
             [
                 types.principal(token),
-                types.uint(startCycle),
+                'u' + BigInt(startCycle),
                 types.principal(yieldToken),
-                types.uint(dx),
+                'u' + BigInt(dx),
             ],
             sender.address
         );
@@ -83,9 +83,9 @@ class FuturesPool{
             "reduce-position",
             [
                 types.principal(token),
-                types.uint(startCycle),
+                'u' + BigInt(startCycle),
                 types.principal(yieldToken),
-                types.uint(percent),
+                'u' + BigInt(percent),
             ],
             sender.address
         )
@@ -104,7 +104,7 @@ class FuturesPool{
             "alex-reserve-pool",
             "get-first-stacks-block-in-reward-cycle",
             [types.principal(token),
-            types.uint(startCycle)],
+            'u' + BigInt(startCycle)],
             sender.address
         )
     }
@@ -115,8 +115,8 @@ class FuturesPool{
         "alex-reserve-pool",
         "set-coinbase-amount",
         [
-          types.principal(token), types.uint(coinbaseOne), types.uint(coinbaseTwo), 
-          types.uint(coinbaseThree) ,types.uint(coinbaseFour), types.uint(coinbaseFive)
+          types.principal(token), 'u' + BigInt(coinbaseOne), 'u' + BigInt(coinbaseTwo), 
+          'u' + BigInt(coinbaseThree) ,'u' + BigInt(coinbaseFour), 'u' + BigInt(coinbaseFive)
         ],
         sender.address
       );
