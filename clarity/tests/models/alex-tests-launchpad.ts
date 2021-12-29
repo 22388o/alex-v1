@@ -59,10 +59,11 @@ class ALEXLaunchpad {
         return block.receipts[0].result;
     }
 
-    refund(sender: Account, tokenTrait: string) {
+    refund(sender: Account, tokenTrait: string, ticketTrait: string) {
         let block = this.chain.mineBlock([
             Tx.contractCall("alex-launchpad", "refund", [
                 types.principal(tokenTrait),
+                types.principal(ticketTrait)
             ],
                 sender.address
             ),
@@ -81,6 +82,18 @@ class ALEXLaunchpad {
         ]);
         return block;
     }
+
+    claimNine(sender: Account, tokenTrait: string, ticketTrait: string) {
+        let block = this.chain.mineBlock([
+            Tx.contractCall("alex-launchpad", "claim-nine", [
+                types.principal(tokenTrait),
+                types.principal(ticketTrait),
+            ],
+                sender.address
+            ),
+        ]);
+        return block;
+    }    
 
     getRegistrationStart(token: string): ReadOnlyFn {
         return this.chain.callReadOnlyFn(

@@ -1,6 +1,6 @@
 import {
   _deploy,
-  _fwp_pools,
+  _fwp_deploy,
   DEPLOYER_ACCOUNT_ADDRESS,
   USER_ACCOUNT_ADDRESS,
 } from './constants';
@@ -36,13 +36,14 @@ import {
   reserveGetStaked,
   reserveGetStakingStatsCoinbaseAsList,
   reserveGetStakingRewards,
-  reserveStakeTokens
+  reserveStakeTokens,
+  reserveGetUser
 } from './reserve';
 import {
   test_spot_trading,
   test_margin_trading
 } from './runSteps/archived-code';
-import { transferSTX, balance, transfer } from './vault';
+import { transferSTX, balance, transfer_ft, transfer_sft, get_token_owned, add_approved_contract } from './vault';
 import {
   mint_ft,
   mint_sft,
@@ -52,7 +53,7 @@ import {
   launchAddToPosition,
   launchGetSubscriberAtToken,
   launchGetTokenDetails,
-  launchRegister
+  launchRegister,
 } from './pools-launch';
 import { 
   multisigEndProposal,
@@ -68,73 +69,104 @@ import {
   reduce_position_fwp,
   reduce_position_ytp
 } from './runSteps/reduce-position'
-
+import {
+  faucetAddApprovedContract
+} from './faucet'
+import { crpGetSpot } from './pools-crp';
+import { genesis_transfer, network } from './wallet';
+import {
+  getNonce
+} from '@stacks/transactions';
 
 
 
 async function run_mint_initial_tokens() {
   await set_faucet_amounts();
-  await transferSTX("ST1J2JTYXGRMZYNKE40GM87ZCACSPSSEEQVSNB7DC.faucet", 300000000e6);
+  await genesis_transfer()
+  await transferSTX("ST1J2JTYXGRMZYNKE40GM87ZCACSPSSEEQVSNB7DC.faucet", 300000000e6);  
+  await transferSTX(USER_ACCOUNT_ADDRESS(), 1000000000e6);  
+  let faucet_approved_contracts = 
+    [
+      'ST32XBVYKFY711FMA0HG8P3Z8KFAQ5ZCJZY5GXWN8',
+      'ST3TS7YBZ6MVAMGQTHH8EYB1Q48ECMZH0GBX59HKG',
+      'ST1A4D97X2J87Y5YMM7JZX591YJN083NZCP9C3W0Q',
+      'STA3H2N4HJPPTK00CMJ28W7NXBD0C789QWD4MYCR',
+      'ST2MVDW2WFACGHMXY5GWW88PE09RK6SZX056RZG0B'
+    ];
+  for(let i = 0; i < faucet_approved_contracts.length; i++){
+    await transferSTX(faucet_approved_contracts[i], 10000e6, false);
+    await faucetAddApprovedContract(faucet_approved_contracts[i]);
+  }  
   await mint_some_tokens(DEPLOYER_ACCOUNT_ADDRESS());
   await mint_some_tokens(USER_ACCOUNT_ADDRESS());  
-  await get_some_token(USER_ACCOUNT_ADDRESS());
-  await transferSTX(USER_ACCOUNT_ADDRESS(), 1000000000e6);  
+  await get_some_token(USER_ACCOUNT_ADDRESS());  
 }
 
 async function run() {
+
+  let deployer_nonce = Number(await getNonce(DEPLOYER_ACCOUNT_ADDRESS(), network));
+  let user_nonce = Number(await getNonce(USER_ACCOUNT_ADDRESS(), network));
+
   // await run_mint_initial_tokens();
-  // await mint_some_tokens(USER_ACCOUNT_ADDRESS());
-  // await transferSTX(USER_ACCOUNT_ADDRESS(), 300000000e6);  
+  // await mint_ft('token-t-alex', 1000000000e8, DEPLOYER_ACCOUNT_ADDRESS());
+  // await create_fwp(false, _fwp_deploy, true);
+  // await create_fwp(true, _fwp_deploy, true);
 
-  // const _pools = { 0:_deploy[4], 1:_deploy[5] };
-  const _pools = _deploy;
-  
-  // await create_fwp(false);
-  // await create_fwp(true, _fwp_pools, true);
+  // await create_ytp(false, _deploy);
+  // await create_crp(false, _deploy);
 
-  // await create_ytp(false, _pools);
-  // await create_crp(false, _pools);
-
-  // let _list = ['token-t-alex', 'fwp-wstx-usda-50-50', 'fwp-wstx-wbtc-50-50'];//, 'ytp-yield-wbtc', 'ytp-yield-usda'];
+  // let _list = ['token-t-alex'];//, 'fwp-wstx-usda-50-50', 'fwp-wstx-wbtc-50-50']; 
+  // let _list = ['ytp-yield-wbtc', 'ytp-yield-usda'];
   // for(let i = 0; i < _list.length; i++) {
   //   await reserveAddToken(_list[i]);
   //   await reserveSetActivationThreshold(1);
   //   await reserveSetActivationDelay(1);
-  //   await reserveSetRewardCycleLength(525);
+    // await reserveSetRewardCycleLength(525);
   //   await reserveRegisterUser(_list[i]);
   //   await reserveSetCoinbaseAmount(_list[i], 1000e8, 1000e8, 1000e8, 1000e8, 1000e8);
   // }
 
-  await arbitrage_fwp(false);
-  await arbitrage_crp(false, _pools);
-  await arbitrage_ytp(false, _pools);
-  await arbitrage_fwp(false);
+
+
+  for (const _key in _fwp_deploy) {
+    const key = _key as '0' | '1' | '2';
+    arbitrage_fwp(_fwp_deploy[key], user_nonce, false);
+    user_nonce += 1;
+  }
+  for (const _key in _deploy) {
+    const key = _key as '0' | '1' | '2';
+    arbitrage_crp(_deploy[key], user_nonce, false);
+    user_nonce += 1;
+  }
+
+  // await arbitrage_ytp(false, _deploy);
+  // await arbitrage_fwp(false);
 
   // await test_spot_trading();
   // await test_margin_trading();
 
-  // await create_crp(true, _pools);
-  // await create_ytp(true, _pools);
+  // await create_crp(true, _deploy);
+  // await create_ytp(true, _deploy);
 
   // await arbitrage_fwp(dry_run=true);
-  // await arbitrage_crp(dry_run=true, _pools);
-  // await arbitrage_ytp(dry_run=true, _pools);
+  // await arbitrage_crp(dry_run=true, _deploy);
+  // await arbitrage_ytp(dry_run=true, _deploy);
   // await get_pool_details_fwp();
 
-  // await get_pool_details_crp(_pools);
-  // await get_pool_details_ytp(_pools);
+  // await get_pool_details_crp(_deploy);
+  // await get_pool_details_ytp(_deploy);
 
-  // await reduce_position_fwp({0:_fwp_pools[1]}, 0.5e8, true);
+  // await reduce_position_fwp({0:_fwp_deploy[1]}, 0.5e8, true);
 
   // const _reduce = { 0: _deploy[14] , 1: _deploy[15] };
   // await reduce_position_ytp(_reduce, 0.9*ONE_8, deployer=true);
   // await get_pool_details_ytp(_subset=_reduce);
 
-  // await reduce_position_ytp(_pools, 0.1*ONE_8, deployer=true);
-  // await reduce_position_crp(_pools, ONE_8, 'yield');
-  // await reduce_position_crp(_pools, ONE_8, 'key');
-  // await reduce_position_crp(_pools, 0.8*ONE_8, 'yield', deployer=true);
-  // await reduce_position_crp(_pools, 0.8*ONE_8, 'key', deployer=true);
+  // await reduce_position_ytp(_deploy, 0.1*ONE_8, deployer=true);
+  // await reduce_position_crp(_deploy, ONE_8, 'yield');
+  // await reduce_position_crp(_deploy, ONE_8, 'key');
+  // await reduce_position_crp(_deploy, 0.8*ONE_8, 'yield', deployer=true);
+  // await reduce_position_crp(_deploy, 0.8*ONE_8, 'key', deployer=true);
 
   // await see_balance(DEPLOYER_ACCOUNT_ADDRESS());
   // await mint_some_tokens(DEPLOYER_ACCOUNT_ADDRESS());
@@ -188,11 +220,11 @@ async function run() {
   //   console.log(result.list[item]);
   // }  
 
-  // await multisigPropose('multisig-fwp-wstx-wbtc-50-50', 6030, 'update fee', '', 0.003e8, 0.003e8);
+  // await multisigPropose('multisig-fwp-wstx-wbtc-50-50', 3630, 'update fee', '', 0.003e8, 0.003e8);
   // let result:any = await balance('fwp-wstx-wbtc-50-50', DEPLOYER_ACCOUNT_ADDRESS());
   // console.log(result)
   // let result:any = await multisigVoteFor('multisig-fwp-wstx-usda-50-50', 'fwp-wstx-usda-50-50', 1, 17907343375660777);
-  // result = await multisigEndProposal('multisig-fwp-wstx-usda-50-50', 1);
+  // let result:any = await multisigEndProposal('multisig-fwp-wstx-usda-50-50', 1);
   // result = await multisigGetProposalById('multisig-fwp-wstx-usda-50-50', 2);
   // console.log(result);
   // result = await multisigVoteFor('multisig-fwp-wstx-usda-50-50', 'fwp-wstx-usda-50-50', 1, 19502551000000);
@@ -209,12 +241,12 @@ async function run() {
 
   // let result:any = await fwpGetPoolDetails('token-wstx', 'token-wbtc', 0.5e8, 0.5e8);
   // console.log(result.value.data);
-  // await transferSTX("ST1J2JTYXGRMZYNKE40GM87ZCACSPSSEEQVSNB7DC.faucet", 100000000e6);
 
   // tiger ST17MVDJT37DGB5QRRS1H4HQ4MKVFKA3KAA4YGFH4
   // james STCTK0C1JAFK3JVM95TFV6EB16579WRCEYN10CTQ
   // lynn ST2PMTQVZVCVSMH5XHYYES3EV9JW22G0VT2C56AY4
   // ali ST1D0QCNK85ZZDNHEV5DTDCD9G2Q043CK967ZST9K
+  // rachel STHFAXDZVFHMY8YR3P9J7ZCV6N89SBET23T2DWG9
 
   // _list = ['key-usda-wbtc', 'key-wbtc-usda', 'key-wbtc-wbtc', 'yield-wbtc', 'yield-usda', 'ytp-yield-wbtc', 'ytp-yield-usda']
   // for (let i = 0; i < _list.length; i++) {
@@ -227,15 +259,17 @@ async function run() {
   //     'STHB7WGM8DRFVGTVKHNVZXEVSPKKPCPEGGN27RWM',
   //     'ST17MVDJT37DGB5QRRS1H4HQ4MKVFKA3KAA4YGFH4',
   //     'ST1D0QCNK85ZZDNHEV5DTDCD9G2Q043CK967ZST9K',
-  //     'STCTK0C1JAFK3JVM95TFV6EB16579WRCEYN10CTQ'
+  //     'STCTK0C1JAFK3JVM95TFV6EB16579WRCEYN10CTQ',
+  //     'STHFAXDZVFHMY8YR3P9J7ZCV6N89SBET23T2DWG9'
   //   ];  
   // for (let i = 0; i < _list.length; i++) {
-  //     await get_some_token(_list[i]);
-  //     // mint_ft('lottery-t-alex', 100e8, _list[i]);
+  //     // await get_some_token(_list[i]);
+  //     mint_ft('token-t-alex', 100e8, _list[i], deployer_nonce);
+  //     deployer_nonce += 1;
   // }
   // await set_faucet_amounts();
   // await get_some_token('ST1XARV3J1N3SJJBDJCE3WE84KDHZQGMGBAZR2JXT');
-  // await get_some_token('STHFAXDZVFHMY8YR3P9J7ZCV6N89SBET23T2DWG9');
+  // await get_some_token('ST11KFHZRN7ANRRPDK0HJXG243EJBFBAFRB27NPK8');
   // await mint_ft('lottery-t-alex', 100e8, 'ST1XARV3J1N3SJJBDJCE3WE84KDHZQGMGBAZR2JXT');
   // await mint_ft('lottery-t-alex', 100e8, 'ST11KFHZRN7ANRRPDK0HJXG243EJBFBAFRB27NPK8');
   // await transferSTX('ST11KFHZRN7ANRRPDK0HJXG243EJBFBAFRB27NPK8', 250000e8);
@@ -265,5 +299,10 @@ async function run() {
   // console.log(result.data);
   // result = await launchGetSubscriberAtToken('token-t-alex', 2);
   // console.log(result.data);
+
+  // await transfer_sft('yield-usda', 'ST1J2JTYXGRMZYNKE40GM87ZCACSPSSEEQVSNB7DC.alex-vault', 34561e8, 1e8, false);
+  // console.log(await get_token_owned('yield-usda', false));
+
+  // await add_approved_contract('token-t-alex', 'ST1J2JTYXGRMZYNKE40GM87ZCACSPSSEEQVSNB7DC.exchange');
 }
 run();

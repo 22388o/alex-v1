@@ -1,5 +1,5 @@
 import { _deploy, _fwp_pools, ONE_8 } from '../constants';
-import { crpAddToPostion, crpCreate } from '../pools-crp';
+import { crpAddToPostion, crpAddToPostionAndSwitch, crpCreate } from '../pools-crp';
 import { fwpAddToPosition, fwpCreate, fwpSetOracleAverage, fwpSetOracleEnbled } from '../pools-fwp';
 import { ytpAddToPosition, ytpCreate } from '../pools-ytp';
 
@@ -20,7 +20,7 @@ export async function create_fwp(
         _subset[key]['weight_y'],
         _subset[key]['pool_token'],
         _subset[key]['left_side'],
-        ONE_8 * ONE_8 * ONE_8,
+        Number.MAX_SAFE_INTEGER,
         deployer,
       );
     } else {
@@ -66,6 +66,7 @@ export async function create_ytp(add_only: boolean, _subset = _deploy) {
           _subset[key]['token'],
           _subset[key]['pool_token'],
           _subset[key]['liquidity_ytp'],
+          Number.MAX_SAFE_INTEGER
         );
       } else {
         await ytpCreate(
