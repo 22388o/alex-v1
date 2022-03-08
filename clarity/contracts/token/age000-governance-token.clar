@@ -52,13 +52,13 @@
 ;; @desc get-name
 ;; @returns (response string-utf8)
 (define-read-only (get-name)
-  (ok "t-alex")
+  (ok "alex")
 )
 
 ;; @desc get-symbol
 ;; @returns (response string-utf8)
 (define-read-only (get-symbol)
-  (ok "t-alex")
+  (ok "alex")
 )
 
 ;; @desc get-decimals
@@ -85,7 +85,7 @@
   )
 )
 
-;; @desc get-token-uri 
+;; @desc get-token-uri
 ;; @params token-id
 ;; @returns (response none)
 (define-read-only (get-token-uri)
@@ -94,7 +94,7 @@
 
 ;; @desc transfer
 ;; @restricted sender
-;; @params token-id 
+;; @params token-id
 ;; @params amount
 ;; @params sender
 ;; @params recipient
@@ -149,7 +149,7 @@
   (/ (* amount (pow-decimals)) ONE_8)
 )
 
-;; @desc decimals-to-fixed 
+;; @desc decimals-to-fixed
 ;; @params amount
 ;; @returns uint
 (define-private (decimals-to-fixed (amount uint))
